@@ -3,7 +3,7 @@ bower_components/
 
 # Custom
 bugreport.txt
-web.cfg.json
+site.cfg.json
 coverage/
 media/
 
