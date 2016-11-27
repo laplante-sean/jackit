@@ -60,6 +60,7 @@ class JackitConfig(JsonConfig):
         self.path = path
         self._width = 800
         self._height = 600
+        self._framerate = 60
         self._mode = "production"
         self._fullscreen = False
 
@@ -126,6 +127,20 @@ class JackitConfig(JsonConfig):
         '''
         self._height = self.validate_int(value)
 
+    @property
+    def framerate(self):
+        '''
+        Get the value of framerate
+        '''
+        return self._framerate
+
+    @framerate.setter
+    def framerate(self, value):
+        '''
+        Set the value of framerate and validate
+        '''
+        self._framerate = self.validate_int(value)
+
     def to_json(self):
         '''
         JSON representation of config options
@@ -136,7 +151,8 @@ class JackitConfig(JsonConfig):
                 "height": self.height
             },
             "mode": self.mode,
-            "fullscreen": self.fullscreen
+            "fullscreen": self.fullscreen,
+            "framerate": self.framerate,
         }
 
     def from_json(self, raw):
@@ -148,6 +164,7 @@ class JackitConfig(JsonConfig):
         self.width = res.get("width", 800)
         self.height = res.get("height", 600)
         self.fullscreen = raw.get("fullscreen", False)
+        self.framerate = raw.get("framerate", 60)
 
     def load(self):
         '''
