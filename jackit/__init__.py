@@ -19,8 +19,12 @@ class JackitGame:
         '''
 
         pygame.init()
+        size = (self.config.width, self.config.height)
 
-        screen = pygame.display.set_mode(self.config.resolution)
+        if self.config.fullscreen:
+            screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+        else:
+            screen = pygame.display.set_mode(size)
 
         running = True
         while running:

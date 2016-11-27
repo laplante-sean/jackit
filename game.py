@@ -12,8 +12,11 @@ if __name__ == "__main__":
     try:
         from deploy import SiteDeployment
         from jackit import JackitGame
+        from jackit.config import ConfigError
         game = JackitGame(SiteDeployment.config)
         game.run()
+    except ConfigError as e:
+        print("Invalid config: {}. Please fix {}".format(str(e), SiteDeployment.config_path))
     except BaseException as e:
         print("Exception during game execution. See {}\nException: {}".format(
             os.path.join(SiteDeployment.base_path, "bugreport.txt"), str(e)

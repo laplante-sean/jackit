@@ -27,8 +27,13 @@ class SiteDeploymentSingleton:
         self.base_path = os.path.dirname(os.path.abspath(__file__))
         self.resource_dir = os.path.join(self.base_path, "jackit", "resources")
         self.config_path = os.path.join(self.base_path, "site.cfg.json")
-        self.config = JackitConfig(self.config_path)
+        self.config = None
 
+    def setup_config(self):
+        '''
+        Setup the config file
+        '''
+        self.config = JackitConfig(self.config_path)
         if not os.path.exists(self.config_path):
             self.config.save()
 

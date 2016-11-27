@@ -6,6 +6,7 @@ bugreport.txt
 site.cfg.json
 coverage/
 media/
+.vscode/
 
 # Mac Filesystem garbage
 .DS_Store*
