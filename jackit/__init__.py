@@ -15,7 +15,7 @@ class JackitGame:
         '''
         Run the game
         '''
-        from jackit.engine import GameEngine
+        from jackit.core.engine import GameEngine
 
         while True:
             GameEngine.update()
