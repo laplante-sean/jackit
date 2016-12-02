@@ -1,16 +1,19 @@
 '''
-Core game componenet abstract base class
+Base class for all engine components
 '''
 
-class GameComponent:
+import pygame
+
+class EngineComponent:
     '''
-    Abstract base class for a game engine component
+    Base class for all engine components
     '''
-    def __init__(self):
-        pass
+
+    def __init__(self, game_engine):
+        self.game_engine = game_engine
 
     def update(self):
         '''
-        Called on each frame. Allows components to perform updates
+        Update the engine component. Must be implemented
         '''
         raise NotImplementedError()

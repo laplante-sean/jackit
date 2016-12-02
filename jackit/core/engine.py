@@ -1,17 +1,12 @@
 '''
 Main game engine
 '''
-
-import os
-import sys
 import pygame
 from deploy import SiteDeployment
 
 # Import game engine components
-from jackit.core.graphics import Graphics
-from jackit.core.world import World
-from jackit.core.sound import Sound
 from jackit.core.input import Input
+from jackit.core.player import Player
 
 class EngineSingleton:
     '''
@@ -31,60 +26,93 @@ class EngineSingleton:
         return cls._instance
 
     def __init__(self):
+        pygame.init()
+
         self.config = SiteDeployment.config
+        self.screen_width = self.config.width
+        self.screen_height = self.config.height
         self.screen_size = (self.config.width, self.config.height)
         self.fullscreen = self.config.fullscreen
         self.framerate = self.config.framerate
         self.clock = pygame.time.Clock() # for framerate control
+        self.active_sprite_list = pygame.sprite.Group() # All active sprites
+        self.running = True
 
-        # Setup the game engine components
+        # TODO: make this a config option
+        self.controls = {
+            'left': pygame.K_a,
+            'right': pygame.K_d,
+            'up': pygame.K_w,
+            'down': pygame.K_s,
+            'jump': pygame.K_SPACE
+        }
 
-        self.graphics = Graphics(self.screen_size, fullscreen=self.fullscreen)
-        self.world = World()
-        self.input = Input()
-        self.sound = Sound()
+        # Init Input handler
+        self.input = Input(self)
+        self.player = Player(self)
 
-        # TODO: Put this in actors.py
-        self.ball = pygame.image.load(
-            os.path.join(SiteDeployment.resource_path, "sprites", "ball.gif")
-        )
-        self.ballrect = self.ball.get_rect()
-        self.speed = [2, 2]
+        if self.fullscreen:
+            self.screen = pygame.display.set_mode(self.screen_size, pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode(self.screen_size)
 
     def update(self):
         '''
         Updates all game components
         '''
-        # Handle events
-        self.handle_events()
 
-        # Update Input
+        # Get user input for this frame
         self.input.update()
 
-        # Update World
-        self.world.update()
+        # Handle input events
+        self.handle_events()
 
-        self.ballrect = self.ballrect.move(self.speed)
-        if self.ballrect.left < 0 or self.ballrect.right > self.graphics.screen_size[0]:
-            self.speed[0] = -self.speed[0]
-        if self.ballrect.top < 0 or self.ballrect.bottom > self.graphics.screen_size[1]:
-            self.speed[1] = -self.speed[1]
+        # Update all active sprites
+        self.active_sprite_list.update()
+        self.player.update()
 
-        self.graphics.screen.blit(self.ball, self.ballrect)
+        # ALL CODE FOR DRAWING GOES BELOW HERE
 
-        # Update screen (MUST BE LAST)
-        self.graphics.update()
+        self.screen.fill((0, 0, 255)) # Black background
+
+        self.active_sprite_list.draw(self.screen) # Draw all active sprites
+
+        # ALL CODE FOR DRAWING GOES ABOVE HERE
 
         # Maintain framerate
         self.clock.tick(self.framerate)
 
+        # Update the screen with what has been drawn
+        pygame.display.flip()
+
     def handle_events(self):
         '''
-        Handle input events
+        Handle user input events
         '''
         for event in self.input.events:
             if event.type == pygame.QUIT:
+                self.running = False
                 pygame.quit()
-                sys.exit(0)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == self.controls['left']:
+                    print("Left key pressed")
+                    self.player.go_left()
+                elif event.key == self.controls['right']:
+                    print("Right key pressed")
+                    self.player.go_right()
+                elif event.key == self.controls["up"]:
+                    print("Up key pressed")
+                elif event.key == self.controls["down"]:
+                    print("Down key pressed")
+                elif event.key == self.controls["jump"]:
+                    print("Jump key pressed")
+                    self.player.jump()
+            elif event.type == pygame.KEYUP:
+                if event.key == self.controls['left'] and self.player.change_x < 0:
+                    print("Stop going left")
+                    self.player.stop()
+                elif event.key == self.controls['right'] and self.player.change_y > 0:
+                    print("Stop going right")
+                    self.player.stop()
 
 GameEngine = EngineSingleton.instance()

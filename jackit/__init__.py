@@ -3,7 +3,6 @@ The main game loop
 '''
 
 import sys
-import pygame
 
 class JackitGame:
     '''
@@ -17,5 +16,5 @@ class JackitGame:
         '''
         from jackit.core.engine import GameEngine
 
-        while True:
+        while GameEngine.running:
             GameEngine.update()
