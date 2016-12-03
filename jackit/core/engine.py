@@ -88,10 +88,10 @@ class EngineSingleton:
             elif event.type == pygame.KEYDOWN:
                 if event.key == self.controls.left:
                     print("Left key pressed")
-                    self.player.go_left()
+                    self.player.control_left()
                 elif event.key == self.controls.right:
                     print("Right key pressed")
-                    self.player.go_right()
+                    self.player.control_right()
                 elif event.key == self.controls.up:
                     print("Up key pressed")
                 elif event.key == self.controls.down:
@@ -102,9 +102,9 @@ class EngineSingleton:
             elif event.type == pygame.KEYUP:
                 if event.key == self.controls.left and self.player.change_x < 0:
                     print("Stop going left")
-                    self.player.stop()
+                    self.player.control_stop()
                 elif event.key == self.controls.right and self.player.change_x > 0:
                     print("Stop going right")
-                    self.player.stop()
+                    self.player.control_stop()
 
 GameEngine = EngineSingleton.instance()
