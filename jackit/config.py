@@ -3,6 +3,7 @@ Config for jackit
 '''
 
 import json
+import pygame
 
 class ConfigError(Exception):
     '''
@@ -51,10 +52,69 @@ class JsonConfig:
                 type(value)
             ))
 
+class JackitConfigControls:
+    '''
+    Class for configuring and validating Jackit controls
+    '''
+
+    def __init__(self):
+        self.up = pygame.K_w
+        self.down = pygame.K_s
+        self.left = pygame.K_a
+        self.right = pygame.K_d
+        self.jump = pygame.K_SPACE
+
+    def from_json(self, raw):
+        '''
+        Load the object from JSON loaded from config file
+        '''
+
+        # First pass make sure all are valid
+        for key in raw:
+            if isinstance(raw[key], str):
+                if not hasattr(pygame, raw[key]):
+                    raise ConfigError(
+                        "Invalid control for {}. Must be a valid pygame key constant".format(key)
+                    )
+                else:
+                    raw[key] = getattr(pygame, raw[key])
+            elif isinstance(raw[key], int):
+                pass
+            else:
+                raise ConfigError(
+                    "Controls must be a valid pygame key constant as a string or integer"
+                )
+
+        # Check for duplicates
+        values = list(raw.values())
+        values_set = set(values)
+
+        if len(values) != len(values_set):
+            raise ConfigError("Cannot have duplicate controls")
+
+        self.up = raw.get('up', getattr(pygame, 'K_w'))
+        self.down = raw.get('down', getattr(pygame, 'K_s'))
+        self.left = raw.get('left', getattr(pygame, 'K_a'))
+        self.right = raw.get('right', getattr(pygame, 'K_d'))
+        self.jump = raw.get('jump', getattr(pygame, 'K_SPACE'))
+
+    def to_json(self):
+        '''
+        Return a dict representation of the object
+        '''
+        return {
+            'up': self.up,
+            'down': self.down,
+            'left': self.left,
+            'right': self.right,
+            'jump': self.jump
+        }
+
 class JackitConfig(JsonConfig):
     '''
     Jackit config class
     '''
+
     def __init__(self, path):
         super(JackitConfig, self).__init__()
         self.path = path
@@ -63,6 +123,7 @@ class JackitConfig(JsonConfig):
         self._framerate = 60
         self._mode = "production"
         self._fullscreen = False
+        self.controls = JackitConfigControls()
 
     @property
     def mode(self):
@@ -153,6 +214,7 @@ class JackitConfig(JsonConfig):
             "mode": self.mode,
             "fullscreen": self.fullscreen,
             "framerate": self.framerate,
+            "controls": self.controls.to_json()
         }
 
     def from_json(self, raw):
@@ -165,6 +227,8 @@ class JackitConfig(JsonConfig):
         self.height = res.get("height", 600)
         self.fullscreen = raw.get("fullscreen", False)
         self.framerate = raw.get("framerate", 60)
+        self.controls = JackitConfigControls()
+        self.controls.from_json(raw.get('controls', self.controls.to_json()))
 
     def load(self):
         '''

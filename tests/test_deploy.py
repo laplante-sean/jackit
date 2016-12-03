@@ -44,4 +44,4 @@ class TestSiteDeployment(unittest.TestCase):
         Test accessing the config prior to setup
         '''
         with self.assertRaises(SiteDeploymentError):
-            test = SiteDeployment.config
+            _ = SiteDeployment.config

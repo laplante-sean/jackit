@@ -74,6 +74,7 @@ class Player(EngineComponent):
             self.change_y += .35
 
         # See if we are on the ground.
+        # TODO: Check if the change_y will put us through the ground and adjust
         ground = self.game_engine.screen_height - self.sprite.rect.height
         if self.sprite.rect.y >= ground and self.change_y >= 0:
             self.change_y = 0

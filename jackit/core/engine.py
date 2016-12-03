@@ -34,18 +34,10 @@ class EngineSingleton:
         self.screen_size = (self.config.width, self.config.height)
         self.fullscreen = self.config.fullscreen
         self.framerate = self.config.framerate
+        self.controls = self.config.controls
         self.clock = pygame.time.Clock() # for framerate control
         self.active_sprite_list = pygame.sprite.Group() # All active sprites
         self.running = True
-
-        # TODO: make this a config option
-        self.controls = {
-            'left': pygame.K_a,
-            'right': pygame.K_d,
-            'up': pygame.K_w,
-            'down': pygame.K_s,
-            'jump': pygame.K_SPACE
-        }
 
         # Init Input handler
         self.input = Input(self)
@@ -94,24 +86,24 @@ class EngineSingleton:
                 self.running = False
                 pygame.quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == self.controls['left']:
+                if event.key == self.controls.left:
                     print("Left key pressed")
                     self.player.go_left()
-                elif event.key == self.controls['right']:
+                elif event.key == self.controls.right:
                     print("Right key pressed")
                     self.player.go_right()
-                elif event.key == self.controls["up"]:
+                elif event.key == self.controls.up:
                     print("Up key pressed")
-                elif event.key == self.controls["down"]:
+                elif event.key == self.controls.down:
                     print("Down key pressed")
-                elif event.key == self.controls["jump"]:
+                elif event.key == self.controls.jump:
                     print("Jump key pressed")
                     self.player.jump()
             elif event.type == pygame.KEYUP:
-                if event.key == self.controls['left'] and self.player.change_x < 0:
+                if event.key == self.controls.left and self.player.change_x < 0:
                     print("Stop going left")
                     self.player.stop()
-                elif event.key == self.controls['right'] and self.player.change_y > 0:
+                elif event.key == self.controls.right and self.player.change_x > 0:
                     print("Stop going right")
                     self.player.stop()
 

@@ -4,7 +4,7 @@ Test the JackitConfig class
 
 import os
 import unittest
-from jackit.config import JackitConfig, JsonConfig, ConfigError
+from jackit.config import JackitConfig, JsonConfig, ConfigError, JackitConfigControls
 
 class TestJsonConfig(unittest.TestCase):
     '''
@@ -88,3 +88,42 @@ class TestJackitConfig(unittest.TestCase):
         '''
         with self.assertRaises(ConfigError):
             self.config.mode = "boo"
+
+class TestJackitConfigControls(unittest.TestCase):
+    '''
+    Test the JackitConfigControls methods
+    '''
+    def setUp(self):
+        '''
+        Called each time a test method is run
+        '''
+        self.controls = JackitConfigControls()
+
+    def test_invalid_controls(self):
+        '''
+        Test from_json() with invalid control values
+        '''
+        with self.assertRaises(ConfigError):
+            raw = {
+                'up': 'blah',
+                'down': 'blah1',
+                'left': 'blah2',
+                'right': 'blah3',
+                'jump': 'blah4'
+            }
+            self.controls.from_json(raw)
+
+    def test_duplicate_controls(self):
+        '''
+        Test from_json() with duplicate control values
+        '''
+
+        with self.assertRaises(ConfigError):
+            raw = {
+                'up': 'K_a',
+                'down': 'K_a',
+                'left': 'K_a',
+                'right': 'K_d',
+                'jump': 'K_SPACE'
+            }
+            self.controls.from_json(raw)
