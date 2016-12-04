@@ -7,6 +7,7 @@ from deploy import SiteDeployment
 # Import game engine components
 from jackit.core.input import Input
 from jackit.core.player import Player
+from jackit.core.platform import Platform
 
 class EngineSingleton:
     '''
@@ -45,10 +46,14 @@ class EngineSingleton:
 
         # Init Input handler
         self.input = Input()
-        
+
         # Init the player
         self.player = Player(self, self.config.controls)
         self.player_sprite_list.add(self.player)
+
+        # TODO: This is a test platform
+        self.platform = Platform(self, 100, 10, 250, 550)
+        self.platform_sprite_list.add(self.platform)
 
         if self.fullscreen:
             self.screen = pygame.display.set_mode(self.screen_size, pygame.FULLSCREEN)

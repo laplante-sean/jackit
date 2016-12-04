@@ -4,29 +4,53 @@ Base class for all game actors. Computer or human controlled
 
 import pygame
 
+class ActorStats:
+    '''
+    Stats for an actor
+    '''
+    def __init__(self, x_acceleration=0.5, x_deceleration=0.5, top_speed=6,
+                 jump_speed=8, air_braking=0.15, grav_acceleration=1.05,
+                 grav_deceleration=0.55, grav_high_jump=0.25
+                ):
+
+        # Starting acceleration
+        self.x_acceleration = x_acceleration
+
+        # Stopping acceleration
+        self.x_deceleration = x_deceleration
+
+        # Fastest (in pixels) the actor moves
+        self.top_speed = top_speed
+
+        # Speed (in pixels) the actor leaves the ground
+        self.jump_speed = jump_speed
+
+        # Ability to slow horizontal momentum while airborne
+        self.air_braking = air_braking
+
+        # Force of gravity while actor is descending
+        self.grav_acceleration = grav_acceleration
+
+        # Force of gravity while actor is ascending
+        self.grav_deceleration = grav_deceleration
+
+        # Force of gravity while actor is ascending and jump is held
+        self.grav_high_jump = grav_high_jump
+
 class Actor(pygame.sprite.Sprite):
     '''
     Base class for all game actors
     '''
-
-    def __init__(self, game_engine, sprite_width, sprite_height):
+    def __init__(self, game_engine, sprite_width, sprite_height, actor_stats=ActorStats()):
         super(Actor, self).__init__()
 
         # Store the game engine for access to globals
         self.game_engine = game_engine
 
-        # Movement stats
-        self.x_acceleration = 0.5       # Starting acceleration
-        self.x_deceleration = 0.5       # Stopping acceleration
-        self.top_speed = 6              # Fastest (in pixels) the actor moves
-        self.jump_speed = 8            # Upward speed on jump
-        self.air_braking = 0.15         # Ability to slow horizontal momentum while airborne
-        self.grav_deceleration = 0.55   # Force of gravity while actor is ascending
-        self.grav_acceleration = 1.05   # Force of gravity while actor is decending
-        self.grav_high_jump = 0.25      # Force of gravity while actor is ascending and jump is held
+        self.stats = actor_stats
 
         # Maximum number of frames it should take to stop movement
-        self.max_stop_frames = int(self.top_speed/self.x_deceleration)
+        self.max_stop_frames = int(self.stats.top_speed/self.stats.x_deceleration)
 
         # Number of frames the actor has been stopping for
         self.cur_stop_frame_count = 0
@@ -35,6 +59,7 @@ class Actor(pygame.sprite.Sprite):
         self.horizontal_movement_action = self.stop
 
         # True if the actor is flying through the air like majesty
+        # TODO: Make sure to check if on platform 
         self.jumping = False
 
         # Setup the sprite
@@ -99,6 +124,7 @@ class Actor(pygame.sprite.Sprite):
         '''
 
         # Are we on the ground? If so don't do gravity
+        # TODO: Also check to see if we're on a platform
         ground = self.game_engine.screen_height - self.rect.height
         if self.rect.y >= ground and self.change_y >= 0:
             self.change_y = 0
@@ -109,11 +135,11 @@ class Actor(pygame.sprite.Sprite):
         if self.change_y == 0:
             self.change_y = 1
         elif self.is_moving_up() and self.jumping: # are we holding jump? Jump higher
-            self.change_y += self.grav_high_jump
+            self.change_y += self.stats.grav_high_jump
         elif self.is_moving_up():
-            self.change_y += self.grav_deceleration
+            self.change_y += self.stats.grav_deceleration
         else:
-            self.change_y += self.grav_acceleration
+            self.change_y += self.stats.grav_acceleration
 
     def jump(self):
         '''
@@ -121,7 +147,7 @@ class Actor(pygame.sprite.Sprite):
         '''
         # If we're on the ground, it's OK to jump
         if self.rect.bottom >= self.game_engine.screen_height:
-            self.change_y = (self.jump_speed * -1) # Up is negative
+            self.change_y = (self.stats.jump_speed * -1) # Up is negative
             self.jumping = True
         else:
             # Move down 2 pixels (doesn't work well with 1)
@@ -134,7 +160,7 @@ class Actor(pygame.sprite.Sprite):
             self.rect.y -= 2 # Reset position after check
 
             if len(blocks_hit) > 0:
-                self.change_y = (self.jump_speed * -1) # Up is negative
+                self.change_y = (self.stats.jump_speed * -1) # Up is negative
                 self.jumping = True
 
     def go_left(self):
@@ -143,12 +169,12 @@ class Actor(pygame.sprite.Sprite):
         '''
         self.horizontal_movement_action = self.go_left
 
-        if self.change_x <= (self.top_speed * -1):
-            self.change_x = (self.top_speed * -1)
+        if self.change_x <= (self.stats.top_speed * -1):
+            self.change_x = (self.stats.top_speed * -1)
         elif self.is_moving_vertical() and self.is_moving_right():
-            self.change_x += (self.air_braking * -1)
+            self.change_x += (self.stats.air_braking * -1)
         else:
-            self.change_x += (self.x_acceleration * -1)
+            self.change_x += (self.stats.x_acceleration * -1)
 
     def go_right(self):
         '''
@@ -156,12 +182,12 @@ class Actor(pygame.sprite.Sprite):
         '''
         self.horizontal_movement_action = self.go_right
 
-        if self.change_x >= self.top_speed:
-            self.change_x = self.top_speed
+        if self.change_x >= self.stats.top_speed:
+            self.change_x = self.stats.top_speed
         elif self.is_moving_left() and self.is_moving_vertical():
-            self.change_x += self.air_braking
+            self.change_x += self.stats.air_braking
         else:
-            self.change_x += self.x_acceleration
+            self.change_x += self.stats.x_acceleration
 
     def stop_jumping(self):
         '''
@@ -187,9 +213,9 @@ class Actor(pygame.sprite.Sprite):
             return
 
         if self.change_x > 0:
-            self.change_x += (self.x_deceleration * -1)
+            self.change_x += (self.stats.x_deceleration * -1)
         elif self.change_x < 0:
-            self.change_x += self.x_deceleration
+            self.change_x += self.stats.x_deceleration
         else:
             self.change_x = 0
 
