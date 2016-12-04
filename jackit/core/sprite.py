@@ -4,15 +4,15 @@ Game sprite. Handles collision detection, sprite images, and animating the sprit
 
 import pygame
 
-class GameSprite(pygame.sprite.Sprite):
+class Sprite(pygame.sprite.Sprite):
     '''
     Sprite in the game
     '''
 
     def __init__(self, color, width, height):
-        super(GameSprite, self).__init__()
+        super(Sprite, self).__init__()
 
-        # Disable error in pylint. It doesn't like the Surface() call. It's wrong.
+        # Disable error in pylint. It doesn't like the Surface() call. Pylint is wrong.
         # pylint: disable=E1121
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
