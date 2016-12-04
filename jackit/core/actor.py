@@ -1,24 +1,29 @@
 '''
-Base class for all game actors. Computer and human controlled
+Base class for all game actors. Computer or human controlled
 '''
 
-from jackit.core import EngineComponent
-from jackit.core.sprite import Sprite
+import pygame
 
-class Actor(EngineComponent):
+class Actor(pygame.sprite.Sprite):
     '''
     Base class for all game actors
     '''
 
-    def __init__(self, game_engine):
-        super(Actor, self).__init__(game_engine)
+    def __init__(self, game_engine, sprite_width, sprite_height):
+        super(Actor, self).__init__()
+
+        # Store the game engine for access to globals
+        self.game_engine = game_engine
+
         # Movement stats
         self.x_acceleration = 0.5       # Starting acceleration
         self.x_deceleration = 0.5       # Stopping acceleration
         self.top_speed = 6              # Fastest (in pixels) the actor moves
-        self.jump_speed = 10            # Upward speed on jump
+        self.jump_speed = 8            # Upward speed on jump
         self.air_braking = 0.15         # Ability to slow horizontal momentum while airborne
-        self.grav_acceleration = 0.35   # Force of gravity
+        self.grav_deceleration = 0.55   # Force of gravity while actor is ascending
+        self.grav_acceleration = 1.05   # Force of gravity while actor is decending
+        self.grav_high_jump = 0.25      # Force of gravity while actor is ascending and jump is held
 
         # Maximum number of frames it should take to stop movement
         self.max_stop_frames = int(self.top_speed/self.x_deceleration)
@@ -26,16 +31,22 @@ class Actor(EngineComponent):
         # Number of frames the actor has been stopping for
         self.cur_stop_frame_count = 0
 
-        # Create the sprite and add it to the game engine
-        self.sprite = Sprite((255, 0, 0), 25, 50)
-        self.game_engine.active_sprite_list.add(self.sprite)
-
-        # Set speed vector of player
-        self.change_x = 0
-        self.change_y = 0
-
         # function to call to update movement based on current input
         self.horizontal_movement_action = self.stop
+
+        # True if the actor is flying through the air like majesty
+        self.jumping = False
+
+        # Setup the sprite
+        # Disable error in pylint. It doesn't like the Surface() call. Pylint is wrong.
+        # pylint: disable=E1121
+        self.image = pygame.Surface([sprite_width, sprite_height])
+        self.image.fill((255, 0, 0))
+        self.rect = self.image.get_rect()
+
+        # Speed vector
+        self.change_x = 0
+        self.change_y = 0
 
     def update(self):
         '''
@@ -48,75 +59,83 @@ class Actor(EngineComponent):
         # Update actor speed by executing the current movement action
         self.horizontal_movement_action()
 
-        # Move left/right
-        self.sprite.prep_change_x(self.change_x)
+        # Update the X direction
+        self.rect.x += self.change_x
 
-        '''
-        # See if we hit anything in the x direction
-        block_hit_list = self.sprite.get_collide_blocks(self.game_engine.active_sprite_list)
-        for block in block_hit_list:
-            # If we are moving right, set our right side to the left side of the item we hit
+        # Check if we hit anything in the x direction
+        blocks_hit = pygame.sprite.spritecollide(self, self.game_engine.platform_sprite_list, False)
+        for block in blocks_hit:
+            # If we are moving right,
+            # set our right side to the left side of the item we hit
             if self.change_x > 0:
-                self.sprite.rect.right = block.rect.left
+                self.rect.right = block.rect.left
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
-                self.sprite.rect.left = block.rect.right
-        '''
+                self.rect.left = block.rect.right
 
-        # Move up/down
-        self.sprite.prep_change_y(self.change_y)
+        if len(blocks_hit):
+            # Stop horizontal movement
+            self.change_x = 0
 
-        '''
-        # Check and see if we hit anything
-        block_hit_list = self.sprite.get_collide_blocks(self.game_engine.active_sprite_list)
-        for block in block_hit_list:
+        # Update te Y direction
+        self.rect.y += self.change_y
 
+        # Check if we hit anything in the y direction
+        blocks_hit = pygame.sprite.spritecollide(self, self.game_engine.platform_sprite_list, False)
+        for block in blocks_hit:
             # Reset our position based on the top/bottom of the object.
             if self.change_y > 0:
-                self.sprite.rect.bottom = block.rect.top
+                self.rect.bottom = block.rect.top
             elif self.change_y < 0:
-                self.sprite.rect.top = block.rect.bottom
+                self.rect.top = block.rect.bottom
 
+        if len(blocks_hit):
             # Stop our vertical movement
             self.change_y = 0
-        '''
-
-        # Commit the change after all the collision detection and whatnot
-        self.sprite.commit_change()
 
     def calc_grav(self):
         '''
         Calculate gravity
         '''
+
+        # Are we on the ground? If so don't do gravity
+        ground = self.game_engine.screen_height - self.rect.height
+        if self.rect.y >= ground and self.change_y >= 0:
+            self.change_y = 0
+            self.rect.y = ground
+            return
+
+        # Are we at the top of our arc? Switch to going down
         if self.change_y == 0:
             self.change_y = 1
+        elif self.is_moving_up() and self.jumping: # are we holding jump? Jump higher
+            self.change_y += self.grav_high_jump
+        elif self.is_moving_up():
+            self.change_y += self.grav_deceleration
         else:
             self.change_y += self.grav_acceleration
-
-        # See if we are on the ground.
-        # TODO: Check if the change_y will put us through the ground and adjust
-        ground = self.game_engine.screen_height - self.sprite.rect.height
-        if self.sprite.rect.y >= ground and self.change_y >= 0:
-            self.change_y = 0
-            self.sprite.rect.y = ground
 
     def jump(self):
         '''
         Called when the user hits the jump button. Makes the character jump
         '''
-
         # If we're on the ground, it's OK to jump
-        if self.sprite.rect.bottom >= self.game_engine.screen_height:
+        if self.rect.bottom >= self.game_engine.screen_height:
             self.change_y = (self.jump_speed * -1) # Up is negative
+            self.jumping = True
         else:
-            # TODO: Check if we're on a platform
             # Move down 2 pixels (doesn't work well with 1)
-            self.sprite.rect.y += 2
-            platform_hit_list = self.sprite.get_collide_blocks([])
-            self.sprite.rect.y -= 2 # Reset position after check
+            self.rect.y += 2
+            blocks_hit = pygame.sprite.spritecollide(
+                self,
+                self.game_engine.platform_sprite_list,
+                False
+            )
+            self.rect.y -= 2 # Reset position after check
 
-            if len(platform_hit_list) > 0:
+            if len(blocks_hit) > 0:
                 self.change_y = (self.jump_speed * -1) # Up is negative
+                self.jumping = True
 
     def go_left(self):
         '''
@@ -143,6 +162,12 @@ class Actor(EngineComponent):
             self.change_x += self.air_braking
         else:
             self.change_x += self.x_acceleration
+
+    def stop_jumping(self):
+        '''
+        Called when the jump key is released
+        '''
+        self.jumping = False
 
     def stop(self):
         '''

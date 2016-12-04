@@ -4,14 +4,11 @@ Handle user input. Controllers/Mouse/Keyboard
 
 import pygame
 
-from jackit.core import EngineComponent
-
-class Input(EngineComponent):
+class Input:
     '''
     Handles user input
     '''
-    def __init__(self, game_engine):
-        super(Input, self).__init__(game_engine)
+    def __init__(self):
         self.events = pygame.event.get() # Get initial events
 
     def update(self):

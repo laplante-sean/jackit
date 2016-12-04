@@ -34,14 +34,21 @@ class EngineSingleton:
         self.screen_size = (self.config.width, self.config.height)
         self.fullscreen = self.config.fullscreen
         self.framerate = self.config.framerate
-        self.controls = self.config.controls
         self.clock = pygame.time.Clock() # for framerate control
-        self.active_sprite_list = pygame.sprite.Group() # All active sprites
         self.running = True
 
+        # Sprite lists
+        self.platform_sprite_list = pygame.sprite.Group()
+        self.player_sprite_list = pygame.sprite.Group()
+        self.item_sprite_list = pygame.sprite.Group()
+        self.enemy_sprite_list = pygame.sprite.Group()
+
         # Init Input handler
-        self.input = Input(self)
-        self.player = Player(self)
+        self.input = Input()
+        
+        # Init the player
+        self.player = Player(self, self.config.controls)
+        self.player_sprite_list.add(self.player)
 
         if self.fullscreen:
             self.screen = pygame.display.set_mode(self.screen_size, pygame.FULLSCREEN)
@@ -59,15 +66,22 @@ class EngineSingleton:
         # Handle input events
         self.handle_events()
 
-        # Update all active sprites
-        self.active_sprite_list.update()
-        self.player.update()
+        # Update all the sprites (must come after actor updates)
+        # Automatically calls each Sprite.update() method
+        self.platform_sprite_list.update()
+        self.item_sprite_list.update()
+        self.enemy_sprite_list.update()
+        self.player_sprite_list.update() # Update the player last
 
         # ALL CODE FOR DRAWING GOES BELOW HERE
 
-        self.screen.fill((0, 0, 255)) # Black background
+        self.screen.fill((0, 0, 255)) # Blue background
 
-        self.active_sprite_list.draw(self.screen) # Draw all active sprites
+        # Draw all active sprites
+        self.platform_sprite_list.draw(self.screen)
+        self.item_sprite_list.draw(self.screen)
+        self.enemy_sprite_list.draw(self.screen)
+        self.player_sprite_list.draw(self.screen)
 
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 
@@ -88,26 +102,8 @@ class EngineSingleton:
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == pygame.KEYUP:
-                if event.key == self.controls.left and not keys[self.controls.right]:
-                    print("Stop going left")
-                    self.player.stop()
-                elif event.key == self.controls.right and not keys[self.controls.left]:
-                    print("Stop going right")
-                    self.player.stop()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == self.controls.left:
-                    print("Left key pressed")
-                    self.player.go_left()
-                elif event.key == self.controls.right:
-                    print("Right key pressed")
-                    self.player.go_right()
-                elif event.key == self.controls.up:
-                    print("Up key pressed")
-                elif event.key == self.controls.down:
-                    print("Down key pressed")
-                elif event.key == self.controls.jump:
-                    print("Jump key pressed")
-                    self.player.jump()
+
+            # Call to handle event for player
+            self.player.handle_event(event, keys)
 
 GameEngine = EngineSingleton.instance()
