@@ -11,7 +11,7 @@ class Player(Actor):
     '''
 
     def __init__(self, game_engine, controls):
-        super(Player, self).__init__(game_engine, 30, 40)
+        super(Player, self).__init__(game_engine, 25, 32)
         self.controls = controls
 
         # TODO: Add stuff like health, items, etc.. to this class

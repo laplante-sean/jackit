@@ -34,7 +34,6 @@ class Platform(pygame.sprite.Sprite):
         # pylint: disable=E1121
         self.image = pygame.Surface([width, height])
         self.image.fill((0, 255, 0))
-
         self.rect = self.image.get_rect()
 
         # Initial position
@@ -46,43 +45,25 @@ class Platform(pygame.sprite.Sprite):
         self.cur_y_travel_dist = 0
 
         # Current speed vector
-        self.change_x = 0
-        self.change_y = 0
+        self.change_x = self.stats.change_x
+        self.change_y = self.stats.change_y
 
     def update(self):
         '''
         Update platform position
         '''
-        if self.stats.change_x > 0:
-            self.go_right()
-        elif self.stats.change_x < 0:
-            self.go_left()
-
-        if self.stats.change_y > 0:
-            self.go_down()
-        elif self.stats.change_y < 0:
-            self.go_up()
-
         self.cur_x_travel_dist += abs(self.change_x)
         self.cur_y_travel_dist += abs(self.change_y)
 
         if self.cur_x_travel_dist >= self.stats.x_travel_dist:
-            pass
+            self.stats.change_x *= -1
+            self.change_x = self.stats.change_x
+            self.cur_x_travel_dist = 0
 
         if self.cur_y_travel_dist >= self.stats.y_travel_dist:
-            pass
+            self.stats.change_y *= -1
+            self.change_y = self.stats.change_y
+            self.cur_y_travel_dist = 0
 
         self.rect.x += self.change_x
         self.rect.y += self.change_y
-
-    def go_left(self):
-        pass
-
-    def go_right(self):
-        pass
-
-    def go_up(self):
-        pass
-
-    def go_down(self):
-        pass

@@ -10,7 +10,7 @@ class ActorStats:
     '''
     def __init__(self, x_acceleration=0.5, x_deceleration=0.5, top_speed=6,
                  jump_speed=8, air_braking=0.15, grav_acceleration=1.05,
-                 grav_deceleration=0.55, grav_high_jump=0.25
+                 grav_deceleration=0.55, grav_high_jump=0.25, terminal_velocity=20
                 ):
 
         # Starting acceleration
@@ -37,6 +37,9 @@ class ActorStats:
         # Force of gravity while actor is ascending and jump is held
         self.grav_high_jump = grav_high_jump
 
+        # Maximum falling speed
+        self.terminal_velocity = terminal_velocity
+
 class Actor(pygame.sprite.Sprite):
     '''
     Base class for all game actors
@@ -59,7 +62,6 @@ class Actor(pygame.sprite.Sprite):
         self.horizontal_movement_action = self.stop
 
         # True if the actor is flying through the air like majesty
-        # TODO: Make sure to check if on platform 
         self.jumping = False
 
         # Setup the sprite
@@ -122,46 +124,38 @@ class Actor(pygame.sprite.Sprite):
         '''
         Calculate gravity
         '''
-
-        # Are we on the ground? If so don't do gravity
-        # TODO: Also check to see if we're on a platform
         ground = self.game_engine.screen_height - self.rect.height
-        if self.rect.y >= ground and self.change_y >= 0:
+        if self.is_on_ground() and self.change_y >= 0:
             self.change_y = 0
             self.rect.y = ground
             return
+        elif self.is_on_platform() and self.change_y >= 0:
+            self.change_y = 0
+            return
 
-        # Are we at the top of our arc? Switch to going down
         if self.change_y == 0:
+            # Are we at the top of our arc? Switch to going down
             self.change_y = 1
-        elif self.is_moving_up() and self.jumping: # are we holding jump? Jump higher
+        elif self.is_moving_up() and self.jumping:
+            # are we holding jump? Jump higher
             self.change_y += self.stats.grav_high_jump
         elif self.is_moving_up():
+            # Jump normal
             self.change_y += self.stats.grav_deceleration
+        elif self.change_y >= self.stats.terminal_velocity:
+            # Don't fall too fast
+            self.change_y = self.stats.terminal_velocity
         else:
+            # Fall normal
             self.change_y += self.stats.grav_acceleration
 
     def jump(self):
         '''
         Called when the user hits the jump button. Makes the character jump
         '''
-        # If we're on the ground, it's OK to jump
-        if self.rect.bottom >= self.game_engine.screen_height:
+        if self.is_on_surface():
             self.change_y = (self.stats.jump_speed * -1) # Up is negative
             self.jumping = True
-        else:
-            # Move down 2 pixels (doesn't work well with 1)
-            self.rect.y += 2
-            blocks_hit = pygame.sprite.spritecollide(
-                self,
-                self.game_engine.platform_sprite_list,
-                False
-            )
-            self.rect.y -= 2 # Reset position after check
-
-            if len(blocks_hit) > 0:
-                self.change_y = (self.stats.jump_speed * -1) # Up is negative
-                self.jumping = True
 
     def go_left(self):
         '''
@@ -171,7 +165,7 @@ class Actor(pygame.sprite.Sprite):
 
         if self.change_x <= (self.stats.top_speed * -1):
             self.change_x = (self.stats.top_speed * -1)
-        elif self.is_moving_vertical() and self.is_moving_right():
+        elif (not self.is_on_surface()) and self.is_moving_right():
             self.change_x += (self.stats.air_braking * -1)
         else:
             self.change_x += (self.stats.x_acceleration * -1)
@@ -184,7 +178,7 @@ class Actor(pygame.sprite.Sprite):
 
         if self.change_x >= self.stats.top_speed:
             self.change_x = self.stats.top_speed
-        elif self.is_moving_left() and self.is_moving_vertical():
+        elif self.is_moving_left() and (not self.is_on_surface()):
             self.change_x += self.stats.air_braking
         else:
             self.change_x += self.stats.x_acceleration
@@ -220,6 +214,36 @@ class Actor(pygame.sprite.Sprite):
             self.change_x = 0
 
         self.cur_stop_frame_count += 1
+
+    def is_on_surface(self):
+        '''
+        True if the Actor is on the ground or a platform
+        '''
+        return self.is_on_ground() or self.is_on_platform()
+
+    def is_on_ground(self):
+        '''
+        True if the Actor is on the ground
+        '''
+        return self.rect.bottom >= self.game_engine.screen_height
+
+    def is_on_platform(self):
+        '''
+        True if Actor is on a platform
+        '''
+        # Move down 2 pixels (doesn't work well with 1)
+        self.rect.y += 2
+        blocks_hit = pygame.sprite.spritecollide(
+            self,
+            self.game_engine.platform_sprite_list,
+            False
+        )
+        self.rect.y -= 2 # Reset position after check
+
+        if len(blocks_hit) > 0:
+            return True
+
+        return False
 
     def is_moving_left(self):
         '''
