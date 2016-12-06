@@ -75,6 +75,11 @@ class Actor(pygame.sprite.Sprite):
         self.change_x = 0
         self.change_y = 0
 
+        # Frame cache. Allows methods that do a lot on each call to store results
+        # for the current frame Useful for things that check for collisions
+        # like is_on_platform()
+        self.frame_cache = {}
+
     def update(self):
         '''
         Update actor position
@@ -86,17 +91,28 @@ class Actor(pygame.sprite.Sprite):
         # Update actor speed by executing the current movement action
         self.horizontal_movement_action()
 
+        # Check if we're on a moving platform
+        platform_net_change_x = 0 # Net change in x-axis resulting from all colliding platforms
+        platform_net_change_y = 0 # Net change in y-axis resulting from all colliding platforms
+        if self.is_on_platform():
+            platforms = self.frame_cache.get("is_on_platform", [])
+            for platform in platforms:
+                if self.change_x == 0:
+                    platform_net_change_x += platform.change_x
+                if self.change_y == 0:
+                    platform_net_change_y += platform.change_y
+
         # Update the X direction
-        self.rect.x += self.change_x
+        self.rect.x += self.change_x + platform_net_change_x
 
         # Check if we hit anything in the x direction
         blocks_hit = pygame.sprite.spritecollide(self, self.game_engine.platform_sprite_list, False)
         for block in blocks_hit:
             # If we are moving right,
             # set our right side to the left side of the item we hit
-            if self.change_x > 0:
+            if self.change_x > 0 or platform_net_change_x > 0:
                 self.rect.right = block.rect.left
-            elif self.change_x < 0:
+            elif self.change_x < 0 or platform_net_change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = block.rect.right
 
@@ -105,20 +121,23 @@ class Actor(pygame.sprite.Sprite):
             self.change_x = 0
 
         # Update te Y direction
-        self.rect.y += self.change_y
+        self.rect.y += self.change_y + platform_net_change_y
 
         # Check if we hit anything in the y direction
         blocks_hit = pygame.sprite.spritecollide(self, self.game_engine.platform_sprite_list, False)
         for block in blocks_hit:
             # Reset our position based on the top/bottom of the object.
-            if self.change_y > 0:
+            if self.change_y > 0 or platform_net_change_y > 0:
                 self.rect.bottom = block.rect.top
-            elif self.change_y < 0:
+            elif self.change_y < 0 or platform_net_change_y < 0:
                 self.rect.top = block.rect.bottom
 
         if len(blocks_hit):
             # Stop our vertical movement
             self.change_y = 0
+
+        # Clear the frame cache
+        self.frame_cache.clear()
 
     def calc_grav(self):
         '''
@@ -231,6 +250,11 @@ class Actor(pygame.sprite.Sprite):
         '''
         True if Actor is on a platform
         '''
+
+        # Speed up calls to this method if used more than once per frame
+        if self.frame_cache.get("is_on_platform", None) != None:
+            return len(self.frame_cache["is_on_platform"]) > 0
+
         # Move down 2 pixels (doesn't work well with 1)
         self.rect.y += 2
         blocks_hit = pygame.sprite.spritecollide(
@@ -239,6 +263,9 @@ class Actor(pygame.sprite.Sprite):
             False
         )
         self.rect.y -= 2 # Reset position after check
+
+        # Update the frame cache with platforms we're on
+        self.frame_cache["is_on_platform"] = blocks_hit
 
         if len(blocks_hit) > 0:
             return True

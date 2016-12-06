@@ -60,8 +60,26 @@ class EngineSingleton:
             y_travel_dist=0
         )
         test_platform2 = Platform(self, 150, 10, 475, 430, platform_stats=test_platform_stats)
+        test_platform_stats2 = PlatformStats(
+            change_x=0,
+            change_y=5,
+            x_travel_dist=250,
+            y_travel_dist=250
+        )
+        test_platform4 = Platform(self, 150, 10, 275, 395, platform_stats=test_platform_stats2)
+        test_platform_stats3 = PlatformStats(
+            change_x=3,
+            change_y=5,
+            x_travel_dist=250,
+            y_travel_dist=250
+        )
+        test_platform5 = Platform(self, 150, 10, 350, 375, platform_stats=test_platform_stats3)
+        test_platform3 = Platform(self, 150, 10, 475, 400)
         self.platform_sprite_list.add(test_platform)
         self.platform_sprite_list.add(test_platform2)
+        self.platform_sprite_list.add(test_platform3)
+        self.platform_sprite_list.add(test_platform4)
+        self.platform_sprite_list.add(test_platform5)
 
         if self.fullscreen:
             self.screen = pygame.display.set_mode(self.screen_size, pygame.FULLSCREEN)
