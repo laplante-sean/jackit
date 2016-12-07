@@ -43,14 +43,8 @@ class EngineSingleton:
         self.running = True
         self.playtime = 0 # Current amout of time playing (seconds)
 
-        #print("Target framerate: ", self.framerate)
-
-        # TODO: Figure out if this actually helps on MAC
-        #if platform.system().lower() == "darwin":
-            #print("Detected MAC OS X. Optimizing.")
-        #    self.clock_update_method = self.clock.tick_busy_loop # More accurate on Mac
-        #else:
-        self.clock_update_method = self.clock.tick # For Windows but not accurate on Mac
+        if platform.system().lower() == "darwin":
+            print("Detected MAC OS X. Run this app in low resolution mode on retina displays.")
 
         # Set the display mode
         if self.fullscreen:
@@ -90,7 +84,7 @@ class EngineSingleton:
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 
         # Maintain framerate
-        milliseconds = self.clock_update_method(self.framerate)
+        milliseconds = self.clock.tick(self.framerate)
         self.playtime += milliseconds / 1000.0
 
         # Print framerate and playtime in titlebar.
