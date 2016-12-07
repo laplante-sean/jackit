@@ -34,6 +34,7 @@ class Platform(pygame.sprite.Sprite):
         # pylint: disable=E1121
         self.image = pygame.Surface([width, height])
         self.image.fill((0, 255, 0))
+        self.image = self.image.convert() # Convert the image for faster blitting
         self.rect = self.image.get_rect()
 
         # Initial position

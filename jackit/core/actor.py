@@ -70,6 +70,7 @@ class Actor(pygame.sprite.Sprite):
         # pylint: disable=E1121
         self.image = pygame.Surface([sprite_width, sprite_height])
         self.image.fill((255, 0, 0))
+        self.image = self.image.convert() # Convert the surface for faster blitting
         self.rect = self.image.get_rect()
 
         # Speed vector

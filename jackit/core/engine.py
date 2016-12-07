@@ -41,9 +41,11 @@ class EngineSingleton:
         self.framerate = self.config.framerate
         self.clock = pygame.time.Clock() # for framerate control
         self.running = True
+        self.playtime = 0 # Current amout of time playing (seconds)
 
         #print("Target framerate: ", self.framerate)
 
+        # TODO: Figure out if this actually helps on MAC
         #if platform.system().lower() == "darwin":
             #print("Detected MAC OS X. Optimizing.")
         #    self.clock_update_method = self.clock.tick_busy_loop # More accurate on Mac
@@ -88,10 +90,17 @@ class EngineSingleton:
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 
         # Maintain framerate
-        self.clock_update_method(self.framerate)
-        #print(self.clock.get_fps())
+        milliseconds = self.clock_update_method(self.framerate)
+        self.playtime += milliseconds / 1000.0
+
+        # Print framerate and playtime in titlebar.
+        # TODO: Make debug mode in config and enable when debugging is on
+        text = "FPS: {0:.2f}   Playtime: {1:.2f}".format(self.clock.get_fps(), self.playtime)
+        pygame.display.set_caption(text)
 
         # Update the screen with what has been drawn
+        # TODO: Look into pygame.display.update() to update only things that have changed
+        # Mighr improve perormance
         pygame.display.flip()
 
     def handle_events(self):
