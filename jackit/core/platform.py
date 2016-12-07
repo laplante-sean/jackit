@@ -67,3 +67,12 @@ class Platform(pygame.sprite.Sprite):
 
         self.rect.x += self.change_x
         self.rect.y += self.change_y
+
+
+class ExitBlock(Platform):
+    '''
+    Exit block. Moves to the next level
+    '''
+    def __init__(self, game_engine, width, height, x_pos, y_pos):
+        super(ExitBlock, self).__init__(game_engine, width, height, x_pos, y_pos)
+        self.image.fill((255, 0, 0))

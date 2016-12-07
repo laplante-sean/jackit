@@ -4,17 +4,32 @@ User controllable player
 
 import pygame
 from jackit.core.actor import Actor
+from jackit.core.platform import ExitBlock
+from jackit.core import CustomEvent
 
 class Player(Actor):
     '''
     User controlled player
     '''
 
-    def __init__(self, game_engine, controls):
-        super(Player, self).__init__(game_engine, 25, 32)
+    def __init__(self, game_engine, controls, spawn_point=(0, 0)):
+        super(Player, self).__init__(game_engine, 32, 32)
         self.controls = controls
+        self.changing_levels = False
+        self.rect.x = spawn_point[0]
+        self.rect.y = spawn_point[1]
 
         # TODO: Add stuff like health, items, etc.. to this class
+
+    def collide(self, change_x, change_y, platform):
+        '''
+        Handle player specific collision events then call base class collide
+        '''
+        if isinstance(platform, ExitBlock) and not self.changing_levels:
+            pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
+            self.changing_levels = True
+        else:
+            super(Player, self).collide(change_x, change_y, platform)
 
     def handle_event(self, event, keys):
         '''

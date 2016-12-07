@@ -3,11 +3,14 @@ Main game engine
 '''
 import pygame
 from deploy import SiteDeployment
+from jackit.core import CustomEvent
 
 # Import game engine components
 from jackit.core.input import Input
 from jackit.core.player import Player
-from jackit.core.platform import Platform, PlatformStats
+from jackit.levels.level_01 import Level_01
+from jackit.levels.level_02 import Level_02
+
 
 class EngineSingleton:
     '''
@@ -38,53 +41,22 @@ class EngineSingleton:
         self.clock = pygame.time.Clock() # for framerate control
         self.running = True
 
-        # Sprite lists
-        self.platform_sprite_list = pygame.sprite.Group()
-        self.player_sprite_list = pygame.sprite.Group()
-        self.item_sprite_list = pygame.sprite.Group()
-        self.enemy_sprite_list = pygame.sprite.Group()
+        # Set the display mode
+        if self.fullscreen:
+            self.screen = pygame.display.set_mode(self.screen_size, pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode(self.screen_size)
+
+        # Init the levels
+        self.levels = [Level_01(self), Level_02(self)]
+        self.current_level_index = 0
+        self.current_level = self.levels[self.current_level_index]
 
         # Init Input handler
         self.input = Input()
 
         # Init the player
-        self.player = Player(self, self.config.controls)
-        self.player_sprite_list.add(self.player)
-
-        # TODO: This is a test platform
-        test_platform = Platform(self, 100, 10, 350, 475)
-        test_platform_stats = PlatformStats(
-            change_x=3,
-            change_y=0,
-            x_travel_dist=250,
-            y_travel_dist=0
-        )
-        test_platform2 = Platform(self, 150, 10, 475, 430, platform_stats=test_platform_stats)
-        test_platform_stats2 = PlatformStats(
-            change_x=0,
-            change_y=5,
-            x_travel_dist=250,
-            y_travel_dist=250
-        )
-        test_platform4 = Platform(self, 150, 10, 275, 395, platform_stats=test_platform_stats2)
-        test_platform_stats3 = PlatformStats(
-            change_x=3,
-            change_y=5,
-            x_travel_dist=250,
-            y_travel_dist=250
-        )
-        test_platform5 = Platform(self, 150, 10, 350, 375, platform_stats=test_platform_stats3)
-        test_platform3 = Platform(self, 150, 10, 475, 400)
-        self.platform_sprite_list.add(test_platform)
-        self.platform_sprite_list.add(test_platform2)
-        self.platform_sprite_list.add(test_platform3)
-        self.platform_sprite_list.add(test_platform4)
-        self.platform_sprite_list.add(test_platform5)
-
-        if self.fullscreen:
-            self.screen = pygame.display.set_mode(self.screen_size, pygame.FULLSCREEN)
-        else:
-            self.screen = pygame.display.set_mode(self.screen_size)
+        self.player = Player(self, self.config.controls, spawn_point=self.current_level.spawn_point)
 
     def update(self):
         '''
@@ -97,22 +69,12 @@ class EngineSingleton:
         # Handle input events
         self.handle_events()
 
-        # Update all the sprites (must come after actor updates)
-        # Automatically calls each Sprite.update() method
-        self.platform_sprite_list.update()
-        self.item_sprite_list.update()
-        self.enemy_sprite_list.update()
-        self.player_sprite_list.update() # Update the player last
+        # Update all sprites for the current level
+        self.current_level.update(self.player)
 
         # ALL CODE FOR DRAWING GOES BELOW HERE
 
-        self.screen.fill((0, 0, 255)) # Blue background
-
-        # Draw all active sprites
-        self.platform_sprite_list.draw(self.screen)
-        self.item_sprite_list.draw(self.screen)
-        self.enemy_sprite_list.draw(self.screen)
-        self.player_sprite_list.draw(self.screen)
+        self.current_level.draw(self.screen, self.player) #Draws entities and player
 
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 
@@ -133,6 +95,15 @@ class EngineSingleton:
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 self.running = False
+            elif event.type == CustomEvent.NEXT_LEVEL:
+                if self.current_level_index >= (len(self.levels) - 1):
+                    self.running = False
+                else:
+                    self.current_level_index += 1
+                    self.current_level = self.levels[self.current_level_index]
+                    self.player.rect.x = self.current_level.spawn_point[0]
+                    self.player.rect.y = self.current_level.spawn_point[1]
+                    self.player.changing_levels = False
 
             # Call to handle event for player
             self.player.handle_event(event, keys)

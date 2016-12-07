@@ -50,6 +50,7 @@ class Actor(pygame.sprite.Sprite):
         # Store the game engine for access to globals
         self.game_engine = game_engine
 
+        # Setup the actor stats
         self.stats = actor_stats
 
         # Maximum number of frames it should take to stop movement
@@ -91,46 +92,29 @@ class Actor(pygame.sprite.Sprite):
         # Update actor speed by executing the current movement action
         self.horizontal_movement_action()
 
-        # Check if we're on a moving platform
-        platform_net_change_x = 0 # Net change in x-axis resulting from all colliding platforms
-        platform_net_change_y = 0 # Net change in y-axis resulting from all colliding platforms
-        if self.is_on_platform():
-            platforms = self.frame_cache.get("is_on_platform", [])
-            for platform in platforms:
-                if self.change_x == 0:
-                    platform_net_change_x += platform.change_x
-                if self.change_y == 0:
-                    platform_net_change_y += platform.change_y
-
         # Update the X direction
-        self.rect.x += self.change_x + platform_net_change_x
+        self.rect.x += self.change_x #+ platform_net_change_x
 
         # Check if we hit anything in the x direction
-        blocks_hit = pygame.sprite.spritecollide(self, self.game_engine.platform_sprite_list, False)
+        blocks_hit = pygame.sprite.spritecollide(
+            self, self.game_engine.current_level.platform_list, False)
+
         for block in blocks_hit:
-            # If we are moving right,
-            # set our right side to the left side of the item we hit
-            if self.change_x > 0 or platform_net_change_x > 0:
-                self.rect.right = block.rect.left
-            elif self.change_x < 0 or platform_net_change_x < 0:
-                # Otherwise if we are moving left, do the opposite.
-                self.rect.left = block.rect.right
+            self.collide(self.change_x, 0, block)
 
         if len(blocks_hit):
             # Stop horizontal movement
             self.change_x = 0
 
         # Update te Y direction
-        self.rect.y += self.change_y + platform_net_change_y
+        self.rect.y += self.change_y #+ platform_net_change_y
 
         # Check if we hit anything in the y direction
-        blocks_hit = pygame.sprite.spritecollide(self, self.game_engine.platform_sprite_list, False)
+        blocks_hit = pygame.sprite.spritecollide(
+            self, self.game_engine.current_level.platform_list, False)
+
         for block in blocks_hit:
-            # Reset our position based on the top/bottom of the object.
-            if self.change_y > 0 or platform_net_change_y > 0:
-                self.rect.bottom = block.rect.top
-            elif self.change_y < 0 or platform_net_change_y < 0:
-                self.rect.top = block.rect.bottom
+            self.collide(0, self.change_y, block)
 
         if len(blocks_hit):
             # Stop our vertical movement
@@ -139,16 +123,24 @@ class Actor(pygame.sprite.Sprite):
         # Clear the frame cache
         self.frame_cache.clear()
 
+    def collide(self, change_x, change_y, platform):
+        '''
+        Handle collisions
+        '''
+        if change_x > 0:
+            self.rect.right = platform.rect.left
+        if change_x < 0:
+            self.rect.left = platform.rect.right
+        if change_y > 0:
+            self.rect.bottom = platform.rect.top
+        if change_y < 0:
+            self.rect.top = platform.rect.bottom
+
     def calc_grav(self):
         '''
         Calculate gravity
         '''
-        ground = self.game_engine.screen_height - self.rect.height
-        if self.is_on_ground() and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = ground
-            return
-        elif self.is_on_platform() and self.change_y >= 0:
+        if self.is_on_platform() and self.change_y >= 0:
             self.change_y = 0
             return
 
@@ -172,7 +164,7 @@ class Actor(pygame.sprite.Sprite):
         '''
         Called when the user hits the jump button. Makes the character jump
         '''
-        if self.is_on_surface():
+        if self.is_on_platform():
             self.change_y = (self.stats.jump_speed * -1) # Up is negative
             self.jumping = True
 
@@ -184,7 +176,7 @@ class Actor(pygame.sprite.Sprite):
 
         if self.change_x <= (self.stats.top_speed * -1):
             self.change_x = (self.stats.top_speed * -1)
-        elif (not self.is_on_surface()) and self.is_moving_right():
+        elif (not self.is_on_platform()) and self.is_moving_right():
             self.change_x += (self.stats.air_braking * -1)
         else:
             self.change_x += (self.stats.x_acceleration * -1)
@@ -197,7 +189,7 @@ class Actor(pygame.sprite.Sprite):
 
         if self.change_x >= self.stats.top_speed:
             self.change_x = self.stats.top_speed
-        elif self.is_moving_left() and (not self.is_on_surface()):
+        elif self.is_moving_left() and (not self.is_on_platform()):
             self.change_x += self.stats.air_braking
         else:
             self.change_x += self.stats.x_acceleration
@@ -234,18 +226,6 @@ class Actor(pygame.sprite.Sprite):
 
         self.cur_stop_frame_count += 1
 
-    def is_on_surface(self):
-        '''
-        True if the Actor is on the ground or a platform
-        '''
-        return self.is_on_ground() or self.is_on_platform()
-
-    def is_on_ground(self):
-        '''
-        True if the Actor is on the ground
-        '''
-        return self.rect.bottom >= self.game_engine.screen_height
-
     def is_on_platform(self):
         '''
         True if Actor is on a platform
@@ -259,7 +239,7 @@ class Actor(pygame.sprite.Sprite):
         self.rect.y += 2
         blocks_hit = pygame.sprite.spritecollide(
             self,
-            self.game_engine.platform_sprite_list,
+            self.game_engine.current_level.platform_list,
             False
         )
         self.rect.y -= 2 # Reset position after check
