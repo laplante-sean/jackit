@@ -1,6 +1,8 @@
 '''
 Main game engine
 '''
+
+import platform
 import pygame
 from deploy import SiteDeployment
 from jackit.core import CustomEvent
@@ -10,7 +12,6 @@ from jackit.core.input import Input
 from jackit.core.player import Player
 from jackit.levels.level_01 import Level_01
 from jackit.levels.level_02 import Level_02
-
 
 class EngineSingleton:
     '''
@@ -40,6 +41,14 @@ class EngineSingleton:
         self.framerate = self.config.framerate
         self.clock = pygame.time.Clock() # for framerate control
         self.running = True
+
+        #print("Target framerate: ", self.framerate)
+
+        #if platform.system().lower() == "darwin":
+            #print("Detected MAC OS X. Optimizing.")
+        #    self.clock_update_method = self.clock.tick_busy_loop # More accurate on Mac
+        #else:
+        self.clock_update_method = self.clock.tick # For Windows but not accurate on Mac
 
         # Set the display mode
         if self.fullscreen:
@@ -79,7 +88,8 @@ class EngineSingleton:
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 
         # Maintain framerate
-        self.clock.tick(self.framerate)
+        self.clock_update_method(self.framerate)
+        #print(self.clock.get_fps())
 
         # Update the screen with what has been drawn
         pygame.display.flip()

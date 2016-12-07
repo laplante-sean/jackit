@@ -76,3 +76,11 @@ class ExitBlock(Platform):
     def __init__(self, game_engine, width, height, x_pos, y_pos):
         super(ExitBlock, self).__init__(game_engine, width, height, x_pos, y_pos)
         self.image.fill((255, 0, 0))
+
+class CodeBlock(Platform):
+    '''
+    Code block. Used to bring up the code view
+    '''
+    def __init__(self, game_engine, width, height, x_pos, y_pos):
+        super(CodeBlock, self).__init__(game_engine, width, height, x_pos, y_pos)
+        self.image.fill((254, 68, 123))

@@ -18,6 +18,7 @@ class LevelMap:
     PLATFORM = "P"
     EXIT = "E"
     SPAWN = "S"
+    CODE = "C"
 
 class Level:
     '''
@@ -77,6 +78,8 @@ class Level:
                     )
                 elif col == LevelMap.SPAWN:
                     self.spawn_point = (x, y)
+                elif col == LevelMap.CODE:
+                    pass # TODO: Code blocks
                 x += self.level_map_block_x
             y += self.level_map_block_y
             x = 0

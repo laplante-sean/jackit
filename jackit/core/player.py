@@ -39,21 +39,21 @@ class Player(Actor):
         '''
         if event.type == pygame.KEYUP:
             if event.key == self.controls.left and not keys[self.controls.right]:
-                print("Stop going left")
+                #print("Stop going left")
                 self.stop()
             elif event.key == self.controls.right and not keys[self.controls.left]:
-                print("Stop going right")
+                #print("Stop going right")
                 self.stop()
             elif event.key == self.controls.jump:
-                print("Stop jumping")
+                #print("Stop jumping")
                 self.stop_jumping()
         elif event.type == pygame.KEYDOWN:
             if event.key == self.controls.left:
-                print("Left key pressed")
+                #print("Left key pressed")
                 self.go_left()
             elif event.key == self.controls.right:
-                print("Right key pressed")
+                #print("Right key pressed")
                 self.go_right()
             elif event.key == self.controls.jump:
-                print("Jump key pressed")
+                #print("Jump key pressed")
                 self.jump()
