@@ -63,7 +63,7 @@ class Level_01(Level):
         "P                                          P",
         "P                         PPPPPPPPPP       E",
         "P    S                                     E",
-        "P                      C                   E",
+        "P    C                 C                   E",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 

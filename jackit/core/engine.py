@@ -151,22 +151,21 @@ class EngineSingleton:
         # Get the keys that are currently down
         keys = pygame.key.get_pressed()
 
+        if self.code_editor.is_running():
+            self.code_editor.handle_events(self.input.events, keys)
+
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == CustomEvent.KILL_ACTOR:
-                if not hasattr(event, "actor"):
-                    print("ERROR! Unable to get actor from event")
-                else:
-                    print("Kill an actor. For now just respawn")
-                    event.actor.rect.x = self.current_level.spawn_point[0]
-                    event.actor.rect.y = self.current_level.spawn_point[1]
+                print("Kill an actor. For now just respawn")
+                event.actor.rect.x = self.current_level.spawn_point[0]
+                event.actor.rect.y = self.current_level.spawn_point[1]
             elif event.type == CustomEvent.DESPAWN_ENTITY:
                 print("Despawning entity")
 
-            if self.code_editor.is_running():
-                self.code_editor.handle_event(event, keys)
-            else:
+            # Don't process controller events for player when code editor is open
+            if not self.code_editor.is_running():
                 # Call to handle event for player
                 self.player.handle_event(event, keys)
 
