@@ -4,7 +4,8 @@ Test the JackitConfig class
 
 import os
 import unittest
-from jackit.config import JackitConfig, JsonConfig, ConfigError, JackitConfigControls
+from jackit.config import JackitConfig, JsonConfig, ConfigError, JackitConfigControls,\
+    JackitConfigCodeEditor
 
 class TestJsonConfig(unittest.TestCase):
     '''
@@ -127,3 +128,14 @@ class TestJackitConfigControls(unittest.TestCase):
                 'jump': 'K_SPACE'
             }
             self.controls.from_json(raw)
+
+# TODO: Test JackitConfigCodeEditor class
+class TestJackitConfigCodeEditor(unittest.TestCase):
+    '''
+    Test the JackitConfigControls methods
+    '''
+    def setUp(self):
+        '''
+        Called each time a test method is run
+        '''
+        self.code_editor = JackitConfigCodeEditor()

@@ -10,7 +10,7 @@ from jackit.core import CustomEvent
 # Import game engine components
 from jackit.core.input import Input
 from jackit.core.player import Player
-from jackit.core.code import CodeEditor
+from jackit.core.editor import CodeEditor
 from jackit.levels.level_01 import Level_01
 from jackit.levels.level_02 import Level_02
 
@@ -148,11 +148,12 @@ class EngineSingleton:
         Handle user input events
         '''
 
+        # Handle code editor events if it's running
+        if self.code_editor.is_running():
+            self.code_editor.handle_events(self.input.events)
+
         # Get the keys that are currently down
         keys = pygame.key.get_pressed()
-
-        if self.code_editor.is_running():
-            self.code_editor.handle_events(self.input.events, keys)
 
         for event in self.input.events:
             if event.type == pygame.QUIT:

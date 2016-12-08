@@ -36,6 +36,15 @@ class JsonConfig:
                 type(value)
             ))
 
+    def validate_uint(self, value):
+        '''
+        Validate an unsigned integer
+        '''
+        value = self.validate_int(value)
+        if value < 0:
+            raise ConfigError("Expected an unsigned integer. Got a negative number")
+        return value
+
     def validate_int(self, value):
         '''
         Validate an integer value
@@ -52,12 +61,87 @@ class JsonConfig:
                 type(value)
             ))
 
-class JackitConfigControls:
+class JackitConfigCodeEditor(JsonConfig):
+    '''
+    Class for configuring and validating code editor settings
+    '''
+    def __init__(self):
+        super(JackitConfigCodeEditor, self).__init__()
+        self.bg_alpha = 210
+        self.bg_color = (0, 0, 0) # Black
+        self.font_antialiasing = True
+        self.font_color = (0, 255, 0) # Green
+        self.key_repeat_delay = 500 # Delay before first repeated key
+        self.key_repeat_interval = 30 # Dealy between each repeated key after first
+        self.cursor_color = (255, 255, 255) # White
+        self.cursor_alpha = 175
+        self.tab_size = 4 # Number of spaces for tab
+        self.font_size = 16
+
+    def from_json(self, raw):
+        '''
+        Load the object from JSON laoded from config file
+        '''
+        self.bg_alpha = self.validate_ubyte(raw.get("bg_alpha", 210))
+        self.bg_color = self.validate_color(raw.get("bg_color", (0, 0, 0)))
+        self.font_antialiasing = self.validate_bool(raw.get("font_antialiasing", True))
+        self.font_color = self.validate_color(raw.get("font_color", (0, 255, 0)))
+        self.key_repeat_delay = self.validate_uint(raw.get("key_repeat_delay", 500))
+        self.key_repeat_interval = self.validate_uint(raw.get("key_repeat_interval", 30))
+        self.cursor_color = self.validate_color(raw.get("cursor_color", (255, 255, 255)))
+        self.cursor_alpha = self.validate_ubyte(raw.get("cursor_alpha", 175))
+        self.tab_size = self.validate_uint(raw.get("tab_size", 4))
+        self.font_size = self.validate_uint(raw.get("font_size", 16))
+
+    def to_json(self):
+        '''
+        Return a dict representation of the object
+        '''
+        return {
+            "bg_alpha": self.bg_alpha,
+            "bg_color": self.bg_color,
+            "font_antialiasing": self.font_antialiasing,
+            "font_color": self.font_color,
+            "key_repeat_delay": self.key_repeat_delay,
+            "key_repeat_interval": self.key_repeat_interval,
+            "cursor_color": self.cursor_color,
+            "cursor_alpha": self.cursor_alpha,
+            "tab_size": self.tab_size,
+            "font_size": self.font_size
+        }
+
+    def validate_ubyte(self, value):
+        '''
+        Validate an unsigned byte value
+        '''
+        value = self.validate_int(value)
+        if value < 0 or value > 255:
+            raise ConfigError("Unsigned byte must be between 0 and 255 inclusive")
+        return value
+
+    def validate_color(self, value):
+        '''
+        Validate a color value from the config
+        '''
+        if isinstance(value, tuple) or isinstance(value, list):
+            if len(value) != 3:
+                raise ConfigError("Colors must be tuples of 3 values representing R, G, B")
+
+            new_list = []
+            for color_val in value:
+                new_list.append(self.validate_ubyte(color_val))
+
+            return tuple(new_list)
+        else:
+            raise ConfigError("Colors must be a list or tuple of 3 unsigned byte values")
+
+
+class JackitConfigControls(JsonConfig):
     '''
     Class for configuring and validating Jackit controls
     '''
-
     def __init__(self):
+        super(JackitConfigControls, self).__init__()
         self.up = pygame.K_w
         self.down = pygame.K_s
         self.left = pygame.K_a
@@ -127,6 +211,7 @@ class JackitConfig(JsonConfig):
         self._mode = "production"
         self._fullscreen = False
         self.controls = JackitConfigControls()
+        self.code_editor = JackitConfigCodeEditor()
 
     @property
     def mode(self):
@@ -217,7 +302,8 @@ class JackitConfig(JsonConfig):
             "mode": self.mode,
             "fullscreen": self.fullscreen,
             "framerate": self.framerate,
-            "controls": self.controls.to_json()
+            "controls": self.controls.to_json(),
+            "code_editor": self.code_editor.to_json()
         }
 
     def from_json(self, raw):
@@ -232,6 +318,7 @@ class JackitConfig(JsonConfig):
         self.framerate = raw.get("framerate", 60)
         self.controls = JackitConfigControls()
         self.controls.from_json(raw.get('controls', self.controls.to_json()))
+        self.code_editor.from_json(raw.get("code_editor", self.code_editor.to_json()))
 
     def load(self):
         '''
