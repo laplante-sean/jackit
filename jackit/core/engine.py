@@ -97,6 +97,17 @@ class EngineSingleton:
         # Mighr improve perormance
         pygame.display.flip()
 
+    def is_rect_in_death_zone(self, rect):
+        '''
+        Is the provided rect in the current level's death zone
+        '''
+        top, left, width, height = self.current_level.death_zone
+        if not (left <= rect.x and rect.x <= width):
+            return True
+        elif not (top <= rect.y and rect.y <= height):
+            return True
+        return False
+
     def handle_events(self):
         '''
         Handle user input events
@@ -117,6 +128,15 @@ class EngineSingleton:
                     self.player.rect.x = self.current_level.spawn_point[0]
                     self.player.rect.y = self.current_level.spawn_point[1]
                     self.player.changing_levels = False
+            elif event.type == CustomEvent.KILL_ACTOR:
+                if not hasattr(event, "actor"):
+                    print("ERROR! Unable to get actor from event")
+                else:
+                    print("Kill an actor. For now just respawn")
+                    event.actor.rect.x = self.current_level.spawn_point[0]
+                    event.actor.rect.y = self.current_level.spawn_point[1]
+            elif event.type == CustomEvent.DESPAWN_ENTITY:
+                print("Despawning entity")
 
             # Call to handle event for player
             self.player.handle_event(event, keys)

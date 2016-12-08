@@ -5,10 +5,13 @@ for each level
 
 import pygame
 
-from jackit.core.platform import Platform, ExitBlock
+from jackit.core.entity import Platform, ExitBlock, CodeBlock
 from jackit.core.camera import Camera, complex_camera
 
 class LevelGeneratorError(Exception):
+    '''
+    Error generating the level from the map provided
+    '''
     pass
 
 class LevelMap:
@@ -36,17 +39,15 @@ class Level:
         # Spawn point
         self.spawn_point = None
 
-        # Initialize the entity lists
-        self.platform_list = pygame.sprite.Group()
-        self.enemy_list = pygame.sprite.Group()
-        self.item_list = pygame.sprite.Group()
-        self.entities = pygame.sprite.Group() # List containing all entities
+        # Initialize the entity list
+        self.entities = pygame.sprite.Group()
 
         # Build the level from the map
         self.width, self.height = self.build_level()
 
-        # Update entities
-        self.entities.add(self.platform_list, self.enemy_list, self.item_list)
+        # Set up the DEATH ZONE!
+        # A rect 50 pixels bigger on all sides than the level
+        self.death_zone = pygame.Rect(-50, -50, self.width + 50, self.height + 50)
 
         # Init the camera
         self.camera = Camera(self.game_engine.screen_size, complex_camera, self.width, self.height)
@@ -59,27 +60,13 @@ class Level:
         for row in self.level_map:
             for col in row:
                 if col == LevelMap.PLATFORM:
-                    self.platform_list.add(
-                        Platform(
-                            self.game_engine,
-                            self.level_map_block_x,
-                            self.level_map_block_y,
-                            x, y
-                        )
-                    )
+                    self.entities.add(self.create_platform(x, y))
                 elif col == LevelMap.EXIT:
-                    self.platform_list.add(
-                        ExitBlock(
-                            self.game_engine,
-                            self.level_map_block_x,
-                            self.level_map_block_y,
-                            x, y
-                        )
-                    )
+                    self.entities.add(self.create_exit_block(x, y))
                 elif col == LevelMap.SPAWN:
                     self.spawn_point = (x, y)
                 elif col == LevelMap.CODE:
-                    pass # TODO: Code blocks
+                    self.entities.add(self.create_code_block(x, y))
                 x += self.level_map_block_x
             y += self.level_map_block_y
             x = 0
@@ -90,6 +77,42 @@ class Level:
         total_level_width = len(max(self.level_map, key=len)) * self.level_map_block_x
         total_level_height = len(self.level_map) * self.level_map_block_y
         return total_level_width, total_level_height
+
+    def create_code_block(self, x_pos, y_pos):
+        '''
+        Creates a code block. Subclasses can override
+        this to assign special functionality to each code block
+        '''
+        return CodeBlock(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+
+    def create_platform(self, x_pos, y_pos):
+        '''
+        Creates a platform block. Subclasses can override
+        this to assign special functionality to each platform block
+        '''
+        return Platform(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+
+    def create_exit_block(self, x_pos, y_pos):
+        '''
+        Creates a exit block. Subclasses can override
+        this to assign special functionality to each exit block
+        '''
+        return ExitBlock(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
 
     def update(self, player):
         '''

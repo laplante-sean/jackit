@@ -16,6 +16,8 @@ def complex_camera(screen_size, camera, target_rect):
     '''
     Complex camera implementation - Dynamic camera movement
     '''
+
+    # left, top, width, height
     l, t, _, _ = target_rect
     _, _, w, h = camera
     l, t, _, _ = -l + (screen_size[0] / 2), -t + (screen_size[1] / 2), w, h

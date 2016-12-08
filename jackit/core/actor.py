@@ -4,6 +4,8 @@ Base class for all game actors. Computer or human controlled
 
 import pygame
 
+from jackit.core import CustomEvent
+
 class ActorStats:
     '''
     Stats for an actor
@@ -79,7 +81,7 @@ class Actor(pygame.sprite.Sprite):
 
         # Frame cache. Allows methods that do a lot on each call to store results
         # for the current frame Useful for things that check for collisions
-        # like is_on_platform()
+        # like is_on_collideable()
         self.frame_cache = {}
 
     def update(self):
@@ -94,54 +96,56 @@ class Actor(pygame.sprite.Sprite):
         self.horizontal_movement_action()
 
         # Update the X direction
-        self.rect.x += self.change_x #+ platform_net_change_x
+        self.rect.x += self.change_x
 
         # Check if we hit anything in the x direction
         blocks_hit = pygame.sprite.spritecollide(
-            self, self.game_engine.current_level.platform_list, False)
+            self, self.game_engine.current_level.entities, False)
 
         for block in blocks_hit:
             self.collide(self.change_x, 0, block)
 
-        if len(blocks_hit):
-            # Stop horizontal movement
+        if any(x.is_collideable() for x in blocks_hit):
             self.change_x = 0
 
-        # Update te Y direction
-        self.rect.y += self.change_y #+ platform_net_change_y
+        # Update the Y direction
+        self.rect.y += self.change_y
 
         # Check if we hit anything in the y direction
         blocks_hit = pygame.sprite.spritecollide(
-            self, self.game_engine.current_level.platform_list, False)
+            self, self.game_engine.current_level.entities, False)
 
         for block in blocks_hit:
             self.collide(0, self.change_y, block)
 
-        if len(blocks_hit):
+        if any(x.is_collideable() for x in blocks_hit):
             # Stop our vertical movement
             self.change_y = 0
+
+        if self.game_engine.is_rect_in_death_zone(self.rect):
+            pygame.event.post(pygame.event.Event(CustomEvent.KILL_ACTOR, {"actor": self}))
 
         # Clear the frame cache
         self.frame_cache.clear()
 
-    def collide(self, change_x, change_y, platform):
+    def collide(self, change_x, change_y, entity):
         '''
         Handle collisions
         '''
         if change_x > 0:
-            self.rect.right = platform.rect.left
+            self.rect.right = entity.rect.left
         if change_x < 0:
-            self.rect.left = platform.rect.right
+            self.rect.left = entity.rect.right
         if change_y > 0:
-            self.rect.bottom = platform.rect.top
+            self.rect.bottom = entity.rect.top
         if change_y < 0:
-            self.rect.top = platform.rect.bottom
+            self.rect.top = entity.rect.bottom
 
     def calc_grav(self):
         '''
         Calculate gravity
         '''
-        if self.is_on_platform() and self.change_y >= 0:
+        if self.is_on_collideable() and self.change_y >= 0:
             self.change_y = 0
             return
 
@@ -165,7 +169,7 @@ class Actor(pygame.sprite.Sprite):
         '''
         Called when the user hits the jump button. Makes the character jump
         '''
-        if self.is_on_platform():
+        if self.is_on_collideable():
             self.change_y = (self.stats.jump_speed * -1) # Up is negative
             self.jumping = True
 
@@ -177,7 +181,7 @@ class Actor(pygame.sprite.Sprite):
 
         if self.change_x <= (self.stats.top_speed * -1):
             self.change_x = (self.stats.top_speed * -1)
-        elif (not self.is_on_platform()) and self.is_moving_right():
+        elif (not self.is_on_collideable()) and self.is_moving_right():
             self.change_x += (self.stats.air_braking * -1)
         else:
             self.change_x += (self.stats.x_acceleration * -1)
@@ -190,7 +194,7 @@ class Actor(pygame.sprite.Sprite):
 
         if self.change_x >= self.stats.top_speed:
             self.change_x = self.stats.top_speed
-        elif self.is_moving_left() and (not self.is_on_platform()):
+        elif self.is_moving_left() and (not self.is_on_collideable()):
             self.change_x += self.stats.air_braking
         else:
             self.change_x += self.stats.x_acceleration
@@ -227,28 +231,28 @@ class Actor(pygame.sprite.Sprite):
 
         self.cur_stop_frame_count += 1
 
-    def is_on_platform(self):
+    def is_on_collideable(self):
         '''
         True if Actor is on a platform
         '''
 
         # Speed up calls to this method if used more than once per frame
-        if self.frame_cache.get("is_on_platform", None) != None:
-            return len(self.frame_cache["is_on_platform"]) > 0
+        if self.frame_cache.get("is_on_collideable", None) != None:
+            return len(self.frame_cache["is_on_collideable"]) > 0
 
         # Move down 2 pixels (doesn't work well with 1)
         self.rect.y += 2
         blocks_hit = pygame.sprite.spritecollide(
             self,
-            self.game_engine.current_level.platform_list,
+            self.game_engine.current_level.entities,
             False
         )
         self.rect.y -= 2 # Reset position after check
 
         # Update the frame cache with platforms we're on
-        self.frame_cache["is_on_platform"] = blocks_hit
+        self.frame_cache["is_on_collideable"] = blocks_hit
 
-        if len(blocks_hit) > 0:
+        if any(x.is_collideable() for x in blocks_hit):
             return True
 
         return False

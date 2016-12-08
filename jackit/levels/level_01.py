@@ -44,7 +44,7 @@ class Level_01(Level):
         "P                                          P                                                                     E",
         "P                                          P                                                                     E",
         "P                        PPPPPPPPPPPPP     P                                                                     E",
-        "P                                          P                                                                     E",
+        "P                                          P                                 C                                   E",
         "P                                          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
         "P          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
         "P                                          P",
@@ -63,9 +63,13 @@ class Level_01(Level):
         "P                                          P",
         "P                         PPPPPPPPPP       P",
         "P    S                                     P",
-        "P                                          P",
+        "P                      C                   P",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 
     def __init__(self, game_engine):
         super(Level_01, self).__init__(game_engine, Level_01._map)
+
+    def create_code_block(self, x_pos, y_pos):
+        block = super(Level_01, self).create_code_block(x_pos, y_pos)
+        return block
