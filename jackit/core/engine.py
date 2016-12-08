@@ -117,7 +117,7 @@ class EngineSingleton:
 
         # Update the screen with what has been drawn
         # TODO: Look into pygame.display.update() to update only things that have changed
-        # Mighr improve perormance
+        # Might improve perormance
         pygame.display.flip()
 
     def next_level(self):
