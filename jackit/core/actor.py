@@ -67,6 +67,9 @@ class Actor(pygame.sprite.Sprite):
         # True if the actor is flying through the air like majesty
         self.jumping = False
 
+        # Entity() object if the Actor is colliding with an interactable block otherwise None
+        self.on_interactable_block = None
+
         # Setup the sprite
         # Disable error in pylint. It doesn't like the Surface() call. Pylint is wrong.
         # pylint: disable=E1121
@@ -89,6 +92,9 @@ class Actor(pygame.sprite.Sprite):
         Update actor position
         '''
 
+        # Reset each frame
+        self.on_interactable_block = None
+
         # Gravity
         self.calc_grav()
 
@@ -98,30 +104,26 @@ class Actor(pygame.sprite.Sprite):
         # Update the X direction
         self.rect.x += self.change_x
 
-        # Check if we hit anything in the x direction
+        # Check if we hit anything in the x direction and stop moving if we did
         blocks_hit = pygame.sprite.spritecollide(
             self, self.game_engine.current_level.entities, False)
-
         for block in blocks_hit:
             self.collide(self.change_x, 0, block)
-
         if any(x.is_collideable() for x in blocks_hit):
             self.change_x = 0
 
         # Update the Y direction
         self.rect.y += self.change_y
 
-        # Check if we hit anything in the y direction
+        # Check if we hit anything in the y direction and stop moving if we did
         blocks_hit = pygame.sprite.spritecollide(
             self, self.game_engine.current_level.entities, False)
-
         for block in blocks_hit:
             self.collide(0, self.change_y, block)
-
         if any(x.is_collideable() for x in blocks_hit):
-            # Stop our vertical movement
             self.change_y = 0
 
+        # Check if we're in the death zone of the level and kill ourself
         if self.game_engine.is_rect_in_death_zone(self.rect):
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_ACTOR, {"actor": self}))
 
@@ -132,14 +134,20 @@ class Actor(pygame.sprite.Sprite):
         '''
         Handle collisions
         '''
-        if change_x > 0:
-            self.rect.right = entity.rect.left
-        if change_x < 0:
-            self.rect.left = entity.rect.right
-        if change_y > 0:
-            self.rect.bottom = entity.rect.top
-        if change_y < 0:
-            self.rect.top = entity.rect.bottom
+
+        # Call the entity's collide method to handle
+        # things like ExitBlock triggering an exit
+        entity.collide(self)
+
+        if entity.is_collideable():
+            if change_x > 0:
+                self.rect.right = entity.rect.left
+            if change_x < 0:
+                self.rect.left = entity.rect.right
+            if change_y > 0:
+                self.rect.bottom = entity.rect.top
+            if change_y < 0:
+                self.rect.top = entity.rect.bottom
 
     def calc_grav(self):
         '''
@@ -230,6 +238,13 @@ class Actor(pygame.sprite.Sprite):
             self.change_x = 0
 
         self.cur_stop_frame_count += 1
+
+    def hard_stop(self):
+        '''
+        Stop the player immediately
+        '''
+        self.change_x = 0
+        self.change_y = 0
 
     def is_on_collideable(self):
         '''

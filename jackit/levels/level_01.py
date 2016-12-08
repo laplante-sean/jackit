@@ -61,9 +61,9 @@ class Level_01(Level):
         "P            PPPPPPPPPPP                   P",
         "P                                          P",
         "P                                          P",
-        "P                         PPPPPPPPPP       P",
-        "P    S                                     P",
-        "P                      C                   P",
+        "P                         PPPPPPPPPP       E",
+        "P    S                                     E",
+        "P                      C                   E",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 
@@ -72,4 +72,18 @@ class Level_01(Level):
 
     def create_code_block(self, x_pos, y_pos):
         block = super(Level_01, self).create_code_block(x_pos, y_pos)
+        # TODO: Set the correct callback
         return block
+
+    def interact_code_block_01(self):
+        '''
+        Called when interacting with the first code block
+        '''
+        pass
+
+    def interact_code_block_02(self):
+        '''
+        Called when interacting with the second code block
+        '''
+        pass
+

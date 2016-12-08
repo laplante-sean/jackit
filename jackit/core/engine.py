@@ -10,6 +10,7 @@ from jackit.core import CustomEvent
 # Import game engine components
 from jackit.core.input import Input
 from jackit.core.player import Player
+from jackit.core.code import CodeEditor
 from jackit.levels.level_01 import Level_01
 from jackit.levels.level_02 import Level_02
 
@@ -56,9 +57,14 @@ class EngineSingleton:
         self.levels = [Level_01(self), Level_02(self)]
         self.current_level_index = 0
         self.current_level = self.levels[self.current_level_index]
+        self.changing_levels = False
 
         # Init Input handler
         self.input = Input()
+
+        # Init the code editor
+        self.doing_the_code = False # True when the user is doing the code challenges
+        self.code_editor = CodeEditor(self)
 
         # Init the player
         self.player = Player(self, self.config.controls, spawn_point=self.current_level.spawn_point)
@@ -67,6 +73,16 @@ class EngineSingleton:
         '''
         Updates all game components
         '''
+
+        # If we are changing levels, do that
+        if self.changing_levels:
+            self.next_level()
+            self.changing_levels = False
+
+        # This will happen when the code editor was running and then stopped
+        if self.doing_the_code and not self.code_editor.running:
+            self.doing_the_code = False
+            self.player.on_interactable_block.interaction_complete()
 
         # Get user input for this frame
         self.input.update()
@@ -77,9 +93,16 @@ class EngineSingleton:
         # Update all sprites for the current level
         self.current_level.update(self.player)
 
+        # Update the code editor if it's running
+        if self.code_editor.is_running():
+            self.code_editor.update()
+
         # ALL CODE FOR DRAWING GOES BELOW HERE
 
-        self.current_level.draw(self.screen, self.player) #Draws entities and player
+        self.current_level.draw(self.screen, self.player) # Draws entities and player
+
+        if self.code_editor.is_running():
+            self.code_editor.draw(self.screen) # Draws the code editor if it's running
 
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 
@@ -96,6 +119,18 @@ class EngineSingleton:
         # TODO: Look into pygame.display.update() to update only things that have changed
         # Mighr improve perormance
         pygame.display.flip()
+
+    def next_level(self):
+        '''
+        Move to the next level
+        '''
+        if self.current_level_index >= (len(self.levels) - 1):
+            self.running = False
+        else:
+            self.current_level_index += 1
+            self.current_level = self.levels[self.current_level_index]
+            self.player.rect.x = self.current_level.spawn_point[0]
+            self.player.rect.y = self.current_level.spawn_point[1]
 
     def is_rect_in_death_zone(self, rect):
         '''
@@ -119,15 +154,6 @@ class EngineSingleton:
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == CustomEvent.NEXT_LEVEL:
-                if self.current_level_index >= (len(self.levels) - 1):
-                    self.running = False
-                else:
-                    self.current_level_index += 1
-                    self.current_level = self.levels[self.current_level_index]
-                    self.player.rect.x = self.current_level.spawn_point[0]
-                    self.player.rect.y = self.current_level.spawn_point[1]
-                    self.player.changing_levels = False
             elif event.type == CustomEvent.KILL_ACTOR:
                 if not hasattr(event, "actor"):
                     print("ERROR! Unable to get actor from event")
@@ -138,7 +164,10 @@ class EngineSingleton:
             elif event.type == CustomEvent.DESPAWN_ENTITY:
                 print("Despawning entity")
 
-            # Call to handle event for player
-            self.player.handle_event(event, keys)
+            if self.code_editor.is_running():
+                self.code_editor.handle_event(event, keys)
+            else:
+                # Call to handle event for player
+                self.player.handle_event(event, keys)
 
 GameEngine = EngineSingleton.instance()

@@ -5,6 +5,7 @@ Sprites for entities (platforms, items, code blocks, etc.)
 import pygame
 
 from jackit.core import CustomEvent
+from jackit.core.player import Player
 
 class Entity(pygame.sprite.Sprite):
     '''
@@ -55,6 +56,24 @@ class Entity(pygame.sprite.Sprite):
         '''
         return self.collideable
 
+    def interact(self):
+        '''
+        Called when an interactable block is interacted with
+        '''
+        return
+
+    def interaction_complete(self):
+        '''
+        Called when an interaction is complete with an interactable block
+        '''
+        return
+
+    def collide(self, _actor):
+        '''
+        Called when an actor collides with this entity
+        '''
+        return
+
 class PlatformStats:
     '''
     Stats for a moving platform
@@ -104,7 +123,6 @@ class Platform(Entity):
         self.rect.x += self.change_x
         self.rect.y += self.change_y
 
-
 class ExitBlock(Entity):
     '''
     Exit block. Moves to the next level
@@ -112,6 +130,10 @@ class ExitBlock(Entity):
     def __init__(self, game_engine, width, height, x_pos, y_pos):
         super(ExitBlock, self).__init__(game_engine, width, height, x_pos, y_pos)
         self.image.fill((255, 0, 0))
+
+    def collide(self, actor):
+        if isinstance(actor, Player):
+            self.game_engine.changing_levels = True
 
 class CodeBlock(Entity):
     '''
@@ -122,3 +144,62 @@ class CodeBlock(Entity):
         self.image.fill((254, 68, 123))
         self.interactable = True
         self.collideable = False
+        self.interaction_guard = pygame.sprite.Group()
+        self.interact_callback = None
+
+    def collide(self, actor):
+        actor.on_interactable_block = self
+
+    def set_interact_callback(self, cb):
+        '''
+        Set the callback function to be used when this blocks is interacted with
+        '''
+        self.interact_callback = cb
+
+    def interaction_complete(self):
+        '''
+        Called when the interaction is complete
+        '''
+
+        # Remove the interaction guard from around the object
+        self.game_engine.current_level.entities.remove(self.interaction_guard)
+
+        # TODO: Create a sprite.Group of sprites to clear from the screen.
+        # Make it part of the Level base class. In Level update, clear the list
+        self.interaction_guard.clear(self.game_engine.screen, (0, 0, 255))
+
+    def interact(self):
+        '''
+        Called when an interactable block is interacted with
+        '''
+        # Guard rects to the left, right, and above the interactable object
+        self.interaction_guard.add(
+            self.game_engine.current_level.create_platform(
+                (self.rect.left - self.game_engine.current_level.level_map_block_x),
+                (self.rect.top)
+            ),
+            self.game_engine.current_level.create_platform(
+                (self.rect.left - self.game_engine.current_level.level_map_block_x),
+                (self.rect.top - self.game_engine.current_level.level_map_block_y)
+            ),
+            self.game_engine.current_level.create_platform(
+                (self.rect.right),
+                (self.rect.top)
+            ),
+            self.game_engine.current_level.create_platform(
+                (self.rect.right),
+                (self.rect.top - self.game_engine.current_level.level_map_block_y)
+            ),
+            self.game_engine.current_level.create_platform(
+                (self.rect.left),
+                (self.rect.top - self.game_engine.current_level.level_map_block_y)
+            )
+        )
+
+        self.game_engine.current_level.entities.add(self.interaction_guard)
+
+        # TODO: Call the interact callback
+
+        # Start doing the code
+        self.game_engine.doing_the_code = True
+        self.game_engine.code_editor.run()
