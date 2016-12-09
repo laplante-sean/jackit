@@ -63,7 +63,6 @@ class EngineSingleton:
         self.input = Input()
 
         # Init the code editor
-        self.doing_the_code = False # True when the user is doing the code challenges
         self.code_editor = CodeEditor(self)
 
         # Init the player
@@ -78,11 +77,6 @@ class EngineSingleton:
         if self.changing_levels:
             self.next_level()
             self.changing_levels = False
-
-        # This will happen when the code editor was running and then stopped
-        if self.doing_the_code and not self.code_editor.running:
-            self.doing_the_code = False
-            self.player.on_interactable_block.interaction_complete()
 
         # Get user input for this frame
         self.input.update()
@@ -164,6 +158,9 @@ class EngineSingleton:
                 event.actor.rect.y = self.current_level.spawn_point[1]
             elif event.type == CustomEvent.DESPAWN_ENTITY:
                 print("Despawning entity")
+            elif event.type == CustomEvent.EXIT_EDITOR:
+                print("Exit code editor. Result: ", event.text)
+                self.player.on_interactable_block.interaction_complete()
 
             # Don't process controller events for player when code editor is open
             if not self.code_editor.is_running():

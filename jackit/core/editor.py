@@ -7,27 +7,28 @@ from string import ascii_letters
 
 import pygame
 
+from jackit.core import CustomEvent
+
 class CodeEditor:
     '''
     Code view text editor
     '''
     def __init__(self, game_engine):
-        # Setup font stuff
-        pygame.font.init()
         self.game_engine = game_engine
         self.config = self.game_engine.config.code_editor
+        self.running = False
+        self.text = None
+
+        # Init the font
+        pygame.font.init()
         self.font = pygame.font.SysFont("Courier", self.config.font_size) # Courier for monospace
 
-        self.running = False
-        self.message = None
-        self.render_msg_list = [] # Message broken into lines for rendering
+        # Lines to render in the text view
+        self.render_msg_list = []
 
         # Create a coding window slightly smaller than the main window
         self.width = self.game_engine.screen_width / 1.25
         self.height = self.game_engine.screen_height / 1.25
-
-        # Disable error in pylint. It doesn't like the Surface() call. Pylint is wrong.
-        # pylint: disable=E1121
         self.code_window = pygame.Surface([self.width, self.height])
         self.code_window.fill(self.config.bg_color)
         self.code_window.set_alpha(self.config.bg_alpha)
@@ -38,17 +39,14 @@ class CodeEditor:
         self.rect.x += (self.game_engine.screen_width - self.width) / 2
         self.rect.y += (self.game_engine.screen_height - self.height) / 2
 
-        # Font rect. Moves down as lines are rendered
-        self.font_rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
+        # Text rect, moves down as lines are rendered
+        self.text_rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
 
-        # The current position of the cursor
+        # Setup the cursor
         self.cursor_position = 0
         self.cursor_line = 0
         self.cursor_pos_in_line = 0
         self.cursor_width = self.font.size(ascii_letters)[0] / len(ascii_letters)
-
-        # Disable error in pylint. It doesn't like the Surface() call. Pylint is wrong.
-        # pylint: disable=E1121
         self.cursor = pygame.Surface([self.cursor_width, self.font.get_linesize()])
         self.cursor.fill(self.config.cursor_color)
         self.cursor.set_alpha(self.config.cursor_alpha)
@@ -61,30 +59,49 @@ class CodeEditor:
 
         # Calculate the maximum number of chars that will fit
         # Max chars must be an int so TextWrapper can wrap long words
-        self.max_chars = int((
-            self.width / (self.font.size(ascii_letters)[0] / len(ascii_letters))
-        ) - 1)
+        self.max_chars = int(
+            (self.width / (self.font.size(ascii_letters)[0] / len(ascii_letters))) - 1
+        )
 
         # Calculate the line size for the font
         self.line_size = self.font.get_linesize()
+
+        # Create the text wrapper
         self.textwrapper = textwrap.TextWrapper(
             width=self.max_chars,
             break_long_words=True,
             replace_whitespace=False,
-            expand_tabs=False
+            expand_tabs=False,
+            drop_whitespace=False
         )
 
-    def run(self, start_text="This is a single line of test text. Handle multiline later"):
+    def run(self, start_text="This is one line\nThis is another line\n\nBlank plus another."):
         '''
-        Setter for running instance variable
+        Setter for running instance variable. Sets the window text as well
         '''
         self.running = True
-        self.message = start_text
+        self.text = start_text
+        self.cursor_position = 0
+        self.cursor_line = 0
+        self.cursor_pos_in_line = 0
 
         # Set the key repeat values. Auto-triggers a KEYDOWN event while a key is held
         # after waiting an initial delay and then triggers subsequent KEYDOWN events
         # after an interval.
         pygame.key.set_repeat(self.config.key_repeat_delay, self.config.key_repeat_interval)
+
+    def stop(self):
+        '''
+        Called when the user hits the escape key
+        '''
+        self.running = False
+
+        # Trigger an event and send off the user edited text
+        pygame.event.post(pygame.event.Event(CustomEvent.EXIT_EDITOR, {"text": self.text}))
+
+        # Undo the key repeat change so we don't effect the rest
+        # of the program
+        pygame.key.set_repeat() # Sets back to no repeat
 
     def is_running(self):
         '''
@@ -98,13 +115,13 @@ class CodeEditor:
         '''
 
         # Reset the Y position (moves down with each line in draw())
-        self.font_rect.y = self.rect.y
+        self.text_rect.y = self.rect.y
 
         # Calc which line the cursor is on and where it is on the line
         self.cursor_line = 0
         self.cursor_pos_in_line = 0
         for i in range(self.cursor_position):
-            if self.message[i] == "\n":
+            if self.text[i] == "\n":
                 self.cursor_line += 1
                 self.cursor_pos_in_line = 0
             else:
@@ -112,8 +129,8 @@ class CodeEditor:
 
         # Break message into lines for rendering
         self.render_msg_list = []
-        if self.message is not None and len(self.message):
-            for line in self.message.split("\n"):
+        if self.text is not None and len(self.text):
+            for line in self.text.split("\n"):
                 if len(line) == 0:
                     self.render_msg_list.append(line)
                 else:
@@ -128,9 +145,9 @@ class CodeEditor:
             line,
             self.config.font_antialiasing,
             self.config.font_color
-        ), self.font_rect)
+        ), self.text_rect)
 
-        self.font_rect.y += self.line_size
+        self.text_rect.y += self.line_size
 
     def draw(self, screen):
         '''
@@ -144,41 +161,112 @@ class CodeEditor:
         for line in self.render_msg_list:
             self.render_line(screen, line)
 
-
-        # Handles case when there's only one character on the line
-        if self.cursor_pos_in_line == len(self.render_msg_list[self.cursor_line]):
-            self.cursor_pos_in_line = 0
-
-        # Returns width and height, only need width
-        w, _ = self.font.size(self.render_msg_list[self.cursor_line][:self.cursor_pos_in_line])
-        self.cursor_rect.x = self.rect.x + w
-        self.cursor_rect.y = self.rect.y + (self.cursor_line * self.line_size)
+        # When everything is deleted there is nothing to do here
+        if len(self.render_msg_list):
+            # Returns width and height, only need width
+            w, _ = self.font.size(self.render_msg_list[self.cursor_line][:self.cursor_pos_in_line])
+            self.cursor_rect.x = self.rect.x + w
+            self.cursor_rect.y = self.rect.y + (self.cursor_line * self.line_size)
+        else:
+            # Reset the cursor
+            self.cursor_rect.x = self.rect.x
+            self.cursor_rect.y = self.rect.y
 
         #Draw the cursor
         screen.blit(self.cursor, self.cursor_rect)
+
+    def handle_events(self, events):
+        '''
+        Handle input events while the code editor is up
+        '''
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.stop()
+                elif event.key == pygame.K_DELETE:
+                    self.k_delete()
+                elif event.key == pygame.K_LEFT:
+                    self.k_left()
+                elif event.key == pygame.K_RIGHT:
+                    self.k_right()
+                elif event.key == pygame.K_BACKSPACE:
+                    self.k_backspace()
+                elif event.key == pygame.K_TAB:
+                    self.k_tab()
+                elif event.key == pygame.K_RETURN:
+                    self.k_return()
+                else:
+                    self.character_key(event.key)
 
     def k_delete(self):
         '''
         Handles the delete key
         '''
-        if self.cursor_position == len(self.message):
+        if self.cursor_position == len(self.text):
             return
 
-        self.message = ''.join((
-            self.message[:self.cursor_position],
-            self.message[self.cursor_position + 1:]
+        self.text = ''.join((
+            self.text[:self.cursor_position],
+            self.text[self.cursor_position + 1:]
         ))
 
     def k_backspace(self):
         '''
         Handles the backspace key
         '''
-        if self.cursor_position > 0:
-            self.message = ''.join((
-                self.message[:self.cursor_position - 1],
-                self.message[self.cursor_position:]
+        if self.cursor_position > 0 and self.cursor_position <= len(self.text):
+            self.text = ''.join((
+                self.text[:self.cursor_position - 1],
+                self.text[self.cursor_position:]
             ))
             self.cursor_position -= 1
+
+    def k_left(self):
+        '''
+        Handles the left arrow key
+        '''
+        if self.cursor_position > 0:
+            self.cursor_position -= 1
+
+    def k_right(self):
+        '''
+        Handles the right arrow key
+        '''
+        if self.cursor_position < len(self.text):
+            self.cursor_position += 1
+
+    def k_tab(self):
+        '''
+        Handles the tab key
+        '''
+        self.text = ''.join((
+            self.text[:self.cursor_position],
+            " " * self.config.tab_size,
+            self.text[self.cursor_position:]
+        ))
+        self.cursor_position += self.config.tab_size
+
+    def k_return(self):
+        '''
+        Handles the enter key
+        '''
+        self.text = ''.join((
+            self.text[:self.cursor_position],
+            "\n",
+            self.text[self.cursor_position:]
+        ))
+        self.cursor_position += 1
+
+    def character_key(self, key):
+        '''
+        Handles the rest of the character keys
+        '''
+        self.text = ''.join((
+            self.text[:self.cursor_position],
+            chr(key),
+            self.text[self.cursor_position:]
+        ))
+        self.cursor_position += 1
 
     def k_up(self):
         '''
@@ -197,91 +285,3 @@ class CodeEditor:
         '''
         if self.cursor_line == len(self.render_msg_list) - 1:
             return
-
-    def k_left(self):
-        '''
-        Handles the left arrow key
-        '''
-        if self.cursor_position > 0:
-            self.cursor_position -= 1
-
-    def k_right(self):
-        '''
-        Handles the right arrow key
-        '''
-        if self.cursor_position < len(self.message):
-            self.cursor_position += 1
-
-    def k_tab(self):
-        '''
-        Handles the tab key
-        '''
-        self.message = ''.join((
-            self.message[:self.cursor_position],
-            " " * self.config.tab_size,
-            self.message[self.cursor_position:]
-        ))
-        self.cursor_position += self.config.tab_size
-
-    def k_return(self):
-        '''
-        Handles the enter key
-        '''
-        self.message = ''.join((
-            self.message[:self.cursor_position],
-            "\n",
-            self.message[self.cursor_position:]
-        ))
-        self.cursor_position += 1
-
-    def character_key(self, key):
-        '''
-        Handles the rest of the character keys
-        '''
-        if key < 32 or key > 126:
-            return
-
-        result = ""
-
-        # Handle shift key being held
-        if pygame.key.get_mods() & pygame.KMOD_SHIFT:
-            s = str(chr(key))
-            result = s.upper()
-        else:
-            result = str(chr(key))
-
-        self.message = ''.join((
-            self.message[:self.cursor_position],
-            result,
-            self.message[self.cursor_position:]
-        ))
-        self.cursor_position += 1
-
-    def handle_events(self, events):
-        '''
-        Handle input events while the code editor is up
-        '''
-        for event in events:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    print("Quiting out of code editor")
-                    self.running = False
-                    self.message = None
-
-                    # Undo the key repeat change so we don't effect the rest
-                    # of the program
-                    pygame.key.set_repeat() # Sets back to no repeat
-                elif event.key == pygame.K_DELETE:
-                    self.k_delete()
-                elif event.key == pygame.K_LEFT:
-                    self.k_left()
-                elif event.key == pygame.K_RIGHT:
-                    self.k_right()
-                elif event.key == pygame.K_BACKSPACE:
-                    self.k_backspace()
-                elif event.key == pygame.K_TAB:
-                    self.k_tab()
-                elif event.key == pygame.K_RETURN:
-                    self.k_return()
-                else:
-                    self.character_key(event.key)

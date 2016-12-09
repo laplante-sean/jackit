@@ -201,5 +201,4 @@ class CodeBlock(Entity):
         # TODO: Call the interact callback
 
         # Start doing the code
-        self.game_engine.doing_the_code = True
         self.game_engine.code_editor.run()

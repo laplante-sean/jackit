@@ -1,3 +1,3 @@
 [MESSAGES CONTROL]
 
-disable=locally-disabled,invalid-name,no-member
+disable=locally-disabled,invalid-name,no-member,E1121
