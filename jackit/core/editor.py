@@ -195,6 +195,10 @@ class CodeEditor:
                     self.k_tab()
                 elif event.key == pygame.K_RETURN:
                     self.k_return()
+                elif event.key == pygame.K_UP:
+                    self.k_up()
+                elif event.key == pygame.K_DOWN:
+                    self.k_down()
                 else:
                     self.character_key(event.key)
 
@@ -261,6 +265,15 @@ class CodeEditor:
         '''
         Handles the rest of the character keys
         '''
+
+        if key == pygame.K_LSHIFT or key == pygame.K_RSHIFT:
+            return # Skip the event for the shift key itself
+
+        # Handle shift key
+        if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+            if key >= 97 and key <= 122:
+                key = ord(chr(key).upper())
+
         self.text = ''.join((
             self.text[:self.cursor_position],
             chr(key),
@@ -275,13 +288,30 @@ class CodeEditor:
         if self.cursor_line == 0:
             return
 
+        # This should never happen b/c we should be on line 0 if the
+        # render_msg_list is empty. Check anyway to prevent potential
+        # index out of bounds below
+        if len(self.render_msg_list) == 0:
+            return
+
         self.cursor_line -= 1
         if len(self.render_msg_list[self.cursor_line]) < self.cursor_pos_in_line:
             self.cursor_pos_in_line = len(self.render_msg_list[self.cursor_line])
+
+        # Determine where we are in the actual text
 
     def k_down(self):
         '''
         Handles the down array key
         '''
+        if len(self.render_msg_list) == 0:
+            return
+
         if self.cursor_line == len(self.render_msg_list) - 1:
             return
+
+        self.cursor_line += 1
+        if len(self.render_msg_list[self.cursor_line]) < self.cursor_pos_in_line:
+            self.cursor_pos_in_line = len(self.render_msg_list[self.cursor_line])
+
+        # Determine where we are in the actual text
