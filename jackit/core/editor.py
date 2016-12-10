@@ -50,7 +50,7 @@ class CodeEditor:
         self.font = pygame.font.SysFont("Courier", self.config.font_size) # Courier for monospace
 
         # Lines to render in the text view
-        self.render_msg_list = []
+        self.render_text_list = []
 
         # Create a coding window slightly smaller than the main window
         self.width = self.game_engine.screen_width / 1.25
@@ -87,7 +87,7 @@ class CodeEditor:
         # Max chars must be an int so TextWrapper can wrap long words
         self.max_chars = int(
             (self.width / (self.font.size(ascii_letters)[0] / len(ascii_letters))) - 1
-        )
+        ) - 1
 
         # Calculate the line size for the font
         self.line_size = self.font.get_linesize()
@@ -98,7 +98,7 @@ class CodeEditor:
             break_long_words=True,
             replace_whitespace=False,
             expand_tabs=False,
-            drop_whitespace=False
+            drop_whitespace=True
         )
 
     def run(self, start_text="This is one line\nThis is another line\n\nBlank plus another."):
@@ -143,18 +143,26 @@ class CodeEditor:
         # Reset the Y position (moves down with each line in draw())
         self.text_rect.y = self.rect.y
 
+        # Build the list of strings to render
+        self.build_render_text_list()
+
         # Get cursor render position
         self.cursor_line, self.cursor_pos_in_line = self.get_cursor_line_and_position()
 
+    def build_render_text_list(self):
+        '''
+        Build the list of strings to render
+        '''
         # Break message into lines for rendering
-        self.render_msg_list = []
+        self.render_text_list = []
         if self.text is not None and len(self.text):
             for line in self.text.split("\n"):
                 if len(line) == 0:
-                    self.render_msg_list.append(line)
+                    self.render_text_list.append(line)
                 else:
-                    for wrapped_line in self.textwrapper.wrap(line):
-                        self.render_msg_list.append(wrapped_line)
+                    self.render_text_list.extend(self.textwrapper.wrap(line))
+
+            self.text = '\n'.join(self.render_text_list) # Re-write text with the broken up lines
 
     def get_cursor_line_and_position(self):
         '''
@@ -212,20 +220,35 @@ class CodeEditor:
         # Blit the background of the code window
         screen.blit(self.code_window, self.rect)
 
-        # Render the lines onto the screen
-        for line in self.render_msg_list:
-            self.render_line(screen, line)
-
         # When everything is deleted there is nothing to do here
-        if len(self.render_msg_list):
-            # Returns width and height, only need width
-            w, _ = self.font.size(self.render_msg_list[self.cursor_line][:self.cursor_pos_in_line])
+        if len(self.render_text_list):
+            # Returns width and height, only need width to set cursor position
+            w, _ = self.font.size(self.render_text_list[self.cursor_line][:self.cursor_pos_in_line])
             self.cursor_rect.x = self.rect.x + w
             self.cursor_rect.y = self.rect.y + (self.cursor_line * self.line_size)
         else:
             # Reset the cursor
             self.cursor_rect.x = self.rect.x
             self.cursor_rect.y = self.rect.y
+
+        '''
+        # Check if we can fit all the text on the screen
+        if (len(self.render_text_list) * self.line_size) >= self.height:
+            # How many lines fit under the cursor?
+            under_lines = int((self.rect.bottom - self.cursor_rect.y)/ self.line_size)
+            over_lines = int((self.cursor_rect.y - self.rect.top) / self.line_size)
+
+            #if under_lines == 0:
+
+
+            self.render_text_list = self.render_text_list[
+                (self.cursor_line - over_lines):(self.cursor_line + under_lines)
+            ]
+        '''
+
+        # Render the lines onto the screen
+        for line in self.render_text_list:
+            self.render_line(screen, line)
 
         #Draw the cursor
         screen.blit(self.cursor, self.cursor_rect)
@@ -349,12 +372,12 @@ class CodeEditor:
         # This should never happen b/c we should be on line 0 if the
         # render_msg_list is empty. Check anyway to prevent potential
         # index out of bounds below
-        if len(self.render_msg_list) == 0:
+        if len(self.render_text_list) == 0:
             return
 
         self.cursor_line -= 1
-        if len(self.render_msg_list[self.cursor_line]) < self.cursor_pos_in_line:
-            self.cursor_pos_in_line = len(self.render_msg_list[self.cursor_line])
+        if len(self.render_text_list[self.cursor_line]) < self.cursor_pos_in_line:
+            self.cursor_pos_in_line = len(self.render_text_list[self.cursor_line])
 
         # Determine where we are in the actual text
         self.cursor_position = self.get_cursor_pos(self.cursor_line, self.cursor_pos_in_line)
@@ -363,15 +386,15 @@ class CodeEditor:
         '''
         Handles the down array key
         '''
-        if len(self.render_msg_list) == 0:
+        if len(self.render_text_list) == 0:
             return
 
-        if self.cursor_line == len(self.render_msg_list) - 1:
+        if self.cursor_line == len(self.render_text_list) - 1:
             return
 
         self.cursor_line += 1
-        if len(self.render_msg_list[self.cursor_line]) < self.cursor_pos_in_line:
-            self.cursor_pos_in_line = len(self.render_msg_list[self.cursor_line])
+        if len(self.render_text_list[self.cursor_line]) < self.cursor_pos_in_line:
+            self.cursor_pos_in_line = len(self.render_text_list[self.cursor_line])
 
         # Determine where we are in the actual text
         self.cursor_position = self.get_cursor_pos(self.cursor_line, self.cursor_pos_in_line)
