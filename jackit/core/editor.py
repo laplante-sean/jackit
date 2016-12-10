@@ -240,21 +240,6 @@ class CodeEditor:
                 self.cursor_rect.x = self.rect.x
                 self.cursor_rect.y = self.rect.y
 
-            '''
-            # Check if we can fit all the text on the screen
-            if (len(self.render_text_list) * self.line_size) >= self.height:
-                # How many lines fit under the cursor?
-                under_lines = int((self.rect.bottom - self.cursor_rect.y)/ self.line_size)
-                over_lines = int((self.cursor_rect.y - self.rect.top) / self.line_size)
-
-                #if under_lines == 0:
-
-
-                self.render_text_list = self.render_text_list[
-                    (self.cursor_line - over_lines):(self.cursor_line + under_lines)
-                ]
-            '''
-
         # Render the lines onto the screen
         for line in self.render_text_list:
             self.render_line(screen, line)
