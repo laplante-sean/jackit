@@ -10,7 +10,7 @@ class ActorStats:
     '''
     Stats for an actor
     '''
-    def __init__(self, x_acceleration=0.5, x_deceleration=0.5, top_speed=6,
+    def __init__(self, x_acceleration=0.5, x_deceleration=0.8, top_speed=6,
                  jump_speed=8, air_braking=0.15, grav_acceleration=1.05,
                  grav_deceleration=0.55, grav_high_jump=0.25, terminal_velocity=20
                 ):
