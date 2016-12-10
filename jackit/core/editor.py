@@ -213,8 +213,8 @@ class CodeEditor:
         if self.text_change:
             # When everything is deleted there is nothing to do here
             if len(self.render_text_list):
-                # Only get width to add if we are at least 1 character into the line and on a line
-                # that exists
+                # Only get width to add if we are at least 1 character into the
+                # line and on a line that exists
                 if self.cursor_offset_in_line > 0 and self.cursor_line < len(self.render_text_list):
                     # Returns width and height, only need width to set cursor position
                     w, _ = self.font.size(
@@ -233,6 +233,9 @@ class CodeEditor:
 
         # Render the lines onto the screen
         for line in self.render_text_list:
+            if (self.text_rect.y + self.line_size) >= (self.height + self.rect.y):
+                break # Don't draw when we hit the bottom
+
             screen.blit(self.font.render(
                 line,
                 self.config.font_antialiasing,
@@ -241,8 +244,9 @@ class CodeEditor:
 
             self.text_rect.y += self.line_size
 
-        #Draw the cursor
-        screen.blit(self.cursor, self.cursor_rect)
+        # Draw the cursor
+        if (self.cursor_rect.y + self.line_size) < (self.height + self.rect.y):
+            screen.blit(self.cursor, self.cursor_rect)
 
         self.text_change = False
 
