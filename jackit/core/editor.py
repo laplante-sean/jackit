@@ -9,6 +9,32 @@ import pygame
 
 from jackit.core import CustomEvent
 
+# Map of special keys to their values when the
+# shift key is being held
+KEY_TO_SHIFT_MAP = {
+    '`':'~',
+    '1':'!',
+    '2':'@',
+    '3':'#',
+    '4':'$',
+    '5':'%',
+    '6':'^',
+    '7':'&',
+    '8':'*',
+    '9':'(',
+    '0':')',
+    '-':'_',
+    '=':'+',
+    '[':'{',
+    ']':'}',
+    '\\':'|',
+    ';':':',
+    "'":'"',
+    ',':'<',
+    '.':'>',
+    '/':'?'
+}
+
 class CodeEditor:
     '''
     Code view text editor
@@ -263,7 +289,7 @@ class CodeEditor:
 
     def character_key(self, key):
         '''
-        Handles the rest of the character keys
+        Handles the rest of the keys
         '''
 
         if key == pygame.K_LSHIFT or key == pygame.K_RSHIFT:
@@ -273,6 +299,9 @@ class CodeEditor:
         if pygame.key.get_mods() & pygame.KMOD_SHIFT:
             if key >= 97 and key <= 122:
                 key = ord(chr(key).upper())
+            else:
+                if KEY_TO_SHIFT_MAP.get(chr(key), None) is not None:
+                    key = ord(KEY_TO_SHIFT_MAP[chr(key)])
 
         self.text = ''.join((
             self.text[:self.cursor_position],

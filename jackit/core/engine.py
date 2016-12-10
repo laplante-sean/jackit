@@ -104,10 +104,10 @@ class EngineSingleton:
         milliseconds = self.clock.tick(self.framerate)
         self.playtime += milliseconds / 1000.0
 
-        # Print framerate and playtime in titlebar.
-        # TODO: Make debug mode in config and enable when debugging is on
-        text = "FPS: {0:.2f}   Playtime: {1:.2f}".format(self.clock.get_fps(), self.playtime)
-        pygame.display.set_caption(text)
+        if self.config.is_development_mode():
+            # Print framerate and playtime in titlebar.
+            text = "FPS: {0:.2f}   Playtime: {1:.2f}".format(self.clock.get_fps(), self.playtime)
+            pygame.display.set_caption(text)
 
         # Update the screen with what has been drawn
         # TODO: Look into pygame.display.update() to update only things that have changed
