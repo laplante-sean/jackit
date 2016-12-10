@@ -143,15 +143,8 @@ class CodeEditor:
         # Reset the Y position (moves down with each line in draw())
         self.text_rect.y = self.rect.y
 
-        # Calc which line the cursor is on and where it is on the line
-        self.cursor_line = 0
-        self.cursor_pos_in_line = 0
-        for i in range(self.cursor_position):
-            if self.text[i] == "\n":
-                self.cursor_line += 1
-                self.cursor_pos_in_line = 0
-            else:
-                self.cursor_pos_in_line += 1
+        # Get cursor render position
+        self.cursor_line, self.cursor_pos_in_line = self.get_cursor_line_and_position()
 
         # Break message into lines for rendering
         self.render_msg_list = []
@@ -162,6 +155,42 @@ class CodeEditor:
                 else:
                     for wrapped_line in self.textwrapper.wrap(line):
                         self.render_msg_list.append(wrapped_line)
+
+    def get_cursor_line_and_position(self):
+        '''
+        Calc which line the cursor is on and where it is on the line
+        '''
+        line = 0
+        position_in_line = 0
+        for i in range(self.cursor_position):
+            if self.text[i] == "\n":
+                line += 1
+                position_in_line = 0
+            else:
+                position_in_line += 1
+
+        return line, position_in_line
+
+    def get_cursor_pos(self, line, position_in_line):
+        '''
+        Calc where the cursor would be in self.text at the given
+        line and position in that line
+        '''
+        cur_line = 0
+        cur_pos = 0
+        real_pos = 0
+        for i in range(len(self.text)):
+            if cur_line == line and cur_pos == position_in_line:
+                break
+
+            if self.text[i] == "\n":
+                cur_line += 1
+                cur_pos = 0
+            else:
+                cur_pos += 1
+            real_pos += 1
+
+        return real_pos
 
     def render_line(self, screen, line):
         '''
@@ -328,6 +357,7 @@ class CodeEditor:
             self.cursor_pos_in_line = len(self.render_msg_list[self.cursor_line])
 
         # Determine where we are in the actual text
+        self.cursor_position = self.get_cursor_pos(self.cursor_line, self.cursor_pos_in_line)
 
     def k_down(self):
         '''
@@ -344,3 +374,4 @@ class CodeEditor:
             self.cursor_pos_in_line = len(self.render_msg_list[self.cursor_line])
 
         # Determine where we are in the actual text
+        self.cursor_position = self.get_cursor_pos(self.cursor_line, self.cursor_pos_in_line)
