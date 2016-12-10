@@ -44,6 +44,8 @@ class CodeEditor:
         self.config = self.game_engine.config.code_editor
         self.running = False
         self.text = None
+        self.text_change = False # Don't re-calc render list
+                                 # if the text hasn't changed
 
         # Init the font
         pygame.font.init()
@@ -98,7 +100,7 @@ class CodeEditor:
             break_long_words=True,
             replace_whitespace=False,
             expand_tabs=False,
-            drop_whitespace=True
+            drop_whitespace=False
         )
 
     def run(self, start_text="This is one line\nThis is another line\n\nBlank plus another."):
@@ -106,6 +108,7 @@ class CodeEditor:
         Setter for running instance variable. Sets the window text as well
         '''
         self.running = True
+        self.text_change = True
         self.text = start_text
         self.cursor_position = 0
         self.cursor_line = 0
@@ -143,6 +146,10 @@ class CodeEditor:
         # Reset the Y position (moves down with each line in draw())
         self.text_rect.y = self.rect.y
 
+        # Don't need to update anything if the text hasn't changed
+        if not self.text_change:
+            return
+
         # Build the list of strings to render
         self.build_render_text_list()
 
@@ -161,8 +168,6 @@ class CodeEditor:
                     self.render_text_list.append(line)
                 else:
                     self.render_text_list.extend(self.textwrapper.wrap(line))
-
-            self.text = '\n'.join(self.render_text_list) # Re-write text with the broken up lines
 
     def get_cursor_line_and_position(self):
         '''
@@ -220,31 +225,35 @@ class CodeEditor:
         # Blit the background of the code window
         screen.blit(self.code_window, self.rect)
 
-        # When everything is deleted there is nothing to do here
-        if len(self.render_text_list):
-            # Returns width and height, only need width to set cursor position
-            w, _ = self.font.size(self.render_text_list[self.cursor_line][:self.cursor_pos_in_line])
-            self.cursor_rect.x = self.rect.x + w
-            self.cursor_rect.y = self.rect.y + (self.cursor_line * self.line_size)
-        else:
-            # Reset the cursor
-            self.cursor_rect.x = self.rect.x
-            self.cursor_rect.y = self.rect.y
+        # Don't bother with this if the text hasn't changed
+        if self.text_change:
+            # When everything is deleted there is nothing to do here
+            if len(self.render_text_list):
+                # Returns width and height, only need width to set cursor position
+                w, _ = self.font.size(
+                    self.render_text_list[self.cursor_line][:self.cursor_pos_in_line]
+                )
+                self.cursor_rect.x = self.rect.x + w
+                self.cursor_rect.y = self.rect.y + (self.cursor_line * self.line_size)
+            else:
+                # Reset the cursor
+                self.cursor_rect.x = self.rect.x
+                self.cursor_rect.y = self.rect.y
 
-        '''
-        # Check if we can fit all the text on the screen
-        if (len(self.render_text_list) * self.line_size) >= self.height:
-            # How many lines fit under the cursor?
-            under_lines = int((self.rect.bottom - self.cursor_rect.y)/ self.line_size)
-            over_lines = int((self.cursor_rect.y - self.rect.top) / self.line_size)
+            '''
+            # Check if we can fit all the text on the screen
+            if (len(self.render_text_list) * self.line_size) >= self.height:
+                # How many lines fit under the cursor?
+                under_lines = int((self.rect.bottom - self.cursor_rect.y)/ self.line_size)
+                over_lines = int((self.cursor_rect.y - self.rect.top) / self.line_size)
 
-            #if under_lines == 0:
+                #if under_lines == 0:
 
 
-            self.render_text_list = self.render_text_list[
-                (self.cursor_line - over_lines):(self.cursor_line + under_lines)
-            ]
-        '''
+                self.render_text_list = self.render_text_list[
+                    (self.cursor_line - over_lines):(self.cursor_line + under_lines)
+                ]
+            '''
 
         # Render the lines onto the screen
         for line in self.render_text_list:
@@ -253,12 +262,16 @@ class CodeEditor:
         #Draw the cursor
         screen.blit(self.cursor, self.cursor_rect)
 
+        self.text_change = False
+
     def handle_events(self, events):
         '''
         Handle input events while the code editor is up
         '''
         for event in events:
             if event.type == pygame.KEYDOWN:
+                self.text_change = True
+
                 if event.key == pygame.K_ESCAPE:
                     self.stop()
                 elif event.key == pygame.K_DELETE:
