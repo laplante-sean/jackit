@@ -12,27 +12,13 @@ from jackit.core import CustomEvent
 # Map of special keys to their values when the
 # shift key is being held
 KEY_TO_SHIFT_MAP = {
-    '`':'~',
-    '1':'!',
-    '2':'@',
-    '3':'#',
-    '4':'$',
-    '5':'%',
-    '6':'^',
-    '7':'&',
-    '8':'*',
-    '9':'(',
-    '0':')',
-    '-':'_',
-    '=':'+',
-    '[':'{',
-    ']':'}',
-    '\\':'|',
-    ';':':',
-    "'":'"',
-    ',':'<',
-    '.':'>',
-    '/':'?'
+    '`':'~', '1':'!', '2':'@',
+    '3':'#', '4':'$', '5':'%',
+    '6':'^', '7':'&', '8':'*',
+    '9':'(', '0':')', '-':'_',
+    '=':'+', '[':'{', ']':'}',
+    '\\':'|', ';':':', "'":'"',
+    ',':'<', '.':'>', '/':'?'
 }
 
 class CodeEditor:
@@ -51,6 +37,9 @@ class CodeEditor:
         pygame.font.init()
         self.font = pygame.font.SysFont("Courier", self.config.font_size) # Courier for monospace
 
+        # Calculate the line size for the font
+        self.line_size = self.font.get_linesize()
+
         # Lines to render in the text view
         self.render_text_list = []
 
@@ -68,12 +57,12 @@ class CodeEditor:
         self.rect.y += (self.game_engine.screen_height - self.height) / 2
 
         # Text rect, moves down as lines are rendered
-        self.text_rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
+        self.text_rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.line_size)
 
         # Setup the cursor
         self.cursor_position = 0
         self.cursor_line = 0
-        self.cursor_pos_in_line = 0
+        self.cursor_offset_in_line = 0
         self.cursor_width = self.font.size(ascii_letters)[0] / len(ascii_letters)
         self.cursor = pygame.Surface([self.cursor_width, self.font.get_linesize()])
         self.cursor.fill(self.config.cursor_color)
@@ -88,11 +77,7 @@ class CodeEditor:
         # Calculate the maximum number of chars that will fit
         # Max chars must be an int so TextWrapper can wrap long words
         self.max_chars = int(
-            (self.width / (self.font.size(ascii_letters)[0] / len(ascii_letters))) - 1
-        ) - 1
-
-        # Calculate the line size for the font
-        self.line_size = self.font.get_linesize()
+            (self.width / (self.font.size(ascii_letters)[0] / len(ascii_letters))) - 1)
 
         # Create the text wrapper
         self.textwrapper = textwrap.TextWrapper(
@@ -108,11 +93,11 @@ class CodeEditor:
         Setter for running instance variable. Sets the window text as well
         '''
         self.running = True
-        self.text_change = True
+        self.text_change = True # Allows initial text to be drawn
         self.text = start_text
         self.cursor_position = 0
         self.cursor_line = 0
-        self.cursor_pos_in_line = 0
+        self.cursor_offset_in_line = 0
 
         # Set the key repeat values. Auto-triggers a KEYDOWN event while a key is held
         # after waiting an initial delay and then triggers subsequent KEYDOWN events
@@ -132,12 +117,6 @@ class CodeEditor:
         # of the program
         pygame.key.set_repeat() # Sets back to no repeat
 
-    def is_running(self):
-        '''
-        Getter for running instance variable
-        '''
-        return self.running
-
     def update(self):
         '''
         Update for code editor
@@ -153,8 +132,9 @@ class CodeEditor:
         # Build the list of strings to render
         self.build_render_text_list()
 
-        # Get cursor render position
-        self.cursor_line, self.cursor_pos_in_line = self.get_cursor_line_and_position()
+        # Get the line and offset to render the cursor
+        self.cursor_line, self.cursor_offset_in_line = self.get_cursor_render_pos(
+            self.cursor_position)
 
     def build_render_text_list(self):
         '''
@@ -169,53 +149,57 @@ class CodeEditor:
                 else:
                     self.render_text_list.extend(self.textwrapper.wrap(line))
 
-    def get_cursor_line_and_position(self):
+    def get_cursor_render_pos(self, pos_in_text):
         '''
-        Calc which line the cursor is on and where it is on the line
+        Get cursor render position based on position in self.text
         '''
         line = 0
-        position_in_line = 0
-        for i in range(self.cursor_position):
+        offset_in_line = 0
+        last_newline = 0
+        for i in range(pos_in_text):
             if self.text[i] == "\n":
                 line += 1
-                position_in_line = 0
+                offset_in_line = 0
+                last_newline = i
+            elif len(self.text[last_newline:i]) >= (self.max_chars - 1):
+                # This block is so the cursor goes to a newline when line wrapping
+                line += 1
+                offset_in_line = 0
+                last_newline = i + 1
             else:
-                position_in_line += 1
+                offset_in_line += 1
 
-        return line, position_in_line
+        return line, offset_in_line
 
-    def get_cursor_pos(self, line, position_in_line):
+    def get_cursor_pos(self, line, offset_in_line):
         '''
-        Calc where the cursor would be in self.text at the given
-        line and position in that line
+        Get where the cursor should be in self.text given
+        a render position
         '''
-        cur_line = 0
-        cur_pos = 0
-        real_pos = 0
+        iter_line = 0
+        iter_offset = 0
+        pos_in_text = 0
+        last_newline = 0
         for i in range(len(self.text)):
-            if cur_line == line and cur_pos == position_in_line:
+            if iter_line == line and iter_offset == offset_in_line:
+                # Found where we should be return the index into
+                # self.text where the cursor should be
                 break
 
             if self.text[i] == "\n":
-                cur_line += 1
-                cur_pos = 0
+                iter_line += 1
+                iter_offset = 0
+                last_newline = i
+            elif len(self.text[last_newline:i]) >= (self.max_chars - 1):
+                # This block is so the cursor goes to a newline when line wrapping
+                iter_line += 1
+                iter_offset = 0
+                last_newline = i + 1
             else:
-                cur_pos += 1
-            real_pos += 1
+                iter_offset += 1
+            pos_in_text += 1
 
-        return real_pos
-
-    def render_line(self, screen, line):
-        '''
-        Render a line of text to the screen
-        '''
-        screen.blit(self.font.render(
-            line,
-            self.config.font_antialiasing,
-            self.config.font_color
-        ), self.text_rect)
-
-        self.text_rect.y += self.line_size
+        return pos_in_text
 
     def draw(self, screen):
         '''
@@ -229,11 +213,18 @@ class CodeEditor:
         if self.text_change:
             # When everything is deleted there is nothing to do here
             if len(self.render_text_list):
-                # Returns width and height, only need width to set cursor position
-                w, _ = self.font.size(
-                    self.render_text_list[self.cursor_line][:self.cursor_pos_in_line]
-                )
-                self.cursor_rect.x = self.rect.x + w
+                # Only get width to add if we are at least 1 character into the line and on a line
+                # that exists
+                if self.cursor_offset_in_line > 0 and self.cursor_line < len(self.render_text_list):
+                    # Returns width and height, only need width to set cursor position
+                    w, _ = self.font.size(
+                        self.render_text_list[self.cursor_line][:self.cursor_offset_in_line]
+                    )
+                    self.cursor_rect.x = self.rect.x + w
+                else:
+                    self.cursor_rect.x = self.rect.x
+
+                # Set the y value of the cursor based on the current line
                 self.cursor_rect.y = self.rect.y + (self.cursor_line * self.line_size)
             else:
                 # Reset the cursor
@@ -242,12 +233,24 @@ class CodeEditor:
 
         # Render the lines onto the screen
         for line in self.render_text_list:
-            self.render_line(screen, line)
+            screen.blit(self.font.render(
+                line,
+                self.config.font_antialiasing,
+                self.config.font_color
+            ), self.text_rect)
+
+            self.text_rect.y += self.line_size
 
         #Draw the cursor
         screen.blit(self.cursor, self.cursor_rect)
 
         self.text_change = False
+
+    def is_running(self):
+        '''
+        Getter for running instance variable
+        '''
+        return self.running
 
     def handle_events(self, events):
         '''
@@ -374,11 +377,11 @@ class CodeEditor:
             return
 
         self.cursor_line -= 1
-        if len(self.render_text_list[self.cursor_line]) < self.cursor_pos_in_line:
-            self.cursor_pos_in_line = len(self.render_text_list[self.cursor_line])
+        if len(self.render_text_list[self.cursor_line]) < self.cursor_offset_in_line:
+            self.cursor_offset_in_line = len(self.render_text_list[self.cursor_line])
 
         # Determine where we are in the actual text
-        self.cursor_position = self.get_cursor_pos(self.cursor_line, self.cursor_pos_in_line)
+        self.cursor_position = self.get_cursor_pos(self.cursor_line, self.cursor_offset_in_line)
 
     def k_down(self):
         '''
@@ -391,8 +394,8 @@ class CodeEditor:
             return
 
         self.cursor_line += 1
-        if len(self.render_text_list[self.cursor_line]) < self.cursor_pos_in_line:
-            self.cursor_pos_in_line = len(self.render_text_list[self.cursor_line])
+        if len(self.render_text_list[self.cursor_line]) < self.cursor_offset_in_line:
+            self.cursor_offset_in_line = len(self.render_text_list[self.cursor_line])
 
         # Determine where we are in the actual text
-        self.cursor_position = self.get_cursor_pos(self.cursor_line, self.cursor_pos_in_line)
+        self.cursor_position = self.get_cursor_pos(self.cursor_line, self.cursor_offset_in_line)
