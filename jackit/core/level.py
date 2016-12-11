@@ -115,6 +115,14 @@ class Level:
             x_pos, y_pos
         )
 
+    def setup_level(self):
+        '''
+        Sets up challenges. Subclasses implement this.
+        Guarenteed to be called after all game engine componenets
+        are initialized.
+        '''
+        return
+
     def update(self, player):
         '''
         Update the level

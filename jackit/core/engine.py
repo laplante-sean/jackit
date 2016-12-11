@@ -68,6 +68,10 @@ class EngineSingleton:
         # Init the player
         self.player = Player(self, self.config.controls, spawn_point=self.current_level.spawn_point)
 
+        # Call this last. Updates the levels with challenges
+        for level in self.levels:
+            level.setup_level()
+
     def update(self):
         '''
         Updates all game components
