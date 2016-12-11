@@ -6,32 +6,15 @@ from jackit.core.level import Level
 
 class Level_04(Level):
     '''
-    Fourth level
+    Fourth level - Don't overdo it with the stats guy
     '''
 
     _map = [
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "P                                                                        P",
-        "PS          C                                                            P",
-        "PPPPPPPPPPPPPP                 PPPP   PPPP                               P",
+        "PDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+        "P                                        D",
+        "P                                        D",
+        "PS          C                            D",
+        "PPPPPPPPPPPPPP                 PPPP   PPPP",
         "                                  P   P                                   ",
         "                                  PEEEP                                   "
     ]

@@ -1,12 +1,12 @@
 '''
-First level - Test level
+Level 1
 '''
 
 from jackit.core.level import Level
 
 class Level_01(Level):
     '''
-    First level - Test level
+    Basic moving around and killing the things
     '''
 
     # pylint: disable=C0301

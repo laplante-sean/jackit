@@ -1,5 +1,5 @@
 '''
-Second level - Test level
+Level 2
 '''
 
 from jackit.core.level import Level

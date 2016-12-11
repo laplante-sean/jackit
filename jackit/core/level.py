@@ -22,6 +22,7 @@ class LevelMap:
     EXIT = "E"
     SPAWN = "S"
     CODE = "C"
+    DEATH_ENTITY = "D"
 
 class Level:
     '''
@@ -68,6 +69,8 @@ class Level:
                     self.spawn_point = (x, y)
                 elif col == LevelMap.CODE:
                     self.entities.add(self.create_code_block(x, y))
+                elif col == LevelMap.DEATH_ENTITY:
+                    self.entities.add(self.create_death_block(x, y))
                 x += self.level_map_block_x
             y += self.level_map_block_y
             x = 0
@@ -114,6 +117,12 @@ class Level:
             self.level_map_block_y,
             x_pos, y_pos
         )
+
+    def create_death_block(self, x_pos, y_pos):
+        '''
+        TODO: Creates a block that kills the player on collide
+        '''
+        pass
 
     def setup_level(self):
         '''

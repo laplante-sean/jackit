@@ -1,12 +1,12 @@
 '''
-Third level level - Test level with actual coding challenge
+Level 3
 '''
 
 from jackit.core.level import Level
 
 class Level_03(Level):
     '''
-    Third level - Test level
+    Long jump - Introduction to coding
     '''
 
     _map = [
