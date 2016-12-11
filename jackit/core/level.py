@@ -5,7 +5,7 @@ for each level
 
 import pygame
 
-from jackit.core.entity import Platform, ExitBlock, CodeBlock
+from jackit.entities import Platform, ExitBlock, CodeBlock
 from jackit.core.camera import Camera, complex_camera
 
 class LevelGeneratorError(Exception):

@@ -9,11 +9,10 @@ from jackit.core import CustomEvent
 
 # Import game engine components
 from jackit.core.input import Input
-from jackit.core.player import Player
+from jackit.actors import Player
 from jackit.core.editor import CodeEditor
-from jackit.levels.level_01 import Level_01
-from jackit.levels.level_02 import Level_02
-from jackit.levels.level_03 import Level_03
+from jackit.levels import Level_01, Level_02, Level_03,\
+                          Level_04
 
 class EngineSingleton:
     '''
@@ -55,7 +54,7 @@ class EngineSingleton:
             self.screen = pygame.display.set_mode(self.screen_size)
 
         # Init the levels
-        self.levels = [Level_01(self), Level_02(self), Level_03(self)]
+        self.levels = [Level_01(self), Level_02(self), Level_03(self), Level_04(self)]
         self.current_level_index = 0
         self.current_level = self.levels[self.current_level_index]
 
