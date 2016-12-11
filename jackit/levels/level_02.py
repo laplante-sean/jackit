@@ -6,7 +6,7 @@ from jackit.core.level import Level
 
 class Level_02(Level):
     '''
-    First level - Test level
+    Second level - Test level
     '''
 
     _map = [
@@ -15,10 +15,10 @@ class Level_02(Level):
         "P                                          P",
         "P                 E                 PPPPPPPP",
         "P            PPPPPPPPPPP                   P",
-        "                          PPPPPPPPPP        ",
+        "                              PPPPPP        ",
         "     S                                      ",
         "                                            ",
-        "PPPPPPPPPPPPPPPPPPPPP    PPPPPPPPPPPPPPPPPPP",
+        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 
     def __init__(self, game_engine):

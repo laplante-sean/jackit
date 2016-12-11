@@ -11,3 +11,4 @@ class CustomEvent:
     DESPAWN_ENTITY = pygame.USEREVENT + 0
     KILL_ACTOR = pygame.USEREVENT + 1
     EXIT_EDITOR = pygame.USEREVENT + 2
+    NEXT_LEVEL = pygame.USEREVENT + 3

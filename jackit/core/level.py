@@ -41,6 +41,7 @@ class Level:
 
         # Initialize the entity list
         self.entities = pygame.sprite.Group()
+        self.actors = pygame.sprite.Group()
 
         # Build the level from the map
         self.width, self.height = self.build_level()

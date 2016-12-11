@@ -39,7 +39,7 @@ class Entity(pygame.sprite.Sprite):
 
     def update(self):
         '''
-        By default entities don't move. Nothing to do here.
+        Check if an entity is in the death zone and trigger an event to remove it
         '''
         if self.game_engine.is_rect_in_death_zone(self.rect):
             pygame.event.post(pygame.event.Event(CustomEvent.DESPAWN_ENTITY, {"entity": self}))
@@ -62,7 +62,7 @@ class Entity(pygame.sprite.Sprite):
         '''
         return
 
-    def interaction_complete(self):
+    def interaction_complete(self, _event):
         '''
         Called when an interaction is complete with an interactable block
         '''
@@ -133,7 +133,7 @@ class ExitBlock(Entity):
 
     def collide(self, actor):
         if isinstance(actor, Player):
-            self.game_engine.changing_levels = True
+            pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
 
 class CodeBlock(Entity):
     '''
@@ -145,33 +145,16 @@ class CodeBlock(Entity):
         self.interactable = True
         self.collideable = False
         self.interaction_guard = pygame.sprite.Group()
-        self.interact_callback = None
+        self.challenge_text = "CHALLENGE TEXT"
 
     def collide(self, actor):
         actor.on_interactable_block = self
-
-    def set_interact_callback(self, cb):
-        '''
-        Set the callback function to be used when this blocks is interacted with
-        '''
-        self.interact_callback = cb
-
-    def interaction_complete(self):
-        '''
-        Called when the interaction is complete
-        '''
-
-        # Remove the interaction guard from around the object
-        self.game_engine.current_level.entities.remove(self.interaction_guard)
-
-        # TODO: Create a sprite.Group of sprites to clear from the screen.
-        # Make it part of the Level base class. In Level update, clear the list
-        self.interaction_guard.clear(self.game_engine.screen, (0, 0, 255))
 
     def interact(self):
         '''
         Called when an interactable block is interacted with
         '''
+
         # Guard rects to the left, right, and above the interactable object
         self.interaction_guard.add(
             self.game_engine.current_level.create_platform(
@@ -198,7 +181,26 @@ class CodeBlock(Entity):
 
         self.game_engine.current_level.entities.add(self.interaction_guard)
 
-        # TODO: Call the interact callback
-
         # Start doing the code
-        self.game_engine.code_editor.run()
+        self.game_engine.code_editor.run(self.challenge_text)
+
+    def interaction_complete(self, event):
+        '''
+        Called when the interaction is complete
+        '''
+
+        print("Code: ", event.text)
+
+        try:
+            # pylint: disable=W0122
+            exec(event.text)
+        except BaseException as e:
+            print("Your code blows! ", str(e))
+
+        # Remove the interaction guard from around the object
+        self.game_engine.current_level.entities.remove(self.interaction_guard)
+
+        # TODO: Create a sprite.Group of sprites to clear from the screen.
+        # Make it part of the Level base class. In Level update, clear the list
+        self.interaction_guard.clear(self.game_engine.screen, (0, 0, 255))
+

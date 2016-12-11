@@ -13,6 +13,7 @@ from jackit.core.player import Player
 from jackit.core.editor import CodeEditor
 from jackit.levels.level_01 import Level_01
 from jackit.levels.level_02 import Level_02
+from jackit.levels.level_03 import Level_03
 
 class EngineSingleton:
     '''
@@ -54,10 +55,9 @@ class EngineSingleton:
             self.screen = pygame.display.set_mode(self.screen_size)
 
         # Init the levels
-        self.levels = [Level_01(self), Level_02(self)]
+        self.levels = [Level_01(self), Level_02(self), Level_03(self)]
         self.current_level_index = 0
         self.current_level = self.levels[self.current_level_index]
-        self.changing_levels = False
 
         # Init Input handler
         self.input = Input()
@@ -72,11 +72,6 @@ class EngineSingleton:
         '''
         Updates all game components
         '''
-
-        # If we are changing levels, do that
-        if self.changing_levels:
-            self.next_level()
-            self.changing_levels = False
 
         # Get user input for this frame
         self.input.update()
@@ -159,8 +154,9 @@ class EngineSingleton:
             elif event.type == CustomEvent.DESPAWN_ENTITY:
                 print("Despawning entity")
             elif event.type == CustomEvent.EXIT_EDITOR:
-                print("Exit code editor. Result: ", event.text)
-                self.player.on_interactable_block.interaction_complete()
+                self.player.on_interactable_block.interaction_complete(event)
+            elif event.type == CustomEvent.NEXT_LEVEL:
+                self.next_level()
 
             # Don't process controller events for player when code editor is open
             if not self.code_editor.is_running():
