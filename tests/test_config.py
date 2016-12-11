@@ -24,6 +24,13 @@ class TestJsonConfig(unittest.TestCase):
         self.assertEqual(self.config.validate_int("10"), 10)
         self.assertEqual(self.config.validate_int(10), 10)
 
+    def test_valid_uint(self):
+        '''
+        Test the validate_uint method
+        '''
+        self.assertEqual(self.config.validate_uint("10"), 10)
+        self.assertEqual(self.config.validate_uint(10), 10)
+
     def test_invalid_int(self):
         '''
         Test the validate_int method with invalid values
@@ -33,6 +40,16 @@ class TestJsonConfig(unittest.TestCase):
 
         with self.assertRaises(ConfigError):
             self.config.validate_int("Invalid Int")
+
+    def test_invalid_uint(self):
+        '''
+        Test the validate_uint method with invalid values
+        '''
+        with self.assertRaises(ConfigError):
+            self.config.validate_uint("-1")
+
+        with self.assertRaises(ConfigError):
+            self.config.validate_uint(-1)
 
     def test_valid_bool(self):
         '''
@@ -129,7 +146,6 @@ class TestJackitConfigControls(unittest.TestCase):
             }
             self.controls.from_json(raw)
 
-# TODO: Test JackitConfigCodeEditor class
 class TestJackitConfigCodeEditor(unittest.TestCase):
     '''
     Test the JackitConfigControls methods
@@ -139,3 +155,38 @@ class TestJackitConfigCodeEditor(unittest.TestCase):
         Called each time a test method is run
         '''
         self.code_editor = JackitConfigCodeEditor()
+
+    def test_valid_ubyte(self):
+        '''
+        Test the validate_ubyte method
+        '''
+        self.assertEqual(self.code_editor.validate_ubyte(200), 200)
+        self.assertEqual(self.code_editor.validate_ubyte("200"), 200)
+
+    def test_invalid_ubyte(self):
+        '''
+        Test the validate_ubyte method with invalid values
+        '''
+        with self.assertRaises(ConfigError):
+            self.code_editor.validate_ubyte(256)
+
+        with self.assertRaises(ConfigError):
+            self.code_editor.validate_ubyte("256")
+
+    def test_valid_color(self):
+        '''
+        Test the validate_color method
+        '''
+        self.assertEqual(self.code_editor.validate_color((0, 0, 0)), (0, 0, 0))
+        self.assertEqual(self.code_editor.validate_color([0, 0, 0]), (0, 0, 0))
+        self.assertEqual(self.code_editor.validate_color(("0", "0", "0")), (0, 0, 0))
+
+    def test_invalid_color(self):
+        '''
+        Test the validate_color method with invalid colors
+        '''
+        with self.assertRaises(ConfigError):
+            self.code_editor.validate_color(10)
+
+        with self.assertRaises(ConfigError):
+            self.code_editor.validate_color(("-1", 0, 10))
