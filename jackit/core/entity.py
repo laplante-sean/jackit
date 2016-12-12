@@ -36,6 +36,9 @@ class Entity(pygame.sprite.Sprite):
         # True if the player should collide with this entity
         self.collideable = True
 
+        # True if an entity is moveable
+        self.moveable = False
+
     def update(self):
         '''
         Check if an entity is in the death zone and trigger an event to remove it
@@ -54,6 +57,12 @@ class Entity(pygame.sprite.Sprite):
         Getter for the collideable instance variable
         '''
         return self.collideable
+
+    def is_moveable(self):
+        '''
+        Getter for the moveable instance variable
+        '''
+        return self.moveable
 
     def interact(self):
         '''
