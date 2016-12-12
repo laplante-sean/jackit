@@ -4,7 +4,19 @@ Sprites for entities (platforms, items, code blocks, etc.)
 
 import pygame
 
+from jackit.core.physics import Physics
 from jackit.core import CustomEvent
+
+class EntityStats(Physics):
+    '''
+    Stats for entities
+    '''
+
+    def __init__(self, friction=1.0):
+        super(EntityStats, self).__init__()
+
+        # Friction - Number between 0 and 1
+        self.friction = friction
 
 class Entity(pygame.sprite.Sprite):
     '''
@@ -12,11 +24,14 @@ class Entity(pygame.sprite.Sprite):
     '''
 
     # TODO: Take an image/color argument to specify sprite image or color of block
-    def __init__(self, game_engine, width, height, x_pos, y_pos):
+    def __init__(self, game_engine, width, height, x_pos, y_pos, entity_stats=EntityStats()):
         super(Entity, self).__init__()
 
         # Store the game engine for access to globals
         self.game_engine = game_engine
+
+        # Stats for the entity.
+        self.stats = entity_stats
 
         # Setup the sprite
         # Disable error in pylint. It doesn't like the Surface() call. Pylint is wrong.
@@ -35,6 +50,9 @@ class Entity(pygame.sprite.Sprite):
 
         # True if the player should collide with this entity
         self.collideable = True
+
+        # True if the player should be able to move this entity
+        self.moveable = False
 
     def update(self):
         '''

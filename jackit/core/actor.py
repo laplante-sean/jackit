@@ -5,15 +5,16 @@ Base class for all game actors. Computer or human controlled
 import pygame
 
 from jackit.core import CustomEvent
+from jackit.core.physics import Physics
+from jackit.core.entity import Entity
 
-class ActorStats:
+class ActorStats(Physics):
     '''
     Stats for an actor
     '''
-    def __init__(self, x_acceleration=0.5, x_deceleration=0.8, top_speed=6,
-                 jump_speed=8, air_braking=0.15, grav_acceleration=1.05,
-                 grav_deceleration=0.55, grav_high_jump=0.25, terminal_velocity=20
-                ):
+    def __init__(self, top_speed=6, jump_speed=10, air_braking=0.15,
+                 x_acceleration=0.5, x_deceleration=0.5, grav_high_jump=0.65):
+        super(ActorStats, self).__init__()
 
         # Starting acceleration
         self.x_acceleration = x_acceleration
@@ -30,17 +31,8 @@ class ActorStats:
         # Ability to slow horizontal momentum while airborne
         self.air_braking = air_braking
 
-        # Force of gravity while actor is descending
-        self.grav_acceleration = grav_acceleration
-
-        # Force of gravity while actor is ascending
-        self.grav_deceleration = grav_deceleration
-
-        # Force of gravity while actor is ascending and jump is held
+        # Weaker force of gravity when jump button is held
         self.grav_high_jump = grav_high_jump
-
-        # Maximum falling speed
-        self.terminal_velocity = terminal_velocity
 
 class Actor(pygame.sprite.Sprite):
     '''
@@ -163,15 +155,12 @@ class Actor(pygame.sprite.Sprite):
         elif self.is_moving_up() and self.jumping:
             # are we holding jump? Jump higher
             self.change_y += self.stats.grav_high_jump
-        elif self.is_moving_up():
-            # Jump normal
-            self.change_y += self.stats.grav_deceleration
         elif self.change_y >= self.stats.terminal_velocity:
             # Don't fall too fast
             self.change_y = self.stats.terminal_velocity
         else:
             # Fall normal
-            self.change_y += self.stats.grav_acceleration
+            self.change_y += self.stats.gravity
 
     def jump(self):
         '''
@@ -191,6 +180,9 @@ class Actor(pygame.sprite.Sprite):
             self.change_x = (self.stats.top_speed * -1)
         elif (not self.is_on_collideable()) and self.is_moving_right():
             self.change_x += (self.stats.air_braking * -1)
+        elif self.is_on_collideable() and isinstance(self.frame_cache["is_on_collideable"], Entity):
+            entity = self.frame_cache["is_on_collideable"]
+            self.change_x += ((self.stats.x_acceleration * -1) * entity.stats.friction)
         else:
             self.change_x += (self.stats.x_acceleration * -1)
 
@@ -204,6 +196,9 @@ class Actor(pygame.sprite.Sprite):
             self.change_x = self.stats.top_speed
         elif self.is_moving_left() and (not self.is_on_collideable()):
             self.change_x += self.stats.air_braking
+        elif self.is_on_collideable() and isinstance(self.frame_cache["is_on_collideable"], Entity):
+            entity = self.frame_cache["is_on_collideable"]
+            self.change_x += (self.stats.x_acceleration * entity.stats.friction)
         else:
             self.change_x += self.stats.x_acceleration
 
@@ -230,12 +225,21 @@ class Actor(pygame.sprite.Sprite):
             self.cur_stop_frame_count = 0
             return
 
-        if self.change_x > 0:
-            self.change_x += (self.stats.x_deceleration * -1)
-        elif self.change_x < 0:
-            self.change_x += self.stats.x_deceleration
-        else:
-            self.change_x = 0
+        if not self.is_on_collideable():
+            if self.change_x > 0:
+                self.change_x += (self.stats.x_deceleration * -1)
+            elif self.change_x < 0:
+                self.change_x += self.stats.x_deceleration
+            else:
+                self.change_x = 0
+        elif self.is_on_collideable() and isinstance(self.frame_cache["is_on_collideable"], Entity):
+            entity = self.frame_cache["is_on_collideable"]
+            if self.change_x > 0:
+                self.change_x += ((self.stats.x_deceleration * -1) * entity.stats.friction)
+            elif self.change_x < 0:
+                self.change_x += (self.stats.x_deceleration * entity.stats.friction)
+            else:
+                self.change_x = 0
 
         self.cur_stop_frame_count += 1
 

@@ -2,13 +2,15 @@
 Platform entity
 '''
 
-from jackit.core.entity import Entity
+from jackit.core.entity import Entity, EntityStats
 
-class PlatformStats:
+class PlatformStats(EntityStats):
     '''
     Stats for a moving platform
     '''
     def __init__(self, change_x=0, change_y=0, x_travel_dist=0, y_travel_dist=0, acceleration=0):
+        super(PlatformStats, self).__init__()
+        
         self.change_x = change_x
         self.change_y = change_y
         self.x_travel_dist = x_travel_dist
@@ -20,10 +22,7 @@ class Platform(Entity):
     Represents a platform that actors can stand on
     '''
     def __init__(self, game_engine, width, height, x_pos, y_pos, platform_stats=PlatformStats()):
-        super(Platform, self).__init__(game_engine, width, height, x_pos, y_pos)
-
-        # Movement stats if it's moving platform
-        self.stats = platform_stats
+        super(Platform, self).__init__(game_engine, width, height, x_pos, y_pos, platform_stats)
 
         # Distance it's traveled since last turn around
         self.cur_x_travel_dist = 0
