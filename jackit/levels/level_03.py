@@ -43,6 +43,20 @@ class Level_03(Level):
         self.code_blocks.append(block)
         return block
 
+    def update(self, player):
+        super(Level_03, self).update(player)
+
+    def challenge_completed(self, code_obj):
+        '''
+        Called when a code block is exited after
+        the entered code is validated and compiled
+        '''
+        try:
+            # pylint: disable=W0122
+            exec(code_obj)
+        except BaseException as e:
+            print("That's some bad code! ", str(e))
+
     def setup_level(self):
         '''
         Setup the challenges

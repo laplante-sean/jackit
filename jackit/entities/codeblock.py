@@ -2,6 +2,7 @@
 Code block entity
 '''
 
+import re
 import pygame
 
 from jackit.core.entity import Entity
@@ -63,8 +64,18 @@ class CodeBlock(Entity):
         print("Code: ", event.text)
 
         try:
-            # pylint: disable=W0122
-            exec(event.text)
+            # TODO: More security
+            pattern = re.compile(r'.*import.*')
+            if pattern.match(event.text) is not None:
+                raise Exception("No Imports!")
+
+            # Compile the code and catch any errors
+            code_obj = compile(event.text, "<string>", "exec")
+
+            self.game_engine.current_level.challenge_completed(code_obj)
+
+            # Update the challenge text
+            self.challenge_text = event.text
         except BaseException as e:
             print("Your code blows! ", str(e))
 

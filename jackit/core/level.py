@@ -152,6 +152,14 @@ class Level:
         '''
         return
 
+    def challenge_completed(self, _):
+        '''
+        Callback for when user finishes editing the code
+        and it passes the compile stage. code_obj can be
+        run with exec()
+        '''
+        return
+
     def update(self, player):
         '''
         Update the level
