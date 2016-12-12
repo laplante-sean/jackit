@@ -5,7 +5,8 @@ for each level
 
 import pygame
 
-from jackit.entities import Platform, ExitBlock, CodeBlock
+from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock,\
+                            MoveableBlock
 from jackit.core.camera import Camera, complex_camera
 
 class LevelGeneratorError(Exception):
@@ -23,6 +24,7 @@ class LevelMap:
     SPAWN = "S"
     CODE = "C"
     DEATH_ENTITY = "D"
+    PUSHABLE_BLOCK = "M"
 
 class Level:
     '''
@@ -71,6 +73,8 @@ class Level:
                     self.entities.add(self.create_code_block(x, y))
                 elif col == LevelMap.DEATH_ENTITY:
                     self.entities.add(self.create_death_block(x, y))
+                elif col == LevelMap.PUSHABLE_BLOCK:
+                    self.entities.add(self.create_moveable_block(x, y))
                 x += self.level_map_block_x
             y += self.level_map_block_y
             x = 0
@@ -120,9 +124,25 @@ class Level:
 
     def create_death_block(self, x_pos, y_pos):
         '''
-        TODO: Creates a block that kills the player on collide
+        Creates a block that kills the player on collide
         '''
-        pass
+        return DeathBlock(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+
+    def create_moveable_block(self, x_pos, y_pos):
+        '''
+        Creates a block that can be pushed by the player on collide
+        '''
+        return MoveableBlock(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
 
     def setup_level(self):
         '''

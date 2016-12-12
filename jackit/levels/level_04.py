@@ -15,8 +15,8 @@ class Level_04(Level):
         "P                                        D",
         "PS          C                            D",
         "PPPPPPPPPPPPPP                 PPPP   PPPP",
-        "                                  P   P                                   ",
-        "                                  PEEEP                                   "
+        "                                  P   P",
+        "                                  PEEEP"
     ]
 
     def __init__(self, game_engine):
