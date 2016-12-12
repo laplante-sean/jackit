@@ -13,6 +13,7 @@ class Player(Actor):
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
         super(Player, self).__init__(game_engine, 24, 24)
         self.controls = controls
+        self.stats.use_patch = True # Use the UserPatch for player stats
         self.rect.x = spawn_point[0]
         self.rect.y = spawn_point[1]
 

@@ -24,7 +24,7 @@ class JsonConfig:
         '''
         if isinstance(value, str):
             if value.lower() not in ("1", "0", "true", "false", "t", "f", "yes", "no", "on", "off"):
-                raise ConfigError("Invalid boolean value for option 'fullscreen': {}".format(value))
+                raise ConfigError("Invalid boolean value: {}".format(value))
             elif value.lower() in ("1", "true", "t", "yes", "on"):
                 return True
             else:
@@ -32,7 +32,7 @@ class JsonConfig:
         elif isinstance(value, bool):
             return value
         else:
-            raise ConfigError("Unknown type for option 'fullscreen'. Expecting bool, got {}".format(
+            raise ConfigError("Unknown type for object. Expecting bool, got {}".format(
                 type(value)
             ))
 
@@ -53,11 +53,11 @@ class JsonConfig:
             try:
                 return int(value)
             except ValueError:
-                raise ConfigError("Invalid integer value for option 'width': {}".format(value))
+                raise ConfigError("Invalid integer value: {}".format(value))
         elif isinstance(value, int):
             return value
         else:
-            raise ConfigError("Unknown type for option 'width'. Expecting int, got {}".format(
+            raise ConfigError("Unknown type object. Expecting 'int', got: {}".format(
                 type(value)
             ))
 

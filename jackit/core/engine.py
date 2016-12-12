@@ -10,6 +10,7 @@ from jackit.core import CustomEvent
 # Import game engine components
 from jackit.core.input import Input
 from jackit.actors import Player
+from jackit.core.patch import UserPatch
 from jackit.core.editor import CodeEditor
 from jackit.levels import Level_01, Level_02, Level_03,\
                           Level_04
@@ -18,7 +19,6 @@ class EngineSingleton:
     '''
     Main game engine. Handles updating game componenents
     '''
-
     _instance = None
 
     @classmethod
