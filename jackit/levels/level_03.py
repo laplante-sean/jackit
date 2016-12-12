@@ -54,25 +54,24 @@ class Level_03(Level):
         Called when a code block is exited after
         the entered code is validated and compiled
         '''
+        local_dict = locals()
 
         # Execute the code object
         try:
             # pylint: disable=W0122
-            exec(code_obj)
+            exec(code_obj, globals(), local_dict)
         except BaseException as e:
             print("That's some bad code! ", str(e))
 
-        this_module = sys.modules[__name__]
-
-        if getattr(this_module, "get_actor_top_speed") is not None:
+        if local_dict.get("get_actor_top_speed", None) is not None:
             UserPatch.patch_method("get_actor_top_speed",
-                                   getattr(this_module, "get_actor_top_speed"))
-        if getattr(this_module, "get_actor_jump_speed") is not None:
+                                   local_dict.get("get_actor_top_speed"))
+        if local_dict.get("get_actor_jump_speed") is not None:
             UserPatch.patch_method("get_actor_jump_speed",
-                                   getattr(this_module, "get_actor_jump_speed"))
-        if getattr(this_module, "get_actor_x_acceleration") is not None:
+                                   local_dict.get("get_actor_jump_speed"))
+        if local_dict.get("get_actor_x_acceleration") is not None:
             UserPatch.patch_method("get_actor_x_acceleration",
-                                   getattr(this_module, "get_actor_x_acceleration"))
+                                   local_dict.get("get_actor_x_acceleration"))
 
     def setup_level(self):
         '''

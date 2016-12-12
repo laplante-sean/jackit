@@ -55,19 +55,19 @@ class UserPatchSingleton:
             raise PatchError("This patch  for {}, was no good!".format(method_name))
         return None
 
-    def validate_int(self, value):
+    def validate_float(self, value):
         '''
-        Validate an integer value
+        Validate an float value
         '''
         if isinstance(value, str):
             try:
-                return int(value)
+                return float(value)
             except ValueError:
-                raise PatchError("Invalid integer: {}".format(value))
-        elif isinstance(value, int):
+                raise PatchError("Invalid float: {}".format(value))
+        elif isinstance(value, float) or isinstance(value, int):
             return value
         else:
-            raise PatchError("Invalid. Return is not an int: {}".format(type(value)))
+            raise PatchError("Invalid. Return is not a float: {}".format(type(value)))
 
     def get_actor_top_speed(self):
         '''
@@ -75,7 +75,7 @@ class UserPatchSingleton:
         '''
         ret = self.call_patch(self.get_actor_top_speed.__name__)
         if ret is not None:
-            return self.validate_int(ret)
+            return self.validate_float(ret)
         return None
 
     def get_actor_jump_speed(self):
@@ -84,7 +84,7 @@ class UserPatchSingleton:
         '''
         ret = self.call_patch(self.get_actor_jump_speed.__name__)
         if ret is not None:
-            return self.validate_int(ret)
+            return self.validate_float(ret)
         return None
 
     def get_actor_x_acceleration(self):
@@ -93,7 +93,7 @@ class UserPatchSingleton:
         '''
         ret = self.call_patch(self.get_actor_x_acceleration.__name__)
         if ret is not None:
-            return self.validate_int(ret)
+            return self.validate_float(ret)
         return None
 
 # Create an instance of UserPatchSingleton
