@@ -2,8 +2,6 @@
 Level 3
 '''
 
-import sys
-
 from jackit.core.level import Level
 from jackit.core.patch import UserPatch
 
@@ -49,6 +47,9 @@ class Level_03(Level):
     def unload(self):
         super(Level_03, self).unload()
         self.code_blocks = []
+
+        # Unpatch the user patched methods when the level is complete
+        UserPatch.unpatch()
 
     def update(self, player):
         super(Level_03, self).update(player)

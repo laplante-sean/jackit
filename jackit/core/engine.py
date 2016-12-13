@@ -40,9 +40,15 @@ class EngineSingleton:
         self.screen_size = (self.config.width, self.config.height)
         self.fullscreen = self.config.fullscreen
         self.framerate = self.config.framerate
-        self.clock = pygame.time.Clock() # for framerate control
         self.running = True
         self.playtime = 0 # Current amout of time playing (seconds)
+
+        self.clock = pygame.time.Clock() # for framerate control
+        if self.config.accurate_framerate:
+            # More accurate but uses more CPU and therefore more power
+            self.tick_method = self.clock.tick_busy_loop
+        else:
+            self.tick_method = self.clock.tick
 
         if platform.system().lower() == "darwin":
             print("Detected MAC OS X. Run this app in low resolution mode on retina displays.")
@@ -97,7 +103,7 @@ class EngineSingleton:
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 
         # Maintain framerate
-        milliseconds = self.clock.tick(self.framerate)
+        milliseconds = self.tick_method(self.framerate)
         self.playtime += milliseconds / 1000.0
 
         if self.config.is_development_mode():
