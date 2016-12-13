@@ -17,6 +17,9 @@ class Player(Actor):
         self.rect.x = spawn_point[0]
         self.rect.y = spawn_point[1]
 
+    def collide(self, change_x, change_y, entity):
+        super(Player, self).collide(change_x, change_y, entity)
+
     def handle_event(self, event, keys):
         '''
         Handle player events (like controls and stuff)

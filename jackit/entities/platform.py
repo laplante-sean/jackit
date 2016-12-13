@@ -21,6 +21,7 @@ class Platform(Entity):
     '''
     def __init__(self, game_engine, width, height, x_pos, y_pos, platform_stats=PlatformStats()):
         super(Platform, self).__init__(game_engine, width, height, x_pos, y_pos)
+        self.image.fill((0, 255, 0))
 
         # Movement stats if it's moving platform
         self.stats = platform_stats

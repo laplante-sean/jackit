@@ -16,6 +16,6 @@ class DeathBlock(Entity):
         super(DeathBlock, self).__init__(game_engine, width, height, x_pos, y_pos)
         self.image.fill((25, 100, 35))
 
-    def collide(self, actor):
+    def collide_with(self, actor):
         if isinstance(actor, Player):
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_ACTOR, {"actor":actor}))

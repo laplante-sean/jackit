@@ -157,12 +157,17 @@ class EngineSingleton:
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == CustomEvent.KILL_ACTOR:
-                print("Kill an actor. For now just respawn")
-                event.actor.rect.x = self.current_level.spawn_point[0]
-                event.actor.rect.y = self.current_level.spawn_point[1]
-            elif event.type == CustomEvent.DESPAWN_ENTITY:
-                print("Despawning entity")
+            elif event.type == CustomEvent.KILL_SPRITE:
+                print("Despawn sprite")
+                if isinstance(event.sprite, Player):
+                    '''
+                    For now set back to spawn point
+                    TODO: Decrement lives
+                    '''
+                    event.sprite.rect.x = self.current_level.spawn_point[0]
+                    event.sprite.rect.y = self.current_level.spawn_point[1]
+                else:
+                    print("Despawning something other than player")
             elif event.type == CustomEvent.EXIT_EDITOR:
                 self.player.on_interactable_block.interaction_complete(event)
             elif event.type == CustomEvent.NEXT_LEVEL:

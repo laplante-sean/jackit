@@ -24,7 +24,7 @@ class LevelMap:
     SPAWN = "S"
     CODE = "C"
     DEATH_ENTITY = "D"
-    PUSHABLE_BLOCK = "M"
+    MOVEABLE_BLOCK = "M"
 
 class Level:
     '''
@@ -92,7 +92,7 @@ class Level:
                     self.entities.add(self.create_code_block(x, y))
                 elif col == LevelMap.DEATH_ENTITY:
                     self.entities.add(self.create_death_block(x, y))
-                elif col == LevelMap.PUSHABLE_BLOCK:
+                elif col == LevelMap.MOVEABLE_BLOCK:
                     self.entities.add(self.create_moveable_block(x, y))
                 x += self.level_map_block_x
             y += self.level_map_block_y
