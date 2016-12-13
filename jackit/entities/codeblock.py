@@ -19,9 +19,6 @@ class CodeBlock(Entity):
         self.interaction_guard = pygame.sprite.Group()
         self.challenge_text = "CHALLENGE TEXT"
 
-    def collide_with(self, actor):
-        actor.on_interactable_block = self
-
     def interact(self):
         '''
         Called when an interactable block is interacted with

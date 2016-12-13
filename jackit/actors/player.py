@@ -3,7 +3,9 @@ User controllable player
 '''
 
 import pygame
+from jackit.core import CustomEvent
 from jackit.core.actor import Actor
+from jackit.entities import CodeBlock, ExitBlock, DeathBlock
 
 class Player(Actor):
     '''
@@ -17,8 +19,21 @@ class Player(Actor):
         self.rect.x = spawn_point[0]
         self.rect.y = spawn_point[1]
 
-    def collide(self, change_x, change_y, entity):
-        super(Player, self).collide(change_x, change_y, entity)
+        # Entity() object if the Player is colliding with an interactable block otherwise None
+        self.on_interactable_block = None
+
+    def collide(self, change_x, change_y, sprite):
+        super(Player, self).collide(change_x, change_y, sprite)
+
+        if isinstance(sprite, CodeBlock):
+            self.on_interactable_block = sprite
+        elif isinstance(sprite, ExitBlock):
+            pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
+        elif isinstance(sprite, DeathBlock):
+            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
+
+    def update(self):
+        super(Player, self).update()
 
     def handle_event(self, event, keys):
         '''

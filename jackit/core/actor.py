@@ -105,16 +105,10 @@ class Actor(Sprite):
         # True if the actor is flying through the air like majesty
         self.jumping = False
 
-        # Entity() object if the Actor is colliding with an interactable block otherwise None
-        self.on_interactable_block = None
-
     def update(self):
         '''
         Update actor position
         '''
-
-        # Reset each frame
-        self.on_interactable_block = None
 
         # Gravity
         self.calc_grav()
