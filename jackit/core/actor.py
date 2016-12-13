@@ -3,95 +3,13 @@ Base class for all game actors. Computer or human controlled
 '''
 
 from jackit.core.sprite import Sprite
-from jackit.core.patch import UserPatch
-
-class ActorStats:
-    '''
-    Stats for an actor
-    '''
-    def __init__(self, x_acceleration=0.5, x_deceleration=0.8, top_speed=6,
-                 jump_speed=8, air_braking=0.15, grav_acceleration=1.05,
-                 grav_deceleration=0.55, grav_high_jump=0.25, terminal_velocity=20
-                ):
-
-        # Starting acceleration
-        self._x_acceleration = x_acceleration
-
-        # Stopping acceleration
-        self.x_deceleration = x_deceleration
-
-        # Fastest (in pixels) the actor moves
-        self._top_speed = top_speed
-
-        # Speed (in pixels) the actor leaves the ground
-        self._jump_speed = jump_speed
-
-        # Ability to slow horizontal momentum while airborne
-        self.air_braking = air_braking
-
-        # Force of gravity while actor is descending
-        self.grav_acceleration = grav_acceleration
-
-        # Force of gravity while actor is ascending
-        self.grav_deceleration = grav_deceleration
-
-        # Force of gravity while actor is ascending and jump is held
-        self.grav_high_jump = grav_high_jump
-
-        # Maximum falling speed
-        self.terminal_velocity = terminal_velocity
-
-        # True if patch methods should be used
-        self.use_patch = False
-
-    @property
-    def x_acceleration(self):
-        '''
-        Getter for x_acceleration - Calls the patched version if it exists
-        '''
-        if not self.use_patch:
-            return self._x_acceleration
-
-        ret = UserPatch.get_actor_x_acceleration()
-        if ret is None:
-            return self._x_acceleration
-        return ret
-
-    @property
-    def top_speed(self):
-        '''
-        Getter for top_speed - Calls the patched version if it exists
-        '''
-        if not self.use_patch:
-            return self._top_speed
-
-        ret = UserPatch.get_actor_top_speed()
-        if ret is None:
-            return self._top_speed
-        return ret
-
-    @property
-    def jump_speed(self):
-        '''
-        Getter for jump_speed - Calls the patched version if it exists
-        '''
-        if not self.use_patch:
-            return self._jump_speed
-
-        ret = UserPatch.get_actor_jump_speed()
-        if ret is None:
-            return self._jump_speed
-        return ret
 
 class Actor(Sprite):
     '''
     Base class for all game actors
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos, actor_stats=ActorStats()):
+    def __init__(self, game_engine, width, height, x_pos, y_pos):
         super(Actor, self).__init__(game_engine, width, height, x_pos, y_pos)
-
-        # Setup the actor stats
-        self.stats = actor_stats
 
         # Maximum number of frames it should take to stop movement
         self.max_stop_frames = int(self.stats.top_speed/self.stats.x_deceleration)

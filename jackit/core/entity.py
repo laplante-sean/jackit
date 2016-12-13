@@ -16,6 +16,9 @@ class Entity(Sprite):
         # True if an entity is moveable
         self.moveable = False
 
+        # True if an entity is collectable (for points or something)
+        self.collectable = False
+
     def update(self):
         '''
         Update the entity position
@@ -27,3 +30,9 @@ class Entity(Sprite):
         Getter for the moveable instance variable
         '''
         return self.moveable
+
+    def is_collectable(self):
+        '''
+        Getter for the collectable instance variable
+        '''
+        return self.collectable

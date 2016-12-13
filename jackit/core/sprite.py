@@ -5,20 +5,25 @@ Base class for jackit sprite
 import pygame
 
 from jackit.core import CustomEvent
+from jackit.core.physics import Physics
 
 class Sprite(pygame.sprite.Sprite):
     '''
     Derives from pygame spriten for update and draw
     and so it can be included in sprite groups
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos):
+    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
         super(Sprite, self).__init__()
 
         # Store the game engine for access to globals
         self.game_engine = game_engine
 
+        # Store the width and height
         self.width = width
         self.height = height
+
+        # Store the stats
+        self.stats = stats
 
         # Setup the sprite
         # Disable error in pylint. It doesn't like the Surface() call. Pylint is wrong.
@@ -96,10 +101,6 @@ class Sprite(pygame.sprite.Sprite):
         Handle collisions
         '''
 
-        # Call the objects collide_with method to handle
-        # things like ExitBlock triggering an exit
-        sprite.collide_with(self)
-
         if sprite.is_collideable():
             if change_x > 0:
                 self.rect.right = sprite.rect.left
@@ -109,13 +110,6 @@ class Sprite(pygame.sprite.Sprite):
                 self.rect.bottom = sprite.rect.top
             if change_y < 0:
                 self.rect.top = sprite.rect.bottom
-
-    def collide_with(self, _sprite):
-        '''
-        Called when a sprite has collided with this sprite.
-        Override to handle things like death blocks and exit blocks
-        '''
-        return
 
     def is_on_collideable_entity(self):
         '''
