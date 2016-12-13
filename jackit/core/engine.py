@@ -172,6 +172,8 @@ class EngineSingleton:
                 self.player.on_interactable_block.interaction_complete(event)
             elif event.type == CustomEvent.NEXT_LEVEL:
                 self.next_level()
+                break # Stop processing more events. Changing levels.
+                      # Fixes #31
 
             # Don't process controller events for player when code editor is open
             if not self.code_editor.is_running():
