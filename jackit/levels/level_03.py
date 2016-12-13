@@ -63,15 +63,19 @@ class Level_03(Level):
         except BaseException as e:
             print("That's some bad code! ", str(e))
 
+        # Patch the provided methods
         if local_dict.get("get_actor_top_speed", None) is not None:
             UserPatch.patch_method("get_actor_top_speed",
-                                   local_dict.get("get_actor_top_speed"))
+                                   local_dict.get("get_actor_top_speed"),
+                                   [float, int])
         if local_dict.get("get_actor_jump_speed") is not None:
             UserPatch.patch_method("get_actor_jump_speed",
-                                   local_dict.get("get_actor_jump_speed"))
+                                   local_dict.get("get_actor_jump_speed"),
+                                   [float, int])
         if local_dict.get("get_actor_x_acceleration") is not None:
             UserPatch.patch_method("get_actor_x_acceleration",
-                                   local_dict.get("get_actor_x_acceleration"))
+                                   local_dict.get("get_actor_x_acceleration"),
+                                   [float, int])
 
     def setup_level(self):
         '''

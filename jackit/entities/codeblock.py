@@ -60,9 +60,6 @@ class CodeBlock(Entity):
         '''
         Called when the interaction is complete
         '''
-
-        print("Code: ", event.text)
-
         try:
             # TODO: More security
             pattern = re.compile(r'.*import.*')

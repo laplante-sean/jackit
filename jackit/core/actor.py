@@ -5,7 +5,7 @@ Base class for all game actors. Computer or human controlled
 import pygame
 
 from jackit.core import CustomEvent
-from jackit.core.patch import UserPatch, PatchError
+from jackit.core.patch import UserPatch
 
 class ActorStats:
     '''
@@ -46,10 +46,6 @@ class ActorStats:
         # True if patch methods should be used
         self.use_patch = False
 
-        # Handicap ratio - Used when a user patch breaks. Lowers the stat as
-        # punishment for bad code.
-        self.handicap = 0.1
-
     @property
     def x_acceleration(self):
         '''
@@ -58,14 +54,10 @@ class ActorStats:
         if not self.use_patch:
             return self._x_acceleration
 
-        try:
-            ret = UserPatch.get_actor_x_acceleration()
-            if ret is None:
-                return self._x_acceleration
-            return ret
-        except PatchError as e:
-            print(str(e))
-            return self._x_acceleration * self.handicap # They blew it. Handicap the return
+        ret = UserPatch.get_actor_x_acceleration()
+        if ret is None:
+            return self._x_acceleration
+        return ret
 
     @property
     def top_speed(self):
@@ -75,14 +67,10 @@ class ActorStats:
         if not self.use_patch:
             return self._top_speed
 
-        try:
-            ret = UserPatch.get_actor_top_speed()
-            if ret is None:
-                return self._top_speed
-            return ret
-        except PatchError as e:
-            print(str(e))
-            return self._top_speed * self.handicap
+        ret = UserPatch.get_actor_top_speed()
+        if ret is None:
+            return self._top_speed
+        return ret
 
     @property
     def jump_speed(self):
@@ -92,14 +80,10 @@ class ActorStats:
         if not self.use_patch:
             return self._jump_speed
 
-        try:
-            ret = UserPatch.get_actor_jump_speed()
-            if ret is None:
-                return self._jump_speed
-            return ret
-        except PatchError as e:
-            print(str(e))
-            return self._jump_speed * self.handicap
+        ret = UserPatch.get_actor_jump_speed()
+        if ret is None:
+            return self._jump_speed
+        return ret
 
 class Actor(pygame.sprite.Sprite):
     '''
