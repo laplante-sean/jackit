@@ -13,11 +13,9 @@ class Player(Actor):
     '''
 
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
-        super(Player, self).__init__(game_engine, 24, 24)
+        super(Player, self).__init__(game_engine, 24, 24, spawn_point[0], spawn_point[1])
         self.controls = controls
         self.stats.use_patch = True # Use the UserPatch for player stats
-        self.rect.x = spawn_point[0]
-        self.rect.y = spawn_point[1]
 
         # Entity() object if the Player is colliding with an interactable block otherwise None
         self.on_interactable_block = None
@@ -30,7 +28,7 @@ class Player(Actor):
         elif isinstance(sprite, ExitBlock):
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
         elif isinstance(sprite, DeathBlock):
-            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
+            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
     def update(self):
         super(Player, self).update()

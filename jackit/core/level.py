@@ -8,6 +8,7 @@ import pygame
 from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock,\
                             MoveableBlock
 from jackit.core.camera import Camera, complex_camera
+from jackit.core.patch import UserPatch
 
 class LevelGeneratorError(Exception):
     '''
@@ -50,6 +51,13 @@ class Level:
         self.death_zone = None
         self.camera = None
 
+    def reset(self):
+        '''
+        Reset the level
+        '''
+        self.unload()
+        self.load()
+
     def unload(self):
         '''
         Unload the level
@@ -60,6 +68,9 @@ class Level:
 
         self.entities.empty() # Empty the list
         self.actors.empty()   # Empty the list
+
+        # Unpatch the user patched methods when the level is complete
+        UserPatch.unpatch()
 
     def load(self):
         '''
@@ -74,6 +85,9 @@ class Level:
 
         # Init the camera
         self.camera = Camera(self.game_engine.screen_size, complex_camera, self.width, self.height)
+
+        # For sub-classes to setup level specific stuff
+        self.setup_level()
 
     def build_level(self):
         '''

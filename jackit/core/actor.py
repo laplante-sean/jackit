@@ -87,8 +87,8 @@ class Actor(Sprite):
     '''
     Base class for all game actors
     '''
-    def __init__(self, game_engine, width, height, actor_stats=ActorStats()):
-        super(Actor, self).__init__(game_engine, width, height, 0, 0)
+    def __init__(self, game_engine, width, height, x_pos, y_pos, actor_stats=ActorStats()):
+        super(Actor, self).__init__(game_engine, width, height, x_pos, y_pos)
 
         # Setup the actor stats
         self.stats = actor_stats

@@ -64,7 +64,6 @@ class EngineSingleton:
         self.current_level_index = 0
         self.current_level = self.levels[self.current_level_index]
         self.current_level.load()
-        self.current_level.setup_level()
 
         # Init Input handler
         self.input = Input()
@@ -127,9 +126,8 @@ class EngineSingleton:
             self.current_level_index += 1
             self.current_level = self.levels[self.current_level_index]
             self.current_level.load()
-            self.current_level.setup_level()
-            self.player.rect.x = self.current_level.spawn_point[0]
-            self.player.rect.y = self.current_level.spawn_point[1]
+            self.player.spawn_point = self.current_level.spawn_point
+            self.player.reset()
 
     def is_rect_in_death_zone(self, rect):
         '''
@@ -164,8 +162,11 @@ class EngineSingleton:
                     For now set back to spawn point
                     TODO: Decrement lives
                     '''
-                    event.sprite.rect.x = self.current_level.spawn_point[0]
-                    event.sprite.rect.y = self.current_level.spawn_point[1]
+                    event.sprite.reset()
+
+                    # Reset the current level. This clears the
+                    # user patched code
+                    self.current_level.reset()
                 else:
                     print("Despawning something other than player")
             elif event.type == CustomEvent.EXIT_EDITOR:

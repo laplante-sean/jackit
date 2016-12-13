@@ -28,6 +28,9 @@ class Sprite(pygame.sprite.Sprite):
         self.image = self.image.convert() # Convert the surface for faster blitting
         self.rect = self.image.get_rect()
 
+        # Store the initial spawn point for this sprite forever
+        self.spawn_point = (x_pos, y_pos)
+
         self.rect.x = x_pos
         self.rect.y = y_pos
 
@@ -174,6 +177,15 @@ class Sprite(pygame.sprite.Sprite):
             return True
 
         return False
+
+    def reset(self):
+        '''
+        Reset the sprite to its starting position
+        Also stops movement
+        '''
+        self.rect.x = self.spawn_point[0]
+        self.rect.y = self.spawn_point[1]
+        self.hard_stop()
 
     def is_interactable(self):
         '''

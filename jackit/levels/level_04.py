@@ -3,6 +3,7 @@ Fourth level
 '''
 
 from jackit.core.level import Level
+from jackit.core.patch import UserPatch
 
 class Level_04(Level):
     '''
@@ -28,6 +29,41 @@ class Level_04(Level):
         self.code_blocks.append(block)
         return block
 
+    def unload(self):
+        super(Level_04, self).unload()
+        self.code_blocks = []
+
+    def update(self, player):
+        super(Level_04, self).update(player)
+
+    def challenge_completed(self, code_obj):
+        '''
+        Called when a code block is exited after
+        the entered code is validated and compiled
+        '''
+        local_dict = locals()
+
+        # Execute the code object
+        try:
+            # pylint: disable=W0122
+            exec(code_obj, globals(), local_dict)
+        except BaseException as e:
+            print("That's some bad code! ", str(e))
+
+        # Patch the provided methods
+        if local_dict.get("get_actor_top_speed", None) is not None:
+            UserPatch.patch_method("get_actor_top_speed",
+                                   local_dict.get("get_actor_top_speed"),
+                                   [float, int])
+        if local_dict.get("get_actor_jump_speed") is not None:
+            UserPatch.patch_method("get_actor_jump_speed",
+                                   local_dict.get("get_actor_jump_speed"),
+                                   [float, int])
+        if local_dict.get("get_actor_x_acceleration") is not None:
+            UserPatch.patch_method("get_actor_x_acceleration",
+                                   local_dict.get("get_actor_x_acceleration"),
+                                   [float, int])
+
     def setup_level(self):
         '''
         Setup the challenges
@@ -35,15 +71,15 @@ class Level_04(Level):
         super(Level_04, self).setup_level()
 
         self.code_blocks[0].challenge_text = """# Make the jump!
-def get_player_top_speed():
+def get_actor_top_speed():
     # Called to get the players current top speed
     return {}
 
-def get_player_jump_speed():
+def get_actor_jump_speed():
     # Called to get the players current y-axis top speed
     return {}
 
-def get_player_x_acceleration():
+def get_actor_x_acceleration():
     # Called to get the players x-axis acceleration
     return {}
         """.format(
@@ -51,21 +87,3 @@ def get_player_x_acceleration():
             self.game_engine.player.stats.jump_speed,
             self.game_engine.player.stats.x_acceleration
         )
-
-    def get_player_top_speed(self):
-        '''
-        Getter for player top speed
-        '''
-        return self.game_engine.player.stats.top_speed
-
-    def get_player_jump_speed(self):
-        '''
-        Getter for player jump speed
-        '''
-        return self.game_engine.player.stats.jump_speed
-
-    def get_player_x_acceleration(self):
-        '''
-        Getter for player x-axis acceleration
-        '''
-        return self.game_engine.player.stats.x_acceleration

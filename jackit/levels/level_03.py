@@ -48,9 +48,6 @@ class Level_03(Level):
         super(Level_03, self).unload()
         self.code_blocks = []
 
-        # Unpatch the user patched methods when the level is complete
-        UserPatch.unpatch()
-
     def update(self, player):
         super(Level_03, self).update(player)
 
@@ -105,21 +102,3 @@ def get_actor_x_acceleration():
             self.game_engine.player.stats.jump_speed,
             self.game_engine.player.stats.x_acceleration
         )
-
-    def get_player_top_speed(self):
-        '''
-        Getter for player top speed
-        '''
-        return self.game_engine.player.stats.top_speed
-
-    def get_player_jump_speed(self):
-        '''
-        Getter for player jump speed
-        '''
-        return self.game_engine.player.stats.jump_speed
-
-    def get_player_x_acceleration(self):
-        '''
-        Getter for player x-axis acceleration
-        '''
-        return self.game_engine.player.stats.x_acceleration
