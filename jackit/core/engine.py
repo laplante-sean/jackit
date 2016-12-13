@@ -57,6 +57,8 @@ class EngineSingleton:
         self.levels = [Level_01(self), Level_02(self), Level_03(self), Level_04(self)]
         self.current_level_index = 0
         self.current_level = self.levels[self.current_level_index]
+        self.current_level.load()
+        self.current_level.setup_level()
 
         # Init Input handler
         self.input = Input()
@@ -66,10 +68,6 @@ class EngineSingleton:
 
         # Init the player
         self.player = Player(self, self.config.controls, spawn_point=self.current_level.spawn_point)
-
-        # Call this last. Updates the levels with challenges
-        for level in self.levels:
-            level.setup_level()
 
     def update(self):
         '''
@@ -119,8 +117,11 @@ class EngineSingleton:
         if self.current_level_index >= (len(self.levels) - 1):
             self.running = False
         else:
+            self.current_level.unload()
             self.current_level_index += 1
             self.current_level = self.levels[self.current_level_index]
+            self.current_level.load()
+            self.current_level.setup_level()
             self.player.rect.x = self.current_level.spawn_point[0]
             self.player.rect.y = self.current_level.spawn_point[1]
 

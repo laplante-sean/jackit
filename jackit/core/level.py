@@ -46,6 +46,25 @@ class Level:
         self.entities = pygame.sprite.Group()
         self.actors = pygame.sprite.Group()
 
+        self.width = self.height = 0
+        self.death_zone = None
+        self.camera = None
+
+    def unload(self):
+        '''
+        Unload the level
+        '''
+        self.width = self.height = 0
+        self.death_zone = None
+        self.camera = None
+
+        self.entities.empty() # Empty the list
+        self.actors.empty()   # Empty the list
+
+    def load(self):
+        '''
+        Load the level
+        '''
         # Build the level from the map
         self.width, self.height = self.build_level()
 

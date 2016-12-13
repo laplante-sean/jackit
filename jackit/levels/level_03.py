@@ -46,6 +46,10 @@ class Level_03(Level):
         self.code_blocks.append(block)
         return block
 
+    def unload(self):
+        super(Level_03, self).unload()
+        self.code_blocks = []
+
     def update(self, player):
         super(Level_03, self).update(player)
 
