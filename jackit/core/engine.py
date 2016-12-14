@@ -155,21 +155,20 @@ class EngineSingleton:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == CustomEvent.KILL_SPRITE:
-                print("Despawn sprite")
                 if isinstance(event.sprite, Player):
-                    '''
-                    For now set back to spawn point
-                    TODO: Decrement lives
-                    '''
-                    event.sprite.reset()
+                    print("Despawn player")
 
                     # Reset the current level. This clears the
                     # user patched code
                     self.current_level.reset()
+
+                    #For now set back to spawn point
+                    # TODO: Decrement lives
+                    event.sprite.reset()
                 else:
                     print("Despawning something other than player")
-            elif event.type == CustomEvent.EXIT_EDITOR:
-                self.player.on_interactable_block.interaction_complete(event)
+            elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():
+                self.player.frame_cache["is_on_code_block"].interaction_complete(event)
             elif event.type == CustomEvent.NEXT_LEVEL:
                 self.next_level()
                 break # Stop processing more events. Changing levels.

@@ -41,7 +41,7 @@ class Actor(Sprite):
         '''
         Calculate gravity
         '''
-        if self.is_on_collideable_entity() and self.change_y >= 0:
+        if self.is_on_collideable() and self.change_y >= 0:
             self.change_y = 0
             return
 
@@ -65,7 +65,7 @@ class Actor(Sprite):
         '''
         Called when the user hits the jump button. Makes the character jump
         '''
-        if self.is_on_collideable_entity():
+        if self.is_on_collideable():
             self.change_y = (self.stats.jump_speed * -1) # Up is negative
             self.jumping = True
 
@@ -77,7 +77,7 @@ class Actor(Sprite):
 
         if self.change_x <= (self.stats.top_speed * -1):
             self.change_x = (self.stats.top_speed * -1)
-        elif (not self.is_on_collideable_entity()) and self.is_moving_right():
+        elif (not self.is_on_collideable()) and self.is_moving_right():
             self.change_x += (self.stats.air_braking * -1)
         else:
             self.change_x += (self.stats.x_acceleration * -1)
@@ -90,7 +90,7 @@ class Actor(Sprite):
 
         if self.change_x >= self.stats.top_speed:
             self.change_x = self.stats.top_speed
-        elif self.is_moving_left() and (not self.is_on_collideable_entity()):
+        elif self.is_moving_left() and (not self.is_on_collideable()):
             self.change_x += self.stats.air_braking
         else:
             self.change_x += self.stats.x_acceleration

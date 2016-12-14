@@ -46,7 +46,6 @@ class Level:
 
         # Initialize the entity list
         self.entities = pygame.sprite.Group()
-        self.actors = pygame.sprite.Group()
 
         self.width = self.height = 0
         self.death_zone = None
@@ -68,7 +67,6 @@ class Level:
         self.camera = None
 
         self.entities.empty() # Empty the list
-        self.actors.empty()   # Empty the list
 
         # Unpatch the user patched methods when the level is complete
         UserPatch.unpatch()
@@ -212,7 +210,7 @@ class Level:
         Update the level
         '''
 
-        # Update the camera
+        # Update the camera to follow the player
         self.camera.update(player)
 
         # Update everything else
