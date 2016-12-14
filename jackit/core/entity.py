@@ -13,9 +13,6 @@ class Entity(Sprite):
     def __init__(self, game_engine, width, height, x_pos, y_pos):
         super(Entity, self).__init__(game_engine, width, height, x_pos, y_pos)
 
-        # True if an entity is moveable
-        self.moveable = False
-
         # True if an entity is collectable (for points or something)
         self.collectable = False
 
@@ -24,12 +21,6 @@ class Entity(Sprite):
         Update the entity position
         '''
         super(Entity, self).update()
-
-    def is_moveable(self):
-        '''
-        Getter for the moveable instance variable
-        '''
-        return self.moveable
 
     def is_collectable(self):
         '''

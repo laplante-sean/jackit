@@ -52,6 +52,9 @@ class Sprite(pygame.sprite.Sprite):
         # True if any of the sprites from the most recent call to spritecollide() were collideable
         self.any_collideable = False
 
+        # True if this sprite kills the player
+        self.kills_player = False
+
         # Frame cache. Allows methods that do a lot to store their results
         # for the current frame so that subsequent calls use the cache. This
         # is cleared on each frame.

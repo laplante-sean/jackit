@@ -172,6 +172,7 @@ class EngineSingleton:
                     self.current_level.entities.add(event.sprite)
                 else:
                     print("Despawning something other than player")
+                    event.sprite.reset()
             elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():
                 print("Exit editor")
                 self.player.frame_cache["is_on_code_block"].interaction_complete(event)

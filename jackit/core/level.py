@@ -5,8 +5,8 @@ for each level
 
 import pygame
 
-from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock,\
-                            MoveableBlock, CollectableBlock
+from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock, CollectableBlock
+from jackit.actors import Enemy
 from jackit.core.camera import Camera, complex_camera
 from jackit.core.patch import UserPatch
 
@@ -25,8 +25,8 @@ class LevelMap:
     SPAWN = "S"
     CODE = "C"
     DEATH_ENTITY = "D"
-    MOVEABLE_BLOCK = "M"
     COLLECTABLE_BLOCK = "I"
+    ENEMY = "B"
 
 class Level:
     '''
@@ -117,10 +117,10 @@ class Level:
                     self.entities.add(self.create_code_block(x, y))
                 elif col == LevelMap.DEATH_ENTITY:
                     self.entities.add(self.create_death_block(x, y))
-                elif col == LevelMap.MOVEABLE_BLOCK:
-                    self.entities.add(self.create_moveable_block(x, y))
                 elif col == LevelMap.COLLECTABLE_BLOCK:
                     self.entities.add(self.create_collectable_block(x, y))
+                elif col == LevelMap.ENEMY:
+                    self.entities.add(self.create_enemy(x, y))
                 x += self.level_map_block_x
             y += self.level_map_block_y
             x = 0
@@ -131,6 +131,19 @@ class Level:
         total_level_width = len(max(self.level_map, key=len)) * self.level_map_block_x
         total_level_height = len(self.level_map) * self.level_map_block_y
         return total_level_width, total_level_height
+
+    def create_enemy(self, x_pos, y_pos):
+        '''
+        Creates an enemy block
+        '''
+        ret = Enemy(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+        self.enemies.add(ret)
+        return ret
 
     def create_code_block(self, x_pos, y_pos):
         '''
@@ -185,19 +198,6 @@ class Level:
             x_pos, y_pos
         )
         self.platforms.add(ret)
-        return ret
-
-    def create_moveable_block(self, x_pos, y_pos):
-        '''
-        Creates a block that can be pushed by the player on collide
-        '''
-        ret = MoveableBlock(
-            self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
-            x_pos, y_pos
-        )
-        self.moveable_blocks.add(ret)
         return ret
 
     def create_collectable_block(self, x_pos, y_pos):

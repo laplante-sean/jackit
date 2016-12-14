@@ -12,12 +12,12 @@ class Level_02(Level):
     _map = [
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP          PPPP",
         "P                             PP           P",
-        "P                                          P",
+        "P                                        B P",
         "P                 E                 PPPPPPPP",
         "P            PPPPPPPPPPP                   P",
         "                              PPPPPP        ",
         "     S                                      ",
-        "                                            ",
+        "                             B           B  ",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 

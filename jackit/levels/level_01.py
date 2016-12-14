@@ -60,7 +60,7 @@ class Level_01(Level):
         "P                                          P",
         "P            PPPPPPPPPPP                   P",
         "P                                          P",
-        "P                                          P",
+        "P                                  B       P",
         "P        MMMMMMMMM        PPPPPPPPPP       E",
         "P    S                                     E",
         "P    C                 C                   E",
