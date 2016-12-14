@@ -130,6 +130,10 @@ class Sprite(pygame.sprite.Sprite):
         '''
         Handle collisions
         '''
+
+        # Called on the sprite being collided with
+        sprite.collide_with(self)
+
         if sprite.is_collideable():
             if change_x > 0:
                 self.rect.right = sprite.rect.left
@@ -199,6 +203,12 @@ class Sprite(pygame.sprite.Sprite):
     def interaction_complete(self, _event):
         '''
         Called when an interaction is complete with an interactable block
+        '''
+        return
+
+    def collide_with(self, _sprite):
+        '''
+        Called on the sprite being collided with
         '''
         return
 

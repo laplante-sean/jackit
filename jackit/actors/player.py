@@ -19,14 +19,27 @@ class Player(Actor):
 
     def collide(self, change_x, change_y, sprite):
         collideable = super(Player, self).collide(change_x, change_y, sprite)
+        if not collideable:
+            return collideable
 
         if isinstance(sprite, ExitBlock):
             print("Exit block")
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
-        elif isinstance(sprite, DeathBlock):
+
+        if sprite.kills_player:
+            print("collide() kills player. Player collided with enemy.")
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
         return collideable
+
+    def collide_with(self, sprite):
+        '''
+        Some other sprite collided into us (we didn't collide into it)
+        Happens when the other sprite is moving and this sprite is not
+        '''
+        if sprite.kills_player:
+            print("collide_with() kills player. Enemy collided with player.")
+            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
     def update(self):
         super(Player, self).update()

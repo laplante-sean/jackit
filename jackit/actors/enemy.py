@@ -3,10 +3,7 @@ User controllable player
 '''
 
 import random
-import pygame
-from jackit.core import CustomEvent
 from jackit.core.actor import Actor
-from jackit.actors.player import Player
 
 class Enemy(Actor):
     '''
@@ -28,15 +25,6 @@ class Enemy(Actor):
         Make the enemy move around
         '''
         super(Enemy, self).update()
-
-        if pygame.sprite.collide_rect(self, self.game_engine.player):
-            print("KILL")
-            pygame.event.post(
-                pygame.event.Event(
-                    CustomEvent.KILL_SPRITE,
-                    {"sprite": self.game_engine.player}
-                )
-            )
 
         if self.change_x == 0:
             direction = random.randint(Enemy.LEFT, Enemy.RIGHT)
