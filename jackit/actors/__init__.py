@@ -3,4 +3,4 @@ Game actor imports
 '''
 
 from .player import Player
-from .enemy import Enemy
+from .behaviors import LedgeSensingBasicEnemy, BasicEnemy

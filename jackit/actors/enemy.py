@@ -1,41 +1,24 @@
 '''
-User controllable player
+Enemy actor - Computer controlled
 '''
 
-import random
 from jackit.core.actor import Actor
+from jackit.core.physics import Physics
 
 class Enemy(Actor):
     '''
-    User controlled player
+    Computer controlled actor
     '''
     LEFT = 0
     RIGHT = 1
     CHANGE_DIR = 2
 
-    def __init__(self, game_engine, width, height, x_pos, y_pos):
-        super(Enemy, self).__init__(game_engine, width, height, x_pos, y_pos)
+    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
+        super(Enemy, self).__init__(game_engine, width, height, x_pos, y_pos, stats)
         self.image.fill((23, 24, 25))
-        self.stats.top_speed = 4
-        random.seed()
 
-    def update(self):
-        '''
-        Make the enemy move around
-        '''
-        super(Enemy, self).update()
+    def collide(self, change_x, change_y, sprite):
+        if isinstance(sprite, Enemy):
+            return False # Override the return for collide if an enemy runs into itself
 
-        if self.change_x == 0:
-            direction = random.randint(Enemy.LEFT, Enemy.RIGHT)
-            if direction == Enemy.LEFT:
-                self.go_left()
-            else:
-                self.go_right()
-        else:
-            # Really low chance of changing direction while moving
-            choice = random.randint(0, 100)
-            if choice == Enemy.CHANGE_DIR:
-                if self.horizontal_movement_action is self.go_left:
-                    self.go_right()
-                else:
-                    self.go_left()
+        return super(Enemy, self).collide(change_x, change_y, sprite)

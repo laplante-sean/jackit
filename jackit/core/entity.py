@@ -16,12 +16,6 @@ class Entity(Sprite):
         # True if an entity is collectable (for points or something)
         self.collectable = False
 
-    def update(self):
-        '''
-        Update the entity position
-        '''
-        super(Entity, self).update()
-
     def is_collectable(self):
         '''
         Getter for the collectable instance variable

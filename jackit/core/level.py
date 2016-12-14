@@ -6,7 +6,8 @@ for each level
 import pygame
 
 from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock, CollectableBlock
-from jackit.actors import Enemy
+from jackit.actors import LedgeSensingBasicEnemy, BasicEnemy
+from jackit.core.spritegroup import SpriteGroup
 from jackit.core.camera import Camera, complex_camera
 from jackit.core.patch import UserPatch
 
@@ -26,7 +27,8 @@ class LevelMap:
     CODE = "C"
     DEATH_ENTITY = "D"
     COLLECTABLE_BLOCK = "I"
-    ENEMY = "B"
+    BASIC_ENEMY = "B"
+    LEDGE_SENSE_ENEMY = "L"
 
 class Level:
     '''
@@ -47,14 +49,14 @@ class Level:
         # Initialize the entity list
         # This will have all entities for use in collision
         # detection
-        self.entities = pygame.sprite.Group()
+        self.entities = SpriteGroup()
 
         # These groups are for draw and update order preservation
-        self.platforms = pygame.sprite.Group()
-        self.code_blocks = pygame.sprite.Group()
-        self.collectable_blocks = pygame.sprite.Group()
-        self.enemies = pygame.sprite.Group()
-        self.moveable_blocks = pygame.sprite.Group()
+        self.platforms = SpriteGroup()
+        self.code_blocks = SpriteGroup()
+        self.collectable_blocks = SpriteGroup()
+        self.enemies = SpriteGroup()
+        self.moveable_blocks = SpriteGroup()
 
         self.width = self.height = 0
         self.death_zone = None
@@ -119,8 +121,10 @@ class Level:
                     self.entities.add(self.create_death_block(x, y))
                 elif col == LevelMap.COLLECTABLE_BLOCK:
                     self.entities.add(self.create_collectable_block(x, y))
-                elif col == LevelMap.ENEMY:
-                    self.entities.add(self.create_enemy(x, y))
+                elif col == LevelMap.BASIC_ENEMY:
+                    self.entities.add(self.create_basic_enemy(x, y))
+                elif col == LevelMap.LEDGE_SENSE_ENEMY:
+                    self.entities.add(self.create_ledge_sense_enemy(x, y))
                 x += self.level_map_block_x
             y += self.level_map_block_y
             x = 0
@@ -132,11 +136,24 @@ class Level:
         total_level_height = len(self.level_map) * self.level_map_block_y
         return total_level_width, total_level_height
 
-    def create_enemy(self, x_pos, y_pos):
+    def create_basic_enemy(self, x_pos, y_pos):
         '''
-        Creates an enemy block
+        Creates a basic enemy
         '''
-        ret = Enemy(
+        ret = BasicEnemy(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+        self.enemies.add(ret)
+        return ret
+
+    def create_ledge_sense_enemy(self, x_pos, y_pos):
+        '''
+        Creates the ledge sensing enemy
+        '''
+        ret = LedgeSensingBasicEnemy(
             self.game_engine,
             self.level_map_block_x,
             self.level_map_block_y,
@@ -238,6 +255,10 @@ class Level:
         self.collectable_blocks.update()
         self.moveable_blocks.update()
         self.enemies.update()
+
+        # Call update complete on all the entities at
+        # once becuase order doesn't matter
+        self.entities.update_complete()
 
     def draw(self, screen, player):
         '''

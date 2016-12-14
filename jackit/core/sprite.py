@@ -36,6 +36,7 @@ class Sprite(pygame.sprite.Sprite):
         # Store the initial spawn point for this sprite forever
         self.spawn_point = (x_pos, y_pos)
 
+        # x and y position of the guy
         self.rect.x = x_pos
         self.rect.y = y_pos
 
@@ -57,6 +58,12 @@ class Sprite(pygame.sprite.Sprite):
         # is cleared on each frame.
         self.frame_cache = {}
 
+    def update_complete(self):
+        '''
+        Called after update from the level
+        '''
+        self.frame_cache.clear()
+
     def update(self):
         '''
         Update the sprite's position.
@@ -64,10 +71,6 @@ class Sprite(pygame.sprite.Sprite):
 
         # Don't waist time if we're not moving
         if self.change_x == 0 and self.change_y == 0:
-            # Clear the frame cache here as well
-            # this is in case someone overrides update
-            # and calls a method that uses the frame cache
-            self.frame_cache.clear()
             return
 
         # Update the X direction
@@ -90,9 +93,6 @@ class Sprite(pygame.sprite.Sprite):
         if self.game_engine.is_rect_in_death_zone(self.rect):
             print("Death zone: (", self.rect.x, ",", self.rect.y, ")")
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite": self}))
-
-        # Clear the frame cache
-        self.frame_cache.clear()
 
     def spritecollide(self, sprites, change_x, change_y, trigger_cb=True, only_collideable=False):
         '''
