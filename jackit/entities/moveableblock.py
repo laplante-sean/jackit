@@ -24,4 +24,4 @@ class MoveableBlock(Entity):
                 self.change_y += self.stats.grav_acceleration
         '''
 
-        #super(MoveableBlock, self).update()
+        super(MoveableBlock, self).update()
