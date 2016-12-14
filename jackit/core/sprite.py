@@ -64,6 +64,10 @@ class Sprite(pygame.sprite.Sprite):
 
         # Don't waist time if we're not moving
         if self.change_x == 0 and self.change_y == 0:
+            # Clear the frame cache here as well
+            # this is in case someone overrides update
+            # and calls a method that uses the frame cache
+            self.frame_cache.clear()
             return
 
         # Update the X direction

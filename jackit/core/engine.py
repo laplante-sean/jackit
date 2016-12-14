@@ -72,6 +72,7 @@ class EngineSingleton:
 
         # Init the player
         self.player = Player(self, self.config.controls, spawn_point=self.current_level.spawn_point)
+        self.current_level.entities.add(self.player)
 
     def update(self):
         '''
@@ -93,7 +94,7 @@ class EngineSingleton:
 
         # ALL CODE FOR DRAWING GOES BELOW HERE
 
-        self.current_level.draw(self.screen, self.player) # Draws entities and player
+        self.current_level.draw(self.screen) # Draws entities and player
 
         if self.code_editor.is_running():
             self.code_editor.draw(self.screen) # Draws the code editor if it's running
@@ -127,6 +128,7 @@ class EngineSingleton:
             self.current_level.load()
             self.player.spawn_point = self.current_level.spawn_point
             self.player.reset()
+            self.current_level.entities.add(self.player)
 
     def is_rect_in_death_zone(self, rect):
         '''
@@ -165,6 +167,9 @@ class EngineSingleton:
                     #For now set back to spawn point
                     # TODO: Decrement lives
                     event.sprite.reset()
+
+                    # Add the player back to the level
+                    self.current_level.entities.add(event.sprite)
                 else:
                     print("Despawning something other than player")
             elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():

@@ -215,9 +215,8 @@ class Level:
 
         # Update everything else
         self.entities.update()
-        player.update()
 
-    def draw(self, screen, player):
+    def draw(self, screen):
         '''
         Draw all the sprites for the level
         '''
@@ -228,5 +227,3 @@ class Level:
         # Draw the sprites
         for e in self.entities:
             screen.blit(e.image, self.camera.apply(e))
-
-        screen.blit(player.image, self.camera.apply(player))
