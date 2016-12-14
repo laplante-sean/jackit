@@ -229,15 +229,15 @@ class Level:
         # Update the camera to follow the player
         self.camera.update(player)
 
+        # Update the player first
+        player.update()
+
         # Update all the entities in order
         self.platforms.update()
         self.code_blocks.update()
         self.collectable_blocks.update()
         self.moveable_blocks.update()
         self.enemies.update()
-
-        # Update the player last
-        player.update()
 
     def draw(self, screen, player):
         '''

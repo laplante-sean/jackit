@@ -24,10 +24,6 @@ class Player(Actor):
             print("Exit block")
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
         elif isinstance(sprite, DeathBlock):
-            print("Death block")
-            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
-        elif sprite.kills_player:
-            print("Enemy block")
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
         return collideable
