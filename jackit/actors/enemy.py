@@ -17,7 +17,6 @@ class Enemy(Actor):
         super(Enemy, self).__init__(game_engine, width, height, x_pos, y_pos)
         self.image.fill((23, 24, 25))
         self.stats.top_speed = 4
-        self.kills_player = True
         random.seed()
 
     def update(self):

@@ -5,6 +5,7 @@ User controllable player
 import pygame
 from jackit.core import CustomEvent
 from jackit.core.actor import Actor
+from jackit.actors.enemy import Enemy
 from jackit.entities import CodeBlock, ExitBlock, DeathBlock
 
 class Player(Actor):
@@ -25,9 +26,8 @@ class Player(Actor):
         if isinstance(sprite, ExitBlock):
             print("Exit block")
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
-
-        if sprite.kills_player:
-            print("collide() kills player. Player collided with enemy.")
+        elif isinstance(sprite, Enemy) or isinstance(sprite, DeathBlock):
+            print("collide() kills player. Player collided with enemy or death block.")
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
         return collideable
@@ -37,12 +37,12 @@ class Player(Actor):
         Some other sprite collided into us (we didn't collide into it)
         Happens when the other sprite is moving and this sprite is not
         '''
-        if sprite.kills_player:
-            print("collide_with() kills player. Enemy collided with player.")
+        if isinstance(sprite, ExitBlock):
+            print("Exit block collided with player")
+            pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
+        elif isinstance(sprite, Enemy) or isinstance(sprite, DeathBlock):
+            print("collide_with() kills player. Enemy or death block collided with player.")
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
-
-    def update(self):
-        super(Player, self).update()
 
     def is_on_code_block(self):
         '''
