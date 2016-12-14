@@ -94,7 +94,7 @@ class EngineSingleton:
 
         # ALL CODE FOR DRAWING GOES BELOW HERE
 
-        self.current_level.draw(self.screen) # Draws entities and player
+        self.current_level.draw(self.screen, self.player) # Draws entities and player
 
         if self.code_editor.is_running():
             self.code_editor.draw(self.screen) # Draws the code editor if it's running
@@ -173,6 +173,7 @@ class EngineSingleton:
                 else:
                     print("Despawning something other than player")
             elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():
+                print("Exit editor")
                 self.player.frame_cache["is_on_code_block"].interaction_complete(event)
             elif event.type == CustomEvent.NEXT_LEVEL:
                 self.next_level()

@@ -75,6 +75,7 @@ class CodeBlock(Entity):
 
         # Remove the interaction guard from around the object
         self.game_engine.current_level.entities.remove(self.interaction_guard)
+        self.game_engine.current_level.platforms.remove(self.interaction_guard)
 
         # TODO: Create a sprite.Group of sprites to clear from the screen.
         # Make it part of the Level base class. In Level update, clear the list

@@ -148,6 +148,7 @@ class JackitConfigControls(JsonConfig):
         self.right = pygame.K_d
         self.jump = pygame.K_SPACE
         self.interact = pygame.K_e
+        self.push = pygame.K_LSHIFT
 
     def from_json(self, raw):
         '''
@@ -183,6 +184,7 @@ class JackitConfigControls(JsonConfig):
         self.right = raw.get('right', getattr(pygame, 'K_d'))
         self.jump = raw.get('jump', getattr(pygame, 'K_SPACE'))
         self.interact = raw.get('interact', getattr(pygame, 'K_e'))
+        self.push = raw.get("push", getattr(pygame, "K_LSHIFT"))
 
     def to_json(self):
         '''
@@ -194,7 +196,8 @@ class JackitConfigControls(JsonConfig):
             'left': self.left,
             'right': self.right,
             'jump': self.jump,
-            'interact': self.interact
+            'interact': self.interact,
+            'push': self.push
         }
 
 class JackitConfig(JsonConfig):

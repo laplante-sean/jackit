@@ -14,6 +14,7 @@ class MoveableBlock(Entity):
         self.moveable = True
 
     def update(self):
+        '''
         if self.is_on_collideable():
             self.change_y = 0
         else:
@@ -21,5 +22,6 @@ class MoveableBlock(Entity):
                 self.change_y = self.stats.terminal_velocity
             else:
                 self.change_y += self.stats.grav_acceleration
+        '''
 
-        super(MoveableBlock, self).update()
+        #super(MoveableBlock, self).update()

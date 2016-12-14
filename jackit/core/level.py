@@ -45,7 +45,16 @@ class Level:
         self.spawn_point = None
 
         # Initialize the entity list
+        # This will have all entities for use in collision
+        # detection
         self.entities = pygame.sprite.Group()
+
+        # These groups are for draw and update order preservation
+        self.platforms = pygame.sprite.Group()
+        self.code_blocks = pygame.sprite.Group()
+        self.collectable_blocks = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
+        self.moveable_blocks = pygame.sprite.Group()
 
         self.width = self.height = 0
         self.death_zone = None
@@ -66,7 +75,13 @@ class Level:
         self.death_zone = None
         self.camera = None
 
-        self.entities.empty() # Empty the list
+        # Empty the lists
+        self.platforms.empty()
+        self.code_blocks.empty()
+        self.collectable_blocks.empty()
+        self.enemies.empty()
+        self.moveable_blocks.empty()
+        self.entities.empty()
 
         # Unpatch the user patched methods when the level is complete
         UserPatch.unpatch()
@@ -84,9 +99,6 @@ class Level:
 
         # Init the camera
         self.camera = Camera(self.game_engine.screen_size, complex_camera, self.width, self.height)
-
-        # For sub-classes to setup level specific stuff
-        self.setup_level()
 
     def build_level(self):
         '''
@@ -125,77 +137,81 @@ class Level:
         Creates a code block. Subclasses can override
         this to assign special functionality to each code block
         '''
-        return CodeBlock(
+        ret = CodeBlock(
             self.game_engine,
             self.level_map_block_x,
             self.level_map_block_y,
             x_pos, y_pos
         )
+        self.code_blocks.add(ret)
+        return ret
 
     def create_platform(self, x_pos, y_pos):
         '''
         Creates a platform block. Subclasses can override
         this to assign special functionality to each platform block
         '''
-        return Platform(
+        ret = Platform(
             self.game_engine,
             self.level_map_block_x,
             self.level_map_block_y,
             x_pos, y_pos
         )
+        self.platforms.add(ret)
+        return ret
 
     def create_exit_block(self, x_pos, y_pos):
         '''
         Creates a exit block. Subclasses can override
         this to assign special functionality to each exit block
         '''
-        return ExitBlock(
+        ret = ExitBlock(
             self.game_engine,
             self.level_map_block_x,
             self.level_map_block_y,
             x_pos, y_pos
         )
+        self.platforms.add(ret)
+        return ret
 
     def create_death_block(self, x_pos, y_pos):
         '''
         Creates a block that kills the player on collide
         '''
-        return DeathBlock(
+        ret = DeathBlock(
             self.game_engine,
             self.level_map_block_x,
             self.level_map_block_y,
             x_pos, y_pos
         )
+        self.platforms.add(ret)
+        return ret
 
     def create_moveable_block(self, x_pos, y_pos):
         '''
         Creates a block that can be pushed by the player on collide
         '''
-        return MoveableBlock(
+        ret = MoveableBlock(
             self.game_engine,
             self.level_map_block_x,
             self.level_map_block_y,
             x_pos, y_pos
         )
+        self.moveable_blocks.add(ret)
+        return ret
 
     def create_collectable_block(self, x_pos, y_pos):
         '''
         Create a block that can be collected by the player on collide
         '''
-        return CollectableBlock(
+        ret = CollectableBlock(
             self.game_engine,
             self.level_map_block_x,
             self.level_map_block_y,
             x_pos, y_pos
         )
-
-    def setup_level(self):
-        '''
-        Sets up challenges. Subclasses implement this.
-        Guarenteed to be called after all game engine componenets
-        are initialized.
-        '''
-        return
+        self.collectable_blocks.add(ret)
+        return ret
 
     def challenge_completed(self, _):
         '''
@@ -213,10 +229,17 @@ class Level:
         # Update the camera to follow the player
         self.camera.update(player)
 
-        # Update everything else
-        self.entities.update()
+        # Update all the entities in order
+        self.platforms.update()
+        self.code_blocks.update()
+        self.collectable_blocks.update()
+        self.moveable_blocks.update()
+        self.enemies.update()
 
-    def draw(self, screen):
+        # Update the player last
+        player.update()
+
+    def draw(self, screen, player):
         '''
         Draw all the sprites for the level
         '''
@@ -224,6 +247,17 @@ class Level:
         # Draw the background
         screen.fill((0, 0, 255)) #TODO: Make this a background image of some sort
 
-        # Draw the sprites
-        for e in self.entities:
+        # Draw the sprites in proper order so layers look right
+        for e in self.platforms:
             screen.blit(e.image, self.camera.apply(e))
+        for e in self.code_blocks:
+            screen.blit(e.image, self.camera.apply(e))
+        for e in self.collectable_blocks:
+            screen.blit(e.image, self.camera.apply(e))
+        for e in self.moveable_blocks:
+            screen.blit(e.image, self.camera.apply(e))
+        for e in self.enemies:
+            screen.blit(e.image, self.camera.apply(e))
+
+        # Draw the player last
+        screen.blit(player.image, self.camera.apply(player))

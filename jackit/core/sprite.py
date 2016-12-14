@@ -63,7 +63,7 @@ class Sprite(pygame.sprite.Sprite):
         '''
 
         # Don't waist time if we're not moving
-        if self.change_x == 0 and self.change_y == 0:
+        if self.change_x == 0 and self.change_y == 0 and self.is_on_collideable():
             # Clear the frame cache here as well
             # this is in case someone overrides update
             # and calls a method that uses the frame cache
@@ -111,12 +111,15 @@ class Sprite(pygame.sprite.Sprite):
             if pygame.sprite.collide_rect(self, sprite):
                 if not only_collideable:
                     collided_with.append(sprite)
+                elif sprite.is_collideable():
+                    collided_with.append(sprite)
+
                 if trigger_cb:
-                    self.collide(change_x, change_y, sprite)
-                if sprite.is_collideable():
+                    collideable = self.collide(change_x, change_y, sprite)
+                    if collideable:
+                        self.any_collideable = True
+                elif sprite.is_collideable():
                     self.any_collideable = True
-                    if only_collideable:
-                        collided_with.append(sprite)
 
         return collided_with
 
@@ -124,7 +127,6 @@ class Sprite(pygame.sprite.Sprite):
         '''
         Handle collisions
         '''
-
         if sprite.is_collideable():
             if change_x > 0:
                 self.rect.right = sprite.rect.left
@@ -134,6 +136,8 @@ class Sprite(pygame.sprite.Sprite):
                 self.rect.bottom = sprite.rect.top
             if change_y < 0:
                 self.rect.top = sprite.rect.bottom
+            return True
+        return False
 
     def is_on_collideable(self):
         '''

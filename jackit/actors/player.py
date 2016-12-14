@@ -5,7 +5,7 @@ User controllable player
 import pygame
 from jackit.core import CustomEvent
 from jackit.core.actor import Actor
-from jackit.entities import CodeBlock, ExitBlock, DeathBlock
+from jackit.entities import CodeBlock, ExitBlock, DeathBlock, MoveableBlock
 
 class Player(Actor):
     '''
@@ -18,7 +18,18 @@ class Player(Actor):
         self.stats.use_patch = True # Use the UserPatch for player stats
 
     def collide(self, change_x, change_y, sprite):
-        super(Player, self).collide(change_x, change_y, sprite)
+
+        # If we're pushing a block don't collide with it
+        '''
+        if isinstance(sprite, MoveableBlock):
+            keys = pygame.key.get_pressed()
+            if keys[self.controls.push]:
+                print("****Pushing/pulling block*****")
+                return False # Overrides is_collidable() preventing collision with
+                             # pushable blocks while pushing
+        '''
+
+        collideable = super(Player, self).collide(change_x, change_y, sprite)
 
         if isinstance(sprite, ExitBlock):
             print("Exit block")
@@ -27,8 +38,76 @@ class Player(Actor):
             print("Death block")
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
+        return collideable
+
     def update(self):
         super(Player, self).update()
+
+        # Move the pushable blocks with the player
+        '''
+        if self.is_pushable_on_left() or self.is_pushable_on_right():
+            keys = pygame.key.get_pressed()
+            if keys[self.controls.push]:
+                left = self.frame_cache.get("is_pushabled_on_left", None)
+                right = self.frame_cache.get("is_pushable_on_right", None)
+
+                if left is not None:
+                    left.rect.x = self.rect.x
+                if right is not None:
+                    right.rect.left = self.rect.x
+        '''
+
+    def is_pushable_on_right(self):
+        '''
+        True if there's a pushable block to the right of player
+        '''
+        if self.frame_cache.get("is_pushable_on_right", None) is not None:
+            return True
+
+        # See if there's a pushable block to the right of player
+        self.rect.x += 2
+        collideable_blocks_hit = self.spritecollide(
+            self.game_engine.current_level.entities,
+            0, 0,
+            trigger_cb=False,
+            only_collideable=True
+        )
+        self.rect.x -= 2
+
+        if self.any_collideable:
+            for block in collideable_blocks_hit:
+                if isinstance(block, MoveableBlock):
+                    # Only use the first b/c only one block should be able to be
+                    # on our left or right at a time
+                    self.frame_cache["is_pushable_on_right"] = block
+                    return True
+
+        return False
+
+    def is_pushable_on_left(self):
+        '''
+        True if there's a pushable block to the left of player
+        '''
+        if self.frame_cache.get("is_pushable_on_left", None) is not None:
+            return True
+
+        # See if there's a pushable block to the left of player
+        self.rect.x -= 2
+        collideable_blocks_hit = self.spritecollide(
+            self.game_engine.current_level.entities,
+            0, 0,
+            trigger_cb=False,
+            only_collideable=True
+        )
+        self.rect.x += 2
+
+        if self.any_collideable:
+            for block in collideable_blocks_hit:
+                if isinstance(block, MoveableBlock):
+                    self.frame_cache["is_pushable_on_left"] = block
+                    return True
+
+        return False
 
     def is_on_code_block(self):
         '''
