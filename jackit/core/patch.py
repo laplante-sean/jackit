@@ -67,21 +67,39 @@ class UserPatchSingleton:
 
     def get_actor_top_speed(self):
         '''
-        Getter for the player's top speed
+        Getter for the actors's top speed
         '''
         return self.call_patch(self.get_actor_top_speed.__name__)
 
     def get_actor_jump_speed(self):
         '''
-        Getter for the player's jump speed
+        Getter for the actors's jump speed
         '''
         return self.call_patch(self.get_actor_jump_speed.__name__)
 
     def get_actor_x_acceleration(self):
         '''
-        Getter for the player's x-axis acceleration
+        Getter for the actors's x-axis acceleration
         '''
         return self.call_patch(self.get_actor_x_acceleration.__name__)
+
+    def get_actor_grav_acceleration(self):
+        '''
+        Getter for the actor's gravity acceleration
+        '''
+        return self.call_patch(self.get_actor_grav_acceleration.__name__)
+
+    def get_actor_grav_deceleration(self):
+        '''
+        Getter for the actor's gravity deceleration
+        '''
+        return self.call_patch(self.get_actor_grav_deceleration.__name__)
+
+    def get_actor_grav_high_jump(self):
+        '''
+        Getter for the actor's gravity high jump value
+        '''
+        return self.call_patch(self.get_actor_grav_high_jump.__name__)
 
 # Create an instance of UserPatchSingleton
 UserPatch = UserPatchSingleton.instance()

@@ -30,13 +30,13 @@ class Physics:
         self.air_braking = air_braking
 
         # Force of gravity while actor is descending
-        self.grav_acceleration = grav_acceleration
+        self._grav_acceleration = grav_acceleration
 
         # Force of gravity while actor is ascending
-        self.grav_deceleration = grav_deceleration
+        self._grav_deceleration = grav_deceleration
 
         # Force of gravity while actor is ascending and jump is held
-        self.grav_high_jump = grav_high_jump
+        self._grav_high_jump = grav_high_jump
 
         # Maximum falling speed
         self.terminal_velocity = terminal_velocity
@@ -45,9 +45,60 @@ class Physics:
         self.use_patch = False
 
     @property
+    def grav_acceleration(self):
+        '''
+        Getter for _grav_acceleration - Calls the patched version if it exists
+        '''
+        if not self.use_patch:
+            return self._grav_acceleration
+
+        ret = UserPatch.get_actor_grav_acceleration()
+        if ret is None:
+            return self._grav_acceleration
+        return ret
+
+    @grav_acceleration.setter
+    def grav_acceleration(self, value):
+        self._grav_acceleration = value
+
+    @property
+    def grav_deceleration(self):
+        '''
+        Getter for _grav_deceleration - Calls the patched version if it exists
+        '''
+        if not self.use_patch:
+            return self._grav_deceleration
+
+        ret = UserPatch.get_actor_grav_deceleration()
+        if ret is None:
+            return self._grav_deceleration
+        return ret
+
+    @grav_deceleration.setter
+    def grav_deceleration(self, value):
+        self._grav_deceleration = value
+
+    @property
+    def grav_high_jump(self):
+        '''
+        Getter for _grav_high_jump - Calls the patched version if it exists
+        '''
+        if not self.use_patch:
+            return self._grav_high_jump
+
+        ret = UserPatch.get_actor_grav_high_jump()
+        if ret is None:
+            return self._grav_high_jump
+        return ret
+
+    @grav_high_jump.setter
+    def grav_high_jump(self, value):
+        self._grav_high_jump = value
+
+    @property
     def x_acceleration(self):
         '''
-        Getter for x_acceleration - Calls the patched version if it exists
+        Getter for _x_acceleration - Calls the patched version if it exists
         '''
         if not self.use_patch:
             return self._x_acceleration
@@ -64,7 +115,7 @@ class Physics:
     @property
     def top_speed(self):
         '''
-        Getter for top_speed - Calls the patched version if it exists
+        Getter for _top_speed - Calls the patched version if it exists
         '''
         if not self.use_patch:
             return self._top_speed
@@ -81,7 +132,7 @@ class Physics:
     @property
     def jump_speed(self):
         '''
-        Getter for jump_speed - Calls the patched version if it exists
+        Getter for _jump_speed - Calls the patched version if it exists
         '''
         if not self.use_patch:
             return self._jump_speed

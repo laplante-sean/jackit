@@ -13,7 +13,7 @@ from jackit.actors import Player
 from jackit.entities import CollectableBlock
 from jackit.core.editor import CodeEditor
 from jackit.levels import Level_01, Level_02, Level_03,\
-                          Level_04
+                          Level_04, Level_05
 
 class EngineSingleton:
     '''
@@ -65,7 +65,9 @@ class EngineSingleton:
             self.screen = pygame.display.set_mode(self.screen_size)
 
         # Init the levels
-        self.levels = [Level_01(self), Level_02(self), Level_03(self), Level_04(self)]
+        self.levels = [
+            Level_01(self), Level_02(self), Level_03(self), Level_04(self), Level_05(self)
+        ]
         self.current_level_index = 0
         self.current_level = self.levels[self.current_level_index]
         self.current_level.load()
