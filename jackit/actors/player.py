@@ -6,7 +6,7 @@ import pygame
 from jackit.core import CustomEvent
 from jackit.core.actor import Actor
 from jackit.actors.enemy import Enemy
-from jackit.entities import CodeBlock, ExitBlock, DeathBlock
+from jackit.entities import CodeBlock, ExitBlock, DeathBlock, CollectableBlock
 
 class Player(Actor):
     '''
@@ -20,6 +20,12 @@ class Player(Actor):
 
     def collide(self, change_x, change_y, sprite):
         collideable = super(Player, self).collide(change_x, change_y, sprite)
+
+        if isinstance(sprite, CollectableBlock):
+            print("collectable block")
+            # TODO: get the value of the item
+            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
+
         if not collideable:
             return collideable
 

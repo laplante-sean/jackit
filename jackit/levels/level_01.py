@@ -51,8 +51,8 @@ class Level_01(Level):
         "PPPPPP                                     P",
         "P     P                                    P",
         "P      P                                   P",
-        "P       PPP                                P",
-        "P           PPP                            P",
+        "P       PPP  I                             P",
+        "P           PPP   I                        P",
         "P                PPP                       P",
         "P                        L                 P",
         "P                       PPPPPPPPPPP        P",
@@ -63,7 +63,7 @@ class Level_01(Level):
         "P                          L       B       P",
         "P                         PPPPPPPPPP       E",
         "P    S                                     E",
-        "P    C                 C                   E",
+        "P    C     I I I I I I C                   E",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 

@@ -10,6 +10,7 @@ from jackit.core import CustomEvent
 # Import game engine components
 from jackit.core.input import Input
 from jackit.actors import Player
+from jackit.entities import CollectableBlock
 from jackit.core.editor import CodeEditor
 from jackit.levels import Level_01, Level_02, Level_03,\
                           Level_04
@@ -170,6 +171,10 @@ class EngineSingleton:
 
                     # Add the player back to the level
                     self.current_level.entities.add(event.sprite)
+                elif isinstance(event.sprite, CollectableBlock):
+                    print("Collected item")
+                    self.current_level.entities.remove(event.sprite)
+                    self.current_level.collectable_blocks.remove(event.sprite)
                 else:
                     print("Despawning something other than player")
                     event.sprite.reset()
