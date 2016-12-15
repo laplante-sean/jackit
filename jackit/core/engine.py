@@ -41,7 +41,12 @@ class EngineSingleton:
         self.fullscreen = self.config.fullscreen
         self.framerate = self.config.framerate
         self.running = True
-        self.playtime = 0 # Current amout of time playing (seconds)
+
+        # Current amout of time playing (seconds)
+        self.playtime = 0
+
+        # Current score
+        self.score = 0
 
         self.clock = pygame.time.Clock() # for framerate control
         if self.config.accurate_framerate:

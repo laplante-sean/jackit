@@ -12,11 +12,14 @@ class Sprite(pygame.sprite.Sprite):
     Derives from pygame spriten for update and draw
     and so it can be included in sprite groups
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
+    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics(), animation=None):
         super(Sprite, self).__init__()
 
         # Store the game engine for access to globals
         self.game_engine = game_engine
+
+        # Setup animation
+        self.animation = animation
 
         # Store the width and height
         self.width = width
@@ -28,10 +31,15 @@ class Sprite(pygame.sprite.Sprite):
         # Setup the sprite
         # Disable error in pylint. It doesn't like the Surface() call. Pylint is wrong.
         # pylint: disable=E1121
-        self.image = pygame.Surface([width, height])
-        self.image.fill((255, 0, 0))
-        self.image = self.image.convert() # Convert the surface for faster blitting
-        self.rect = self.image.get_rect()
+        if self.animation is None:
+            self.image = pygame.Surface([width, height])
+            self.image.fill((255, 0, 0))
+            self.image = self.image.convert() # Convert the surface for faster blitting
+            self.rect = self.image.get_rect()
+        else:
+            self.animation.iter()
+            self.image = self.animation.next()
+            self.rect = self.image.get_rect()
 
         # Store the initial spawn point for this sprite forever
         self.spawn_point = (x_pos, y_pos)
@@ -68,6 +76,8 @@ class Sprite(pygame.sprite.Sprite):
         '''
         Update the sprite's position.
         '''
+        if self.animation is not None:
+            self.image = self.animation.next()
 
         # Don't waist time if we're not moving
         if self.change_x == 0 and self.change_y == 0:

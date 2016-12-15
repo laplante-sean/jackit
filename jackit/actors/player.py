@@ -2,7 +2,10 @@
 User controllable player
 '''
 
+import os
 import pygame
+from deploy import SiteDeployment
+from jackit.core.animation import SpriteStripAnimation
 from jackit.core import CustomEvent
 from jackit.core.actor import Actor
 from jackit.actors.enemy import Enemy
@@ -14,7 +17,15 @@ class Player(Actor):
     '''
 
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
-        super(Player, self).__init__(game_engine, 24, 24, spawn_point[0], spawn_point[1])
+        animation = SpriteStripAnimation(
+            os.path.join(SiteDeployment.resource_path, "sprites", "animation_demo.bmp"),
+            (0, 48, 24, 24), 10, -1, True,
+            int(game_engine.config.framerate / game_engine.config.animation_framerate)
+        )
+
+        super(Player, self).__init__(
+            game_engine, 24, 24, spawn_point[0], spawn_point[1], animation=animation)
+
         self.controls = controls
         self.stats.use_patch = True # Use the UserPatch for player stats
 

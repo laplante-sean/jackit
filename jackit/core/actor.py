@@ -9,8 +9,8 @@ class Actor(Sprite):
     '''
     Base class for all game actors
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
-        super(Actor, self).__init__(game_engine, width, height, x_pos, y_pos, stats)
+    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics(), animation=None):
+        super(Actor, self).__init__(game_engine, width, height, x_pos, y_pos, stats, animation)
 
         # Maximum number of frames it should take to stop movement
         self.max_stop_frames = int(self.stats.top_speed/self.stats.x_deceleration)
