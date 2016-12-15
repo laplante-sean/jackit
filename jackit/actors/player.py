@@ -41,9 +41,12 @@ class Player(Actor):
         )
 
         self.controls = controls
-        self.stats.use_patch = True # Use the UserPatch for player stats
+        self.use_patch = True # Use the UserPatch for player stats and player
 
     def collide(self, change_x, change_y, sprite):
+        '''
+        Called on each collision
+        '''
         collideable = super(Player, self).collide(change_x, change_y, sprite)
 
         if isinstance(sprite, CollectableBlock):

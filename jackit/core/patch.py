@@ -27,7 +27,7 @@ class UserPatchSingleton:
     def __init__(self):
         self.patch_map = {}
 
-    def patch_method(self, method_name, cb, valid_ret_types):
+    def patch_method(self, method_name, cb, valid_ret_types, *args):
         '''
         Patch the method with the provided callback
         '''
@@ -36,7 +36,7 @@ class UserPatchSingleton:
         # Test the method and return value so we don't have to wrap it
         # in a try catch and test the return on each frame
         try:
-            ret = cb()
+            ret = cb(*args)
             for rtype in valid_ret_types:
                 if isinstance(ret, rtype):
                     valid = True
@@ -57,12 +57,12 @@ class UserPatchSingleton:
         '''
         self.patch_map = {}
 
-    def call_patch(self, method_name):
+    def call_patch(self, method_name, *args):
         '''
         Call a patched method if it exists
         '''
         if self.patch_map.get(method_name, None) is not None:
-            return self.patch_map[method_name]()
+            return self.patch_map[method_name](*args)
         return None
 
     def get_actor_top_speed(self):
@@ -100,6 +100,12 @@ class UserPatchSingleton:
         Getter for the actor's gravity high jump value
         '''
         return self.call_patch(self.get_actor_grav_high_jump.__name__)
+
+    def is_moving_up(self, change_y):
+        '''
+        User patch getter to check if the sprite is moving up
+        '''
+        return self.call_patch(self.is_moving_up.__name__, change_y)
 
 # Create an instance of UserPatchSingleton
 UserPatch = UserPatchSingleton.instance()

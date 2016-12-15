@@ -35,6 +35,9 @@ def get_actor_grav_deceleration():
 def get_actor_grav_high_jump():
     # Get the reduced force of gravity while jump is held
     return 0
+
+def is_moving_up(change_y):
+    return change_y < 0
         """
     ]
 
@@ -84,3 +87,7 @@ def get_actor_grav_high_jump():
             UserPatch.patch_method("get_actor_grav_high_jump",
                                    local_dict.get("get_actor_grav_high_jump"),
                                    [float, int])
+        if local_dict.get("is_moving_up") is not None:
+            UserPatch.patch_method("is_moving_up",
+                                   local_dict.get("is_moving_up"),
+                                   [float, int], 0)

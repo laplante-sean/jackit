@@ -6,6 +6,7 @@ import pygame
 
 from jackit.core import CustomEvent
 from jackit.core.physics import Physics
+from jackit.core.patch import UserPatch
 
 class Sprite(pygame.sprite.Sprite):
     '''
@@ -61,10 +62,28 @@ class Sprite(pygame.sprite.Sprite):
         # True if any of the sprites from the most recent call to spritecollide() were collideable
         self.any_collideable = False
 
+        # True to use the user patched methods
+        self._use_patch = False
+
         # Frame cache. Allows methods that do a lot to store their results
         # for the current frame so that subsequent calls use the cache. This
         # is cleared on each frame.
         self.frame_cache = {}
+
+    @property
+    def use_patch(self):
+        '''
+        Getter for the _use_patch instance variable
+        '''
+        return self._use_patch
+
+    @use_patch.setter
+    def use_patch(self, value):
+        '''
+        Also set this in the stats
+        '''
+        self.stats.use_patch = value
+        self._use_patch = value
 
     def update_complete(self):
         '''
@@ -152,6 +171,32 @@ class Sprite(pygame.sprite.Sprite):
                 self.rect.top = sprite.rect.bottom
             return True
         return False
+
+    def is_under_collideable(self):
+        '''
+        True if Sprite is under a collideable entity
+        uses frame cache to ensure subsequent calls
+        are faster
+        '''
+
+        # Speed up calls to this method if used more than once per frame
+        if self.frame_cache.get("is_under_collideable", None) != None:
+            return True
+
+        # Move up 2 pixels (doesn't work well with 1)
+        self.rect.y -= 2
+        collideable_blocks_hit = self.spritecollide(
+            self.game_engine.current_level.entities,
+            0, 0,
+            trigger_cb=False,
+            only_collideable=True
+        )
+        self.rect.y += 2 # Reset the position after check
+
+        if self.any_collideable:
+            self.frame_cache["is_under_collideable"] = collideable_blocks_hit
+            return True
+        return True
 
     def is_on_collideable(self):
         '''
@@ -242,7 +287,13 @@ class Sprite(pygame.sprite.Sprite):
         '''
         True if the Actor is moving up
         '''
-        return self.change_y < 0
+        if not self.use_patch:
+            return self.change_y < 0
+
+        ret = UserPatch.is_moving_up(self.change_y)
+        if ret is None:
+            return self.change_y < 0
+        return ret
 
     def is_moving_down(self):
         '''
