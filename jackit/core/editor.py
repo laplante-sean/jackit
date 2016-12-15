@@ -44,8 +44,8 @@ class CodeEditor:
         self.render_text_list = []
 
         # Create a coding window slightly smaller than the main window
-        self.width = self.game_engine.screen_width / 1.25
-        self.height = self.game_engine.screen_height / 1.25
+        self.width = self.game_engine.screen_width / 1.1
+        self.height = self.game_engine.screen_height / 1.1
         self.code_window = pygame.Surface([self.width, self.height])
         self.code_window.fill(self.config.bg_color)
         self.code_window.set_alpha(self.config.bg_alpha)
