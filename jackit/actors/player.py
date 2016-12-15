@@ -20,7 +20,7 @@ class Player(Actor):
         animation = SpriteStripAnimation(
             os.path.join(SiteDeployment.resource_path, "sprites", "animation_demo.bmp"),
             (0, 48, 24, 24), 10, -1, True,
-            int(game_engine.config.framerate / game_engine.config.animation_framerate)
+            int(game_engine.config.framerate / 4)
         )
 
         super(Player, self).__init__(
