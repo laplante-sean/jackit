@@ -17,14 +17,28 @@ class Player(Actor):
     '''
 
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
+        block_width = game_engine.current_level.level_map_block_x
+        block_height = game_engine.current_level.level_map_block_y
+        image_path = os.path.join(SiteDeployment.resource_path, "sprites", "animation_demo.bmp")
+
         animation = SpriteStripAnimation(
-            os.path.join(SiteDeployment.resource_path, "sprites", "animation_demo.bmp"),
-            (0, 48, 24, 24), 10, -1, True,
-            int(game_engine.config.framerate / 4)
+            image_path, (0, 0, block_width, block_height), 8, -1, True,
+            int(game_engine.config.framerate / 24)
+        ) + SpriteStripAnimation(
+            image_path, (0, 24, block_width, block_height), 8, -1, True,
+            int(game_engine.config.framerate / 24)
+        ) + SpriteStripAnimation(
+            image_path, (0, 48, block_width, block_height), 8, -1, True,
+            int(game_engine.config.framerate / 24)
+        ) + SpriteStripAnimation(
+            image_path, (0, 72, block_width, block_height), 8, -1, True,
+            int(game_engine.config.framerate / 24)
         )
 
         super(Player, self).__init__(
-            game_engine, 24, 24, spawn_point[0], spawn_point[1], animation=animation)
+            game_engine, block_width, block_height, spawn_point[0],
+            spawn_point[1], animation=animation
+        )
 
         self.controls = controls
         self.stats.use_patch = True # Use the UserPatch for player stats
