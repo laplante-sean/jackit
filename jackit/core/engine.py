@@ -179,7 +179,6 @@ class EngineSingleton:
                     # Add the player back to the level
                     self.current_level.entities.add(event.sprite)
                 elif isinstance(event.sprite, CollectableBlock):
-                    print("Collected item")
                     self.current_level.entities.remove(event.sprite)
                     self.current_level.collectable_blocks.remove(event.sprite)
                 else:

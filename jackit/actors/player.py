@@ -50,7 +50,6 @@ class Player(Actor):
         collideable = super(Player, self).collide(change_x, change_y, sprite)
 
         if isinstance(sprite, CollectableBlock):
-            print("collectable block")
             # TODO: get the value of the item
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
 
@@ -65,6 +64,19 @@ class Player(Actor):
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
         return collideable
+
+    def is_on_collideable(self):
+        '''
+        The rare chance that we land perfectly on an enemy and miss the call to collide
+        '''
+        ret = super(Player, self).is_on_collideable()
+        if ret:
+            for block in self.frame_cache["is_on_collideable"]:
+                if isinstance(block, Enemy):
+                    print("*******Somehow missed this one. On enemy!")
+                    pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
+                    break
+        return ret
 
     def collide_with(self, sprite):
         '''
