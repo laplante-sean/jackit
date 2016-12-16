@@ -15,6 +15,8 @@ class BasicEnemy(Enemy):
     '''
     def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
         super(BasicEnemy, self).__init__(game_engine, width, height, x_pos, y_pos, stats)
+        self.random_behavior = False
+        self.random_chance = 50
 
     def update(self):
         super(BasicEnemy, self).update()
@@ -26,36 +28,28 @@ class BasicEnemy(Enemy):
             else:
                 self.go_right()
 
-class RandomEnemy(BasicEnemy):
-    '''
-    Randomly changes direction rarely
-    '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
-        super(RandomEnemy, self).__init__(game_engine, width, height, x_pos, y_pos, stats)
-
-    def update(self):
-        super(RandomEnemy, self).update()
-
-        if self.change_x != 0:
+        if self.random_behavior and self.change_x != 0:
             # Low chance of changing direction while moving
-            choice = random.randint(0, 100)
+            choice = random.randint(0, 50)
             if choice == Enemy.CHANGE_DIR:
                 if self.horizontal_movement_action is self.go_left:
                     self.go_right()
                 else:
                     self.go_left()
 
-class LedgeSensingBasicEnemy(BasicEnemy):
+class LedgeSensingEnemy(BasicEnemy):
     '''
     Basic enemy that also turns around on a ledge
     '''
     def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
-        super(LedgeSensingBasicEnemy, self).__init__(
+        super(LedgeSensingEnemy, self).__init__(
             game_engine, width, height,
             x_pos, y_pos, stats
         )
 
     def update(self):
+        super(LedgeSensingEnemy, self).update()
+
         if self.is_moving_left() and self.is_on_collideable():
             self.rect.y += 2 # Move down 2
             on_ledge = True
@@ -87,5 +81,3 @@ class LedgeSensingBasicEnemy(BasicEnemy):
             if on_ledge:
                 self.change_x = 0
                 self.go_left()
-
-        super(LedgeSensingBasicEnemy, self).update()

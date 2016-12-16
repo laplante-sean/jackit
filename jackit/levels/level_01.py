@@ -45,7 +45,7 @@ class Level_01(Level):
         "P                                          P                                                                     E",
         "P                        PPPPPPPPPPPPP     P                                                                     E",
         "P                                          P                                 C                                   E",
-        "P                                          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+        "P                                B         PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
         "P          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
         "P                                          P",
         "PPPPPP                                     P",
@@ -57,13 +57,13 @@ class Level_01(Level):
         "P                        L                 P",
         "P                       PPPPPPPPPPP        P",
         "P                                          P",
-        "P              L                           P",
+        "P              Z                           P",
         "P            PPPPPPPPPPP                   P",
         "P                                          P",
-        "P                          L       B       P",
+        "P                          Z               P",
         "P                         PPPPPPPPPP       E",
         "P    S                                     E",
-        "P    C     I I I I I I C                   E",
+        "P    C     I I I I I I C         R         E",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 
@@ -72,4 +72,7 @@ class Level_01(Level):
 
     def create_code_block(self, x_pos, y_pos):
         block = super(Level_01, self).create_code_block(x_pos, y_pos)
+        block.challenge_text = """
+dDDDdjslkfjdsf;lksafhkfjahsdjkfhasdkjfhalsdkjfhaldjksfhalkjsdhflakjshdflkajhfldkajhdlkjhalkjsdhflasjdhfalksdjhfaldsj
+        """
         return block

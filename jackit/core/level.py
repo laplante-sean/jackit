@@ -6,7 +6,7 @@ for each level
 import pygame
 
 from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock, CollectableBlock
-from jackit.actors import LedgeSensingBasicEnemy, BasicEnemy
+from jackit.actors import LedgeSensingEnemy, BasicEnemy
 from jackit.core.spritegroup import SpriteGroup
 from jackit.core.camera import Camera, complex_camera
 from jackit.core.patch import UserPatch
@@ -29,6 +29,9 @@ class LevelMap:
     COLLECTABLE_BLOCK = "I"
     BASIC_ENEMY = "B"
     LEDGE_SENSE_ENEMY = "L"
+    LEDGE_SENSE_RND_ENEMY = "Z"
+    RANDOM_ENEMY = "R"
+    MIRROR_ENEMY = "M"
 
 class Level:
     '''
@@ -125,6 +128,10 @@ class Level:
                     self.entities.add(self.create_basic_enemy(x, y))
                 elif col == LevelMap.LEDGE_SENSE_ENEMY:
                     self.entities.add(self.create_ledge_sense_enemy(x, y))
+                elif col == LevelMap.RANDOM_ENEMY:
+                    self.entities.add(self.create_random_enemy(x, y))
+                elif col == LevelMap.LEDGE_SENSE_RND_ENEMY:
+                    self.entities.add(self.create_ledge_sense_random_enemy(x, y))
                 x += self.level_map_block_x
             y += self.level_map_block_y
             x = 0
@@ -135,6 +142,20 @@ class Level:
         total_level_width = len(max(self.level_map, key=len)) * self.level_map_block_x
         total_level_height = len(self.level_map) * self.level_map_block_y
         return total_level_width, total_level_height
+
+    def create_random_enemy(self, x_pos, y_pos):
+        '''
+        Create a random enemy (moves randomly)
+        '''
+        ret = BasicEnemy(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+        ret.random_behavior = True
+        self.enemies.add(ret)
+        return ret
 
     def create_basic_enemy(self, x_pos, y_pos):
         '''
@@ -153,12 +174,26 @@ class Level:
         '''
         Creates the ledge sensing enemy
         '''
-        ret = LedgeSensingBasicEnemy(
+        ret = LedgeSensingEnemy(
             self.game_engine,
             self.level_map_block_x,
             self.level_map_block_y,
             x_pos, y_pos
         )
+        self.enemies.add(ret)
+        return ret
+
+    def create_ledge_sense_random_enemy(self, x_pos, y_pos):
+        '''
+        Creates the ledge sensing enemy with random behavior
+        '''
+        ret = LedgeSensingEnemy(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+        ret.random_behavior = True
         self.enemies.add(ret)
         return ret
 

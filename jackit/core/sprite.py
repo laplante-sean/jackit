@@ -172,32 +172,6 @@ class Sprite(pygame.sprite.Sprite):
             return True
         return False
 
-    def is_under_collideable(self):
-        '''
-        True if Sprite is under a collideable entity
-        uses frame cache to ensure subsequent calls
-        are faster
-        '''
-
-        # Speed up calls to this method if used more than once per frame
-        if self.frame_cache.get("is_under_collideable", None) != None:
-            return True
-
-        # Move up 2 pixels (doesn't work well with 1)
-        self.rect.y -= 2
-        collideable_blocks_hit = self.spritecollide(
-            self.game_engine.current_level.entities,
-            0, 0,
-            trigger_cb=False,
-            only_collideable=True
-        )
-        self.rect.y += 2 # Reset the position after check
-
-        if self.any_collideable:
-            self.frame_cache["is_under_collideable"] = collideable_blocks_hit
-            return True
-        return True
-
     def is_on_collideable(self):
         '''
         True if Sprite is on a collideable entity
