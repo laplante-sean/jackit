@@ -169,14 +169,11 @@ class EngineSingleton:
                 self.running = False
             elif event.type == CustomEvent.KILL_SPRITE:
                 if isinstance(event.sprite, Player):
-                    print("Despawn player")
-
                     # Reset the current level. This clears the
                     # user patched code
                     self.current_level.reset()
 
                     #For now set back to spawn point
-                    # TODO: Decrement lives
                     event.sprite.reset()
 
                     # Add the player back to the level
@@ -185,12 +182,12 @@ class EngineSingleton:
                     self.current_level.entities.remove(event.sprite)
                     self.current_level.collectable_blocks.remove(event.sprite)
                 else:
-                    print("Despawning something other than player")
                     event.sprite.reset()
             elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():
-                print("Exit editor")
                 self.player.frame_cache["is_on_code_block"].interaction_complete(event)
             elif event.type == CustomEvent.NEXT_LEVEL:
+                print("Level score: ", self.player.level_score)
+                print("Lives: ", self.lives)
                 self.next_level()
                 break # Stop processing more events. Changing levels.
                       # Fixes #31

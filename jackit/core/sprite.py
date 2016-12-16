@@ -121,6 +121,7 @@ class Sprite(pygame.sprite.Sprite):
         # Check if we're in the death zone of the level and kill ourself
         if self.game_engine.is_rect_in_death_zone(self.rect):
             print("Death zone: (", self.rect.x, ",", self.rect.y, ")")
+            self.kill()
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite": self}))
 
     def spritecollide(self, sprites, change_x, change_y, trigger_cb=True, only_collideable=False):
@@ -198,6 +199,13 @@ class Sprite(pygame.sprite.Sprite):
             return True
 
         return False
+
+    def kill(self):
+        '''
+        Overridden by subclasses to do more on death
+        like decrement lives etc.
+        '''
+        return
 
     def reset(self):
         '''
