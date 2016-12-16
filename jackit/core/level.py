@@ -5,7 +5,8 @@ for each level
 
 import pygame
 
-from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock, CollectableBlock
+from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock, CollectableBlock,\
+                            OneUp, DecryptionKey, Coin
 from jackit.actors import LedgeSensingEnemy, BasicEnemy
 from jackit.core.spritegroup import SpriteGroup
 from jackit.core.camera import Camera, complex_camera
@@ -26,12 +27,16 @@ class LevelMap:
     SPAWN = "S"
     CODE = "C"
     DEATH_ENTITY = "D"
-    COLLECTABLE_BLOCK = "I"
     BASIC_ENEMY = "B"
     LEDGE_SENSE_ENEMY = "L"
     LEDGE_SENSE_RND_ENEMY = "Z"
     RANDOM_ENEMY = "R"
     MIRROR_ENEMY = "M"
+    DECRYPTION_KEY = "K"
+    ONE_UP = "U"
+    ONE_POINT_COIN = "1"
+    FIVE_POINT_COIN = "5"
+    TEN_POINT_COIN = "0"
 
 class Level:
     '''
@@ -122,8 +127,6 @@ class Level:
                     self.entities.add(self.create_code_block(x, y))
                 elif col == LevelMap.DEATH_ENTITY:
                     self.entities.add(self.create_death_block(x, y))
-                elif col == LevelMap.COLLECTABLE_BLOCK:
-                    self.entities.add(self.create_collectable_block(x, y))
                 elif col == LevelMap.BASIC_ENEMY:
                     self.entities.add(self.create_basic_enemy(x, y))
                 elif col == LevelMap.LEDGE_SENSE_ENEMY:
@@ -132,6 +135,16 @@ class Level:
                     self.entities.add(self.create_random_enemy(x, y))
                 elif col == LevelMap.LEDGE_SENSE_RND_ENEMY:
                     self.entities.add(self.create_ledge_sense_random_enemy(x, y))
+                elif col == LevelMap.DECRYPTION_KEY:
+                    self.entities.add(self.create_decryption_key(x, y))
+                elif col == LevelMap.ONE_UP:
+                    self.entities.add(self.create_one_up(x, y))
+                elif col == LevelMap.ONE_POINT_COIN:
+                    self.entities.add(self.create_coin(x, y, 1))
+                elif col == LevelMap.FIVE_POINT_COIN:
+                    self.entities.add(self.create_coin(x, y, 5))
+                elif col == LevelMap.TEN_POINT_COIN:
+                    self.entities.add(self.create_coin(x, y, 10))
                 x += self.level_map_block_x
             y += self.level_map_block_y
             x = 0
@@ -142,6 +155,46 @@ class Level:
         total_level_width = len(max(self.level_map, key=len)) * self.level_map_block_x
         total_level_height = len(self.level_map) * self.level_map_block_y
         return total_level_width, total_level_height
+
+    def create_coin(self, x_pos, y_pos, value):
+        '''
+        Create a coin worth value
+        '''
+        ret = Coin(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+        ret.points = value
+        self.collectable_blocks.add(ret)
+        return ret
+
+    def create_one_up(self, x_pos, y_pos):
+        '''
+        Create a collectable extra life pickup
+        '''
+        ret = OneUp(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+        self.collectable_blocks.add(ret)
+        return ret
+
+    def create_decryption_key(self, x_pos, y_pos):
+        '''
+        Create a collectable adapter plug
+        '''
+        ret = DecryptionKey(
+            self.game_engine,
+            self.level_map_block_x,
+            self.level_map_block_y,
+            x_pos, y_pos
+        )
+        self.collectable_blocks.add(ret)
+        return ret
 
     def create_random_enemy(self, x_pos, y_pos):
         '''
@@ -250,19 +303,6 @@ class Level:
             x_pos, y_pos
         )
         self.platforms.add(ret)
-        return ret
-
-    def create_collectable_block(self, x_pos, y_pos):
-        '''
-        Create a block that can be collected by the player on collide
-        '''
-        ret = CollectableBlock(
-            self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
-            x_pos, y_pos
-        )
-        self.collectable_blocks.add(ret)
         return ret
 
     def challenge_completed(self, _):

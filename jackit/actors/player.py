@@ -9,7 +9,8 @@ from jackit.core.animation import SpriteStripAnimation
 from jackit.core import CustomEvent
 from jackit.core.actor import Actor
 from jackit.actors.enemy import Enemy
-from jackit.entities import CodeBlock, ExitBlock, DeathBlock, CollectableBlock
+from jackit.entities import CodeBlock, ExitBlock, DeathBlock,\
+                            DecryptionKey, Coin, OneUp
 
 class Player(Actor):
     '''
@@ -43,27 +44,76 @@ class Player(Actor):
         self.controls = controls
         self.use_patch = True # Use the UserPatch for player stats and player
 
+        # Current level score
+        self.level_score = 0
+
+        # List of items the player has
+        self.items = []
+
+        # List of stored code routines (so they don't have to do the code blocks_hit
+        # every time)
+        self.stored_code = []
+
+        # True if the player is alive otherwise false
+        self.alive = True
+
+    def has_key(self):
+        '''
+        Does the player have the decryption key?
+        '''
+        return any(isinstance(x, DecryptionKey) for x in self.items)
+
     def collide(self, change_x, change_y, sprite):
         '''
         Called on each collision
         '''
         collideable = super(Player, self).collide(change_x, change_y, sprite)
 
-        if isinstance(sprite, CollectableBlock):
-            # TODO: get the value of the item
+        if isinstance(sprite, Coin):
+            self.level_score += sprite.points
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
-
-        if not collideable:
-            return collideable
-
-        if isinstance(sprite, ExitBlock):
+        elif isinstance(sprite, OneUp):
+            self.game_engine.lives += 1
+            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
+        elif isinstance(sprite, DecryptionKey):
+            print("Got decryption key")
+            self.items.append(sprite)
+            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
+        elif isinstance(sprite, ExitBlock):
             print("Exit block")
+            self.game_engine.total_score += self.level_score
+            self.items.clear()
+            self.level_score = 0
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
         elif isinstance(sprite, Enemy) or isinstance(sprite, DeathBlock):
             print("collide() kills player. Player collided with enemy or death block.")
-            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
+            self.kill()
 
         return collideable
+
+    def reset(self):
+        '''
+        Reset the player
+        '''
+        super(Player, self).reset()
+        self.alive = True
+
+    def kill(self):
+        '''
+        Kill the player
+        '''
+        if not self.alive:
+            return
+
+        self.game_engine.lives -= 1
+        if self.game_engine.lives <= 0:
+            self.game_engine.running = False
+
+        self.items.clear()
+        self.level_score = 0
+
+        self.alive = False
+        pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
     def is_on_collideable(self):
         '''
@@ -83,12 +133,9 @@ class Player(Actor):
         Some other sprite collided into us (we didn't collide into it)
         Happens when the other sprite is moving and this sprite is not
         '''
-        if isinstance(sprite, ExitBlock):
-            print("Exit block collided with player")
-            pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
-        elif isinstance(sprite, Enemy) or isinstance(sprite, DeathBlock):
+        if isinstance(sprite, Enemy):
             print("collide_with() kills player. Enemy or death block collided with player.")
-            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
+            self.kill()
 
     def is_on_code_block(self):
         '''
@@ -160,6 +207,10 @@ class Player(Actor):
             elif event.key == self.controls.jump:
                 self.jump()
             elif event.key == self.controls.interact and self.is_on_code_block():
+                if self.frame_cache["is_on_code_block"].is_locked() and not self.has_key():
+                    print("This block is encrypted. Needs key!")
+                    return
+
                 # Stop the player and put them over the interactable object
                 self.hard_stop()
                 self.rect.left = self.frame_cache["is_on_code_block"].rect.left

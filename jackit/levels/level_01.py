@@ -21,7 +21,7 @@ class Level_01(Level):
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP                  PPPPPPPP                                       P",
         "P                                                                        P                                       P",
         "P                                                  PPPPPPPP              P                                       P",
-        "P                                                                        P                                       P",
+        "P                         K                                              P                                       P",
         "P                    PPPPPPPPPPP                               PPPPPPPPPPP                                       P",
         "P                                                                        PPPPPPPPPPPPPPPPPPPPPPPPPPP             P",
         "P                                          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP                                       P",
@@ -45,25 +45,25 @@ class Level_01(Level):
         "P                                          P                                                                     E",
         "P                        PPPPPPPPPPPPP     P                                                                     E",
         "P                                          P                                 C                                   E",
-        "P                                B         PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+        "P                                Z         PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
         "P          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
         "P                                          P",
         "PPPPPP                                     P",
         "P     P                                    P",
         "P      P                                   P",
-        "P       PPP  I                             P",
-        "P           PPP   I                        P",
+        "P       PPP  5                             P",
+        "P           PPP   5                        P",
         "P                PPP                       P",
-        "P                        L                 P",
+        "P                                          P",
         "P                       PPPPPPPPPPP        P",
         "P                                          P",
-        "P              Z                           P",
+        "P              L                           P",
         "P            PPPPPPPPPPP                   P",
         "P                                          P",
-        "P                          Z               P",
+        "P                                          P",
         "P                         PPPPPPPPPP       E",
         "P    S                                     E",
-        "P    C     I I I I I I C         R         E",
+        "P    C     K 1 1 1 1 1 C         R         E",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 
@@ -75,4 +75,5 @@ class Level_01(Level):
         block.challenge_text = """
 dDDDdjslkfjdsf;lksafhkfjahsdjkfhasdkjfhalsdkjfhaldjksfhalkjsdhflakjshdflkajhfldkajhdlkjhalkjsdhflasjdhfalksdjhfaldsj
         """
+        block.locked = True
         return block

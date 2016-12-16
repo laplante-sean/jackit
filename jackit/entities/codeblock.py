@@ -19,6 +19,15 @@ class CodeBlock(Entity):
         self.interaction_guard = pygame.sprite.Group()
         self.challenge_text = "CHALLENGE TEXT"
 
+        # True if this block requires an adapter to unlock
+        self.locked = False
+
+    def is_locked(self):
+        '''
+        Getter for the locked instance variable
+        '''
+        return self.locked
+
     def interact(self):
         '''
         Called when an interactable block is interacted with

@@ -46,7 +46,10 @@ class EngineSingleton:
         self.playtime = 0
 
         # Current score
-        self.score = 0
+        self.total_score = 0
+
+        # Lives
+        self.lives = 3
 
         self.clock = pygame.time.Clock() # for framerate control
         if self.config.accurate_framerate:
