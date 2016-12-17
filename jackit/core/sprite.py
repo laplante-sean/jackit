@@ -106,17 +106,19 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.x += self.change_x
 
         # Check if we hit anything in the x direction and stop moving if we did
-        self.spritecollide(self.game_engine.current_level.entities, self.change_x, 0)
-        if self.any_collideable:
-            self.change_x = 0
+        if self.collideable:
+            self.spritecollide(self.game_engine.current_level.entities, self.change_x, 0)
+            if self.any_collideable:
+                self.change_x = 0
 
         # Update the Y direction
         self.rect.y += self.change_y
 
         # Check if we hit anything in the y direction and stop moving if we did
-        self.spritecollide(self.game_engine.current_level.entities, 0, self.change_y)
-        if self.any_collideable:
-            self.change_y = 0
+        if self.collideable:
+            self.spritecollide(self.game_engine.current_level.entities, 0, self.change_y)
+            if self.any_collideable:
+                self.change_y = 0
 
         # Check if we're in the death zone of the level and kill ourself
         if self.game_engine.is_rect_in_death_zone(self.rect):

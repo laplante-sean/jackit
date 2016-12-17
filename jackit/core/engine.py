@@ -122,9 +122,7 @@ class EngineSingleton:
             pygame.display.set_caption(text)
 
         # Update the screen with what has been drawn
-        # TODO: Look into pygame.display.update() to update only things that have changed
-        # Might improve perormance
-        pygame.display.flip()
+        pygame.display.update(self.current_level.camera.state)
 
     def next_level(self):
         '''

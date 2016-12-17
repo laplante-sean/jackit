@@ -16,6 +16,7 @@ class Enemy(Actor):
     def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
         super(Enemy, self).__init__(game_engine, width, height, x_pos, y_pos, stats)
         self.image.fill((23, 24, 25))
+        self.collideable = False
 
     def collide(self, change_x, change_y, sprite):
         if isinstance(sprite, Enemy):
