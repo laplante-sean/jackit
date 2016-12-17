@@ -106,7 +106,7 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.x += self.change_x
 
         # Check if we hit anything in the x direction and stop moving if we did
-        if self.collideable:
+        if self.collideable and abs(self.change_x) > 0:
             self.spritecollide(self.game_engine.current_level.entities, self.change_x, 0)
             if self.any_collideable:
                 self.change_x = 0
@@ -115,7 +115,7 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.y += self.change_y
 
         # Check if we hit anything in the y direction and stop moving if we did
-        if self.collideable:
+        if self.collideable and abs(self.change_y) > 0:
             self.spritecollide(self.game_engine.current_level.entities, 0, self.change_y)
             if self.any_collideable:
                 self.change_y = 0
