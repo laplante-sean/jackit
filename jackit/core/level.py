@@ -6,7 +6,7 @@ for each level
 import pygame
 
 from jackit.core import CustomEvent, BLOCK_WIDTH, BLOCK_HEIGHT
-from jackit.actors import LedgeSensingEnemy, BasicEnemy, Player
+from jackit.actors import LedgeSensingEnemy, BasicEnemy, Player, Enemy
 from jackit.core.spritegroup import SpriteGroup
 from jackit.core.camera import Camera, complex_camera
 from jackit.core.patch import UserPatch
@@ -52,7 +52,7 @@ class Level:
         # This will have all entities for use in collision
         # detection
         self.entities = SpriteGroup()
-        self.collideable_entities = SpriteGroup()
+        self.non_enemy_collideable_entities = SpriteGroup()
         self.interactable_blocks = SpriteGroup()
 
         # These groups are for draw and update order preservation
@@ -91,7 +91,7 @@ class Level:
         self.enemies.empty()
         self.moveable_blocks.empty()
         self.entities.empty()
-        self.collideable_entities.empty()
+        self.non_enemy_collideable_entities.empty()
         self.interactable_blocks.empty()
 
         # Stop the text editor if it's running
@@ -118,10 +118,10 @@ class Level:
         # The player collides with everything
         self.player.collides_with = self.entities
         self.entities.add(self.player)
+        self.non_enemy_collideable_entities.add(self.player)
 
         for enemy in self.enemies:
-            enemy.collides_with = SpriteGroup()
-            enemy.collides_with.add(self.platforms, self.player)
+            enemy.collides_with = self.non_enemy_collideable_entities
 
         # Reset the Player
         self.player.reset()
@@ -162,8 +162,8 @@ class Level:
                     sprite = self.create_coin(x, y, 10)
 
                 if sprite is not None:
-                    if sprite.is_collideable():
-                        self.collideable_entities.add(sprite)
+                    if sprite.is_collideable() and not isinstance(sprite, Enemy):
+                        self.non_enemy_collideable_entities.add(sprite)
                     elif sprite.is_interactable():
                         self.interactable_blocks.add(sprite)
                     self.entities.add(sprite)
@@ -378,7 +378,7 @@ class Level:
                 self.entities.remove(event.sprite)
                 self.collectable_blocks.remove(event.sprite)
                 if event.sprite.is_collideable():
-                    self.collideable_entities.remove(event.sprite)
+                    self.non_enemy_collideable_entities.remove(event.sprite)
                 if event.sprite.is_interactable():
                     self.interactable_blocks.remove(event.sprite)
             else:

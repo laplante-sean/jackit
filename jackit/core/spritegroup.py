@@ -20,3 +20,12 @@ class SpriteGroup(pygame.sprite.Group):
         for sprite in self.sprites():
             if hasattr(sprite, "update_complete"):
                 sprite.update_complete()
+
+    def set_attr(self, attr, value):
+        '''
+        Sets an attribute for each sprite
+        that has it
+        '''
+        for sprite in self.sprites():
+            if hasattr(sprite, attr):
+                setattr(sprite, attr, value)

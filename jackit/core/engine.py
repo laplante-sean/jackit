@@ -7,6 +7,7 @@ import pygame
 from deploy import SiteDeployment
 
 # Import game engine components
+from jackit.core import CustomEvent
 from jackit.core.input import Input
 from jackit.core.editor import CodeEditor
 from jackit.levels import Level_01, Level_02, Level_03,\
@@ -74,6 +75,12 @@ class EngineSingleton:
 
         # Init the code editor
         self.code_editor = CodeEditor(self)
+
+        # Set the allowed events so that we don't waste time looking for more
+        pygame.event.set_allowed([
+            pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP,
+            CustomEvent.KILL_SPRITE, CustomEvent.EXIT_EDITOR,
+            CustomEvent.NEXT_LEVEL])
 
     def update(self):
         '''
