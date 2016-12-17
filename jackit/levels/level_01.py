@@ -50,7 +50,7 @@ class Level_01(Level):
         "P   0                                      P",
         "PPPPPP                                     P",
         "P     P                                    P",
-        "P      P                                   P",
+        "P      P B                                 P",
         "P       PPP  5                             P",
         "P           PPP   5                        P",
         "P                PPP                       P",

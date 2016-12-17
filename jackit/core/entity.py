@@ -10,8 +10,8 @@ class Entity(Sprite):
     '''
 
     # TODO: Take an image/color argument to specify sprite image or color of block
-    def __init__(self, game_engine, width, height, x_pos, y_pos):
-        super(Entity, self).__init__(game_engine, width, height, x_pos, y_pos)
+    def __init__(self, game_engine, width, height, x_pos, y_pos, collides_with=None):
+        super(Entity, self).__init__(game_engine, width, height, x_pos, y_pos, collides_with)
 
         # True if an entity is collectable (for points or something)
         self.collectable = False

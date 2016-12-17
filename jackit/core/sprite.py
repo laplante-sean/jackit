@@ -13,7 +13,9 @@ class Sprite(pygame.sprite.Sprite):
     Derives from pygame spriten for update and draw
     and so it can be included in sprite groups
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics(), animation=None):
+    def __init__(self, game_engine, width, height,
+                 x_pos, y_pos, collides_with=None, stats=Physics(), animation=None
+                ):
         super(Sprite, self).__init__()
 
         # Store the game engine for access to globals
@@ -62,6 +64,9 @@ class Sprite(pygame.sprite.Sprite):
         # True if any of the sprites from the most recent call to spritecollide() were collideable
         self.any_collideable = False
 
+        # List of sprites that this sprite should check for collisions against
+        self.collides_with = collides_with
+
         # True to use the user patched methods
         self._use_patch = False
 
@@ -106,8 +111,8 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.x += self.change_x
 
         # Check if we hit anything in the x direction and stop moving if we did
-        if self.collideable and abs(self.change_x) > 0:
-            self.spritecollide(self.game_engine.current_level.entities, self.change_x, 0)
+        if self.collideable and abs(self.change_x) > 0 and self.collides_with is not None:
+            self.spritecollide(self.collides_with, self.change_x, 0)
             if self.any_collideable:
                 self.change_x = 0
 
@@ -115,8 +120,8 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.y += self.change_y
 
         # Check if we hit anything in the y direction and stop moving if we did
-        if self.collideable and abs(self.change_y) > 0:
-            self.spritecollide(self.game_engine.current_level.entities, 0, self.change_y)
+        if self.collideable and abs(self.change_y) > 0 and self.collides_with is not None:
+            self.spritecollide(self.collides_with, 0, self.change_y)
             if self.any_collideable:
                 self.change_y = 0
 
@@ -189,7 +194,7 @@ class Sprite(pygame.sprite.Sprite):
         # Move down 2 pixels (doesn't work well with 1)
         self.rect.y += 2
         collideable_blocks_hit = self.spritecollide(
-            self.game_engine.current_level.entities,
+            self.game_engine.current_level.collideable_entities,
             0, 0,
             trigger_cb=False,
             only_collideable=True

@@ -13,13 +13,8 @@ class Enemy(Actor):
     RIGHT = 1
     CHANGE_DIR = 2
 
-    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
-        super(Enemy, self).__init__(game_engine, width, height, x_pos, y_pos, stats)
+    def __init__(self, game_engine, width, height, x_pos, y_pos,
+                 collides_with=None, stats=Physics()
+                ):
+        super(Enemy, self).__init__(game_engine, width, height, x_pos, y_pos, collides_with, stats)
         self.image.fill((23, 24, 25))
-        self.collideable = False
-
-    def collide(self, change_x, change_y, sprite):
-        if isinstance(sprite, Enemy):
-            return False # Override the return for collide if an enemy runs into itself
-
-        return super(Enemy, self).collide(change_x, change_y, sprite)

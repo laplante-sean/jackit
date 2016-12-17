@@ -5,12 +5,9 @@ Main game engine
 import platform
 import pygame
 from deploy import SiteDeployment
-from jackit.core import CustomEvent
 
 # Import game engine components
 from jackit.core.input import Input
-from jackit.actors import Player
-from jackit.entities import CollectableBlock
 from jackit.core.editor import CodeEditor
 from jackit.levels import Level_01, Level_02, Level_03,\
                           Level_04, Level_05
@@ -48,9 +45,6 @@ class EngineSingleton:
         # Current score
         self.total_score = 0
 
-        # Lives
-        self.lives = 3
-
         self.clock = pygame.time.Clock() # for framerate control
         if self.config.accurate_framerate:
             # More accurate but uses more CPU and therefore more power
@@ -81,10 +75,6 @@ class EngineSingleton:
         # Init the code editor
         self.code_editor = CodeEditor(self)
 
-        # Init the player
-        self.player = Player(self, self.config.controls, spawn_point=self.current_level.spawn_point)
-        self.current_level.entities.add(self.player)
-
     def update(self):
         '''
         Updates all game components
@@ -97,7 +87,7 @@ class EngineSingleton:
         self.handle_events()
 
         # Update all sprites for the current level
-        self.current_level.update(self.player)
+        self.current_level.update()
 
         # Update the code editor if it's running
         if self.code_editor.is_running():
@@ -105,7 +95,7 @@ class EngineSingleton:
 
         # ALL CODE FOR DRAWING GOES BELOW HERE
 
-        self.current_level.draw(self.screen, self.player) # Draws entities and player
+        self.current_level.draw(self.screen) # Draws entities and player
 
         if self.code_editor.is_running():
             self.code_editor.draw(self.screen) # Draws the code editor if it's running
@@ -135,9 +125,6 @@ class EngineSingleton:
             self.current_level_index += 1
             self.current_level = self.levels[self.current_level_index]
             self.current_level.load()
-            self.player.spawn_point = self.current_level.spawn_point
-            self.player.reset()
-            self.current_level.entities.add(self.player)
 
     def is_rect_in_death_zone(self, rect):
         '''
@@ -165,34 +152,8 @@ class EngineSingleton:
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == CustomEvent.KILL_SPRITE:
-                if isinstance(event.sprite, Player):
-                    # Reset the current level. This clears the
-                    # user patched code
-                    self.current_level.reset()
 
-                    #For now set back to spawn point
-                    event.sprite.reset()
-
-                    # Add the player back to the level
-                    self.current_level.entities.add(event.sprite)
-                elif isinstance(event.sprite, CollectableBlock):
-                    self.current_level.entities.remove(event.sprite)
-                    self.current_level.collectable_blocks.remove(event.sprite)
-                else:
-                    event.sprite.reset()
-            elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():
-                self.player.frame_cache["is_on_code_block"].interaction_complete(event)
-            elif event.type == CustomEvent.NEXT_LEVEL:
-                print("Level score: ", self.player.level_score)
-                print("Lives: ", self.lives)
-                self.next_level()
-                break # Stop processing more events. Changing levels.
-                      # Fixes #31
-
-            # Don't process controller events for player when code editor is open
-            if not self.code_editor.is_running():
-                # Call to handle event for player
-                self.player.handle_event(event, keys)
+            if not self.current_level.handle_event(event, keys):
+                break
 
 GameEngine = EngineSingleton.instance()

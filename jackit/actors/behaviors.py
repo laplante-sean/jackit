@@ -13,8 +13,10 @@ class BasicEnemy(Enemy):
     Basic enemy turns around on collidion and randomly changes
     direction rarely
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
-        super(BasicEnemy, self).__init__(game_engine, width, height, x_pos, y_pos, stats)
+    def __init__(self, game_engine, width, height, x_pos, y_pos,
+                 collides_with=None, stats=Physics()):
+        super(BasicEnemy, self).__init__(game_engine, width, height, x_pos, y_pos,
+                                         collides_with, stats)
         self.random_behavior = False
         self.random_chance = 50
 
@@ -41,10 +43,11 @@ class LedgeSensingEnemy(BasicEnemy):
     '''
     Basic enemy that also turns around on a ledge
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos, stats=Physics()):
+    def __init__(self, game_engine, width, height, x_pos, y_pos,
+                 collides_with=None, stats=Physics()):
         super(LedgeSensingEnemy, self).__init__(
             game_engine, width, height,
-            x_pos, y_pos, stats
+            x_pos, y_pos, collides_with, stats
         )
 
     def update(self):

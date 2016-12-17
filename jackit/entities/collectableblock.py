@@ -48,11 +48,3 @@ class DecryptionKey(CollectableBlock):
     def __init__(self, game_engine, width, height, x_pos, y_pos):
         super(DecryptionKey, self).__init__(game_engine, width, height, x_pos, y_pos)
         self.image.fill((200, 200, 200))
-
-class OneUp(CollectableBlock):
-    '''
-    A block that gives the player another life
-    '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos):
-        super(OneUp, self).__init__(game_engine, width, height, x_pos, y_pos)
-        self.image.fill((255, 110, 255))

@@ -5,12 +5,14 @@ for each level
 
 import pygame
 
-from jackit.entities import Platform, ExitBlock, CodeBlock, DeathBlock, CollectableBlock,\
-                            OneUp, DecryptionKey, Coin
-from jackit.actors import LedgeSensingEnemy, BasicEnemy
+from jackit.core import CustomEvent, BLOCK_WIDTH, BLOCK_HEIGHT
+from jackit.actors import LedgeSensingEnemy, BasicEnemy, Player
 from jackit.core.spritegroup import SpriteGroup
 from jackit.core.camera import Camera, complex_camera
 from jackit.core.patch import UserPatch
+from jackit.entities import Platform, ExitBlock, CodeBlock,\
+                            DeathBlock, CollectableBlock,\
+                            DecryptionKey, Coin
 
 class LevelGeneratorError(Exception):
     '''
@@ -33,7 +35,6 @@ class LevelMap:
     RANDOM_ENEMY = "R"
     MIRROR_ENEMY = "M"
     DECRYPTION_KEY = "K"
-    ONE_UP = "U"
     ONE_POINT_COIN = "1"
     FIVE_POINT_COIN = "5"
     TEN_POINT_COIN = "0"
@@ -47,17 +48,12 @@ class Level:
         self.level_map = level_map
         self.game_engine = game_engine
 
-        # Block size for building a level from a map
-        self.level_map_block_x = 24
-        self.level_map_block_y = 24
-
-        # Spawn point
-        self.spawn_point = None
-
         # Initialize the entity list
         # This will have all entities for use in collision
         # detection
         self.entities = SpriteGroup()
+        self.collideable_entities = SpriteGroup()
+        self.interactable_blocks = SpriteGroup()
 
         # These groups are for draw and update order preservation
         self.platforms = SpriteGroup()
@@ -69,6 +65,9 @@ class Level:
         self.width = self.height = 0
         self.death_zone = None
         self.camera = None
+
+        # Init the Player
+        self.player = Player(game_engine, game_engine.config.controls)
 
     def reset(self):
         '''
@@ -92,6 +91,8 @@ class Level:
         self.enemies.empty()
         self.moveable_blocks.empty()
         self.entities.empty()
+        self.collideable_entities.empty()
+        self.interactable_blocks.empty()
 
         # Unpatch the user patched methods when the level is complete
         UserPatch.unpatch()
@@ -110,6 +111,17 @@ class Level:
         # Init the camera
         self.camera = Camera(self.game_engine.screen_size, complex_camera, self.width, self.height)
 
+        # The player collides with everything
+        self.player.collides_with = self.entities
+        self.entities.add(self.player)
+
+        for enemy in self.enemies:
+            enemy.collides_with = SpriteGroup()
+            enemy.collides_with.add(self.platforms, self.player)
+
+        # Reset the Player
+        self.player.reset()
+
     def build_level(self):
         '''
         Build the level from the map
@@ -117,43 +129,47 @@ class Level:
         x = y = 0
         for row in self.level_map:
             for col in row:
+                sprite = None
                 if col == LevelMap.PLATFORM:
-                    self.entities.add(self.create_platform(x, y))
+                    sprite = self.create_platform(x, y)
                 elif col == LevelMap.EXIT:
-                    self.entities.add(self.create_exit_block(x, y))
+                    sprite = self.create_exit_block(x, y)
                 elif col == LevelMap.SPAWN:
-                    self.spawn_point = (x, y)
+                    self.player.spawn_point = (x, y)
                 elif col == LevelMap.CODE:
-                    self.entities.add(self.create_code_block(x, y))
+                    sprite = self.create_code_block(x, y)
                 elif col == LevelMap.DEATH_ENTITY:
-                    self.entities.add(self.create_death_block(x, y))
+                    sprite = self.create_death_block(x, y)
                 elif col == LevelMap.BASIC_ENEMY:
-                    self.entities.add(self.create_basic_enemy(x, y))
+                    sprite = self.create_basic_enemy(x, y)
                 elif col == LevelMap.LEDGE_SENSE_ENEMY:
-                    self.entities.add(self.create_ledge_sense_enemy(x, y))
+                    sprite = self.create_ledge_sense_enemy(x, y)
                 elif col == LevelMap.RANDOM_ENEMY:
-                    self.entities.add(self.create_random_enemy(x, y))
+                    sprite = self.create_random_enemy(x, y)
                 elif col == LevelMap.LEDGE_SENSE_RND_ENEMY:
-                    self.entities.add(self.create_ledge_sense_random_enemy(x, y))
+                    sprite = self.create_ledge_sense_random_enemy(x, y)
                 elif col == LevelMap.DECRYPTION_KEY:
-                    self.entities.add(self.create_decryption_key(x, y))
-                elif col == LevelMap.ONE_UP:
-                    self.entities.add(self.create_one_up(x, y))
+                    sprite = self.create_decryption_key(x, y)
                 elif col == LevelMap.ONE_POINT_COIN:
-                    self.entities.add(self.create_coin(x, y, 1))
+                    sprite = self.create_coin(x, y, 1)
                 elif col == LevelMap.FIVE_POINT_COIN:
-                    self.entities.add(self.create_coin(x, y, 5))
+                    sprite = self.create_coin(x, y, 5)
                 elif col == LevelMap.TEN_POINT_COIN:
-                    self.entities.add(self.create_coin(x, y, 10))
-                x += self.level_map_block_x
-            y += self.level_map_block_y
+                    sprite = self.create_coin(x, y, 10)
+
+                if sprite is not None:
+                    if sprite.is_collideable():
+                        self.collideable_entities.add(sprite)
+                    elif sprite.is_interactable():
+                        self.interactable_blocks.add(sprite)
+                    self.entities.add(sprite)
+
+                x += BLOCK_WIDTH
+            y += BLOCK_HEIGHT
             x = 0
 
-        if not self.spawn_point:
-            raise LevelGeneratorError("No spawn point specified in level map")
-
-        total_level_width = len(max(self.level_map, key=len)) * self.level_map_block_x
-        total_level_height = len(self.level_map) * self.level_map_block_y
+        total_level_width = len(max(self.level_map, key=len)) * BLOCK_WIDTH
+        total_level_height = len(self.level_map) * BLOCK_HEIGHT
         return total_level_width, total_level_height
 
     def create_coin(self, x_pos, y_pos, value):
@@ -162,24 +178,11 @@ class Level:
         '''
         ret = Coin(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         ret.points = value
-        self.collectable_blocks.add(ret)
-        return ret
-
-    def create_one_up(self, x_pos, y_pos):
-        '''
-        Create a collectable extra life pickup
-        '''
-        ret = OneUp(
-            self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
-            x_pos, y_pos
-        )
         self.collectable_blocks.add(ret)
         return ret
 
@@ -189,8 +192,8 @@ class Level:
         '''
         ret = DecryptionKey(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         self.collectable_blocks.add(ret)
@@ -202,8 +205,8 @@ class Level:
         '''
         ret = BasicEnemy(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         ret.random_behavior = True
@@ -216,8 +219,8 @@ class Level:
         '''
         ret = BasicEnemy(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         self.enemies.add(ret)
@@ -229,8 +232,8 @@ class Level:
         '''
         ret = LedgeSensingEnemy(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         self.enemies.add(ret)
@@ -242,8 +245,8 @@ class Level:
         '''
         ret = LedgeSensingEnemy(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         ret.random_behavior = True
@@ -257,8 +260,8 @@ class Level:
         '''
         ret = CodeBlock(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         self.code_blocks.add(ret)
@@ -271,8 +274,8 @@ class Level:
         '''
         ret = Platform(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         self.platforms.add(ret)
@@ -285,8 +288,8 @@ class Level:
         '''
         ret = ExitBlock(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         self.platforms.add(ret)
@@ -298,8 +301,8 @@ class Level:
         '''
         ret = DeathBlock(
             self.game_engine,
-            self.level_map_block_x,
-            self.level_map_block_y,
+            BLOCK_WIDTH,
+            BLOCK_HEIGHT,
             x_pos, y_pos
         )
         self.platforms.add(ret)
@@ -313,16 +316,16 @@ class Level:
         '''
         return
 
-    def update(self, player):
+    def update(self):
         '''
         Update the level
         '''
 
         # Update the camera to follow the player
-        self.camera.update(player)
+        self.camera.update(self.player)
 
         # Update the player first
-        player.update()
+        self.player.update()
 
         # Update all the entities in order
         self.platforms.update()
@@ -335,7 +338,7 @@ class Level:
         # once becuase order doesn't matter
         self.entities.update_complete()
 
-    def draw(self, screen, player):
+    def draw(self, screen):
         '''
         Draw all the sprites for the level
         '''
@@ -356,4 +359,36 @@ class Level:
             screen.blit(e.image, self.camera.apply(e))
 
         # Draw the player last
-        screen.blit(player.image, self.camera.apply(player))
+        screen.blit(self.player.image, self.camera.apply(self.player))
+
+    def handle_event(self, event, keys):
+        '''
+        Handle events for the level
+        '''
+        if event.type == CustomEvent.KILL_SPRITE:
+            if isinstance(event.sprite, Player):
+                # Reset the current level. This clears the
+                # user patched code
+                self.reset()
+            elif isinstance(event.sprite, CollectableBlock):
+                self.entities.remove(event.sprite)
+                self.collectable_blocks.remove(event.sprite)
+                if event.sprite.is_collideable():
+                    self.collideable_entities.remove(event.sprite)
+                if event.sprite.is_interactable():
+                    self.interactable_blocks.remove(event.sprite)
+            else:
+                event.sprite.reset()
+        elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():
+            self.player.frame_cache["is_on_code_block"].interaction_complete(event)
+        elif event.type == CustomEvent.NEXT_LEVEL:
+            print("Level score: ", self.player.level_score)
+            self.game_engine.next_level()
+            return False # Stop processing more events
+
+        # Don't process controller events for player when code editor is open
+        if not self.game_engine.code_editor.is_running():
+            # Call to handle event for player
+            return self.player.handle_event(event, keys)
+
+        return True # Continue processing events

@@ -5,12 +5,13 @@ User controllable player
 import os
 import pygame
 from deploy import SiteDeployment
+from jackit.core import BLOCK_WIDTH, BLOCK_HEIGHT
 from jackit.core.animation import SpriteStripAnimation
 from jackit.core import CustomEvent
 from jackit.core.actor import Actor
 from jackit.actors.enemy import Enemy
 from jackit.entities import CodeBlock, ExitBlock, DeathBlock,\
-                            DecryptionKey, Coin, OneUp
+                            DecryptionKey, Coin
 
 class Player(Actor):
     '''
@@ -18,26 +19,24 @@ class Player(Actor):
     '''
 
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
-        block_width = game_engine.current_level.level_map_block_x
-        block_height = game_engine.current_level.level_map_block_y
         image_path = os.path.join(SiteDeployment.resource_path, "sprites", "animation_demo.bmp")
 
         animation = SpriteStripAnimation(
-            image_path, (0, 0, block_width, block_height), 8, -1, True,
+            image_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
             int(game_engine.config.framerate / 24)
         ) + SpriteStripAnimation(
-            image_path, (0, 24, block_width, block_height), 8, -1, True,
+            image_path, (0, 24, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
             int(game_engine.config.framerate / 24)
         ) + SpriteStripAnimation(
-            image_path, (0, 48, block_width, block_height), 8, -1, True,
+            image_path, (0, 48, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
             int(game_engine.config.framerate / 24)
         ) + SpriteStripAnimation(
-            image_path, (0, 72, block_width, block_height), 8, -1, True,
+            image_path, (0, 72, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
             int(game_engine.config.framerate / 24)
         )
 
         super(Player, self).__init__(
-            game_engine, block_width, block_height, spawn_point[0],
+            game_engine, BLOCK_WIDTH, BLOCK_HEIGHT, spawn_point[0],
             spawn_point[1], animation=animation
         )
 
@@ -57,6 +56,9 @@ class Player(Actor):
         # True if the player is alive otherwise false
         self.alive = True
 
+        # True if the player cannot be killed
+        self.invincinble = False
+
     def has_key(self):
         '''
         Does the player have the decryption key?
@@ -71,9 +73,6 @@ class Player(Actor):
 
         if isinstance(sprite, Coin):
             self.level_score += sprite.points
-            pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
-        elif isinstance(sprite, OneUp):
-            self.game_engine.lives += 1
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, DecryptionKey):
             print("Got decryption key")
@@ -102,12 +101,8 @@ class Player(Actor):
         '''
         Kill the player
         '''
-        if not self.alive:
+        if not self.alive or self.invincinble:
             return
-
-        self.game_engine.lives -= 1
-        if self.game_engine.lives <= 0:
-            self.game_engine.running = False
 
         self.items.clear()
         self.level_score = 0
@@ -123,7 +118,6 @@ class Player(Actor):
         if ret:
             for block in self.frame_cache["is_on_collideable"]:
                 if isinstance(block, Enemy):
-                    print("*******Somehow missed this one. On enemy!")
                     pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
                     break
         return ret
@@ -169,7 +163,7 @@ class Player(Actor):
             return True
 
         blocks_hit = self.spritecollide(
-            self.game_engine.current_level.entities,
+            self.game_engine.current_level.interactable_blocks,
             0, 0,
             trigger_cb=False,
             only_collideable=False
@@ -212,9 +206,13 @@ class Player(Actor):
                     return
 
                 # Stop the player and put them over the interactable object
+                # and make them invincible
                 self.hard_stop()
                 self.rect.left = self.frame_cache["is_on_code_block"].rect.left
                 self.rect.bottom = self.frame_cache["is_on_code_block"].rect.bottom
+                self.invincinble = True
 
                 # Interact with the object
                 self.frame_cache["is_on_code_block"].interact()
+
+        return True # Continue processing events
