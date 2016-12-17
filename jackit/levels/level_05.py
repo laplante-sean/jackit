@@ -83,9 +83,6 @@ def is_moving_up(change_y):
         super(Level_05, self).unload()
         self.num_code_blocks_created = 0
 
-    def update(self, player):
-        super(Level_05, self).update(player)
-
     def challenge_completed(self, code_obj):
         '''
         Called when a code block is exited after

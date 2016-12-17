@@ -57,7 +57,7 @@ class Player(Actor):
         self.alive = True
 
         # True if the player cannot be killed
-        self.invincinble = False
+        self.invincible = False
 
     def has_key(self):
         '''
@@ -75,17 +75,14 @@ class Player(Actor):
             self.level_score += sprite.points
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, DecryptionKey):
-            print("Got decryption key")
             self.items.append(sprite)
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, ExitBlock):
-            print("Exit block")
             self.game_engine.total_score += self.level_score
             self.items.clear()
             self.level_score = 0
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
         elif isinstance(sprite, Enemy) or isinstance(sprite, DeathBlock):
-            print("collide() kills player. Player collided with enemy or death block.")
             self.kill()
 
         return collideable
@@ -96,12 +93,13 @@ class Player(Actor):
         '''
         super(Player, self).reset()
         self.alive = True
+        self.invincible = False
 
     def kill(self):
         '''
         Kill the player
         '''
-        if not self.alive or self.invincinble:
+        if not self.alive or self.invincible:
             return
 
         self.items.clear()
@@ -128,7 +126,6 @@ class Player(Actor):
         Happens when the other sprite is moving and this sprite is not
         '''
         if isinstance(sprite, Enemy):
-            print("collide_with() kills player. Enemy or death block collided with player.")
             self.kill()
 
     def is_on_code_block(self):
@@ -202,7 +199,6 @@ class Player(Actor):
                 self.jump()
             elif event.key == self.controls.interact and self.is_on_code_block():
                 if self.frame_cache["is_on_code_block"].is_locked() and not self.has_key():
-                    print("This block is encrypted. Needs key!")
                     return
 
                 # Stop the player and put them over the interactable object
@@ -210,7 +206,6 @@ class Player(Actor):
                 self.hard_stop()
                 self.rect.left = self.frame_cache["is_on_code_block"].rect.left
                 self.rect.bottom = self.frame_cache["is_on_code_block"].rect.bottom
-                self.invincinble = True
 
                 # Interact with the object
                 self.frame_cache["is_on_code_block"].interact()

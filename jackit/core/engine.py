@@ -112,7 +112,8 @@ class EngineSingleton:
             pygame.display.set_caption(text)
 
         # Update the screen with what has been drawn
-        pygame.display.update(self.current_level.camera.state)
+        #pygame.display.update(self.current_level.camera.state)
+        pygame.display.flip()
 
     def next_level(self):
         '''
@@ -151,6 +152,7 @@ class EngineSingleton:
 
         for event in self.input.events:
             if event.type == pygame.QUIT:
+                self.total_score += self.current_level.player.level_score
                 self.running = False
 
             if not self.current_level.handle_event(event, keys):

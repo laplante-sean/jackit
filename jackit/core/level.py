@@ -94,6 +94,10 @@ class Level:
         self.collideable_entities.empty()
         self.interactable_blocks.empty()
 
+        # Stop the text editor if it's running
+        if self.game_engine.code_editor.is_running():
+            self.game_engine.code_editor.stop()
+
         # Unpatch the user patched methods when the level is complete
         UserPatch.unpatch()
 
@@ -382,7 +386,6 @@ class Level:
         elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():
             self.player.frame_cache["is_on_code_block"].interaction_complete(event)
         elif event.type == CustomEvent.NEXT_LEVEL:
-            print("Level score: ", self.player.level_score)
             self.game_engine.next_level()
             return False # Stop processing more events
 

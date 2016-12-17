@@ -16,8 +16,8 @@ class Level_02(Level):
         "P                 E                 PPPPPPPP",
         "P            PPPPPPPPPPP                   P",
         "                              PPPPPP        ",
-        "     S                                      ",
-        "                             B           B  ",
+        "                                            ",
+        "      S                      B           B  ",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 

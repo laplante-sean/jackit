@@ -19,3 +19,7 @@ class JackitGame:
 
         while GameEngine.running:
             GameEngine.update()
+
+        print("Game over: ")
+        print("\tScore: ", GameEngine.total_score)
+        print("\tPlaytime: {}s".format(GameEngine.playtime))

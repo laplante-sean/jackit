@@ -52,9 +52,6 @@ def get_actor_x_acceleration():
         super(Level_04, self).unload()
         self.num_code_blocks_created = 0
 
-    def update(self, player):
-        super(Level_04, self).update(player)
-
     def challenge_completed(self, code_obj):
         '''
         Called when a code block is exited after

@@ -127,7 +127,6 @@ class Sprite(pygame.sprite.Sprite):
 
         # Check if we're in the death zone of the level and kill ourself
         if self.game_engine.is_rect_in_death_zone(self.rect):
-            print("Death zone: (", self.rect.x, ",", self.rect.y, ")")
             self.kill()
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite": self}))
 

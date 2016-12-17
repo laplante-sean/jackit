@@ -34,6 +34,7 @@ class CodeBlock(Entity):
 
         # Start doing the code
         self.game_engine.code_editor.run(self.challenge_text)
+        self.game_engine.current_level.player.invincible = True
 
     def interaction_complete(self, event):
         '''
