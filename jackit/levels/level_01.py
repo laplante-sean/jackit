@@ -67,8 +67,8 @@ class Level_01(Level):
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 
-    def __init__(self, game_engine):
-        super(Level_01, self).__init__(game_engine, Level_01._map)
+    def __init__(self, game_engine, player):
+        super(Level_01, self).__init__(game_engine, Level_01._map, player)
 
     def create_code_block(self, x_pos, y_pos):
         block = super(Level_01, self).create_code_block(x_pos, y_pos)

@@ -10,6 +10,7 @@ from deploy import SiteDeployment
 from jackit.core import CustomEvent
 from jackit.core.input import Input
 from jackit.core.editor import CodeEditor
+from jackit.actors import Player
 from jackit.levels import Level_01, Level_02, Level_03,\
                           Level_04, Level_05
 
@@ -46,6 +47,9 @@ class EngineSingleton:
         # Current score
         self.total_score = 0
 
+        # Number of deaths (factors into final score)
+        self.deaths = 0
+
         self.clock = pygame.time.Clock() # for framerate control
         if self.config.accurate_framerate:
             # More accurate but uses more CPU and therefore more power
@@ -62,9 +66,15 @@ class EngineSingleton:
         else:
             self.screen = pygame.display.set_mode(self.screen_size)
 
+        self.player = Player(self, self.config.controls)
+
         # Init the levels
         self.levels = [
-            Level_01(self), Level_02(self), Level_03(self), Level_04(self), Level_05(self)
+            Level_01(self, self.player),
+            Level_02(self, self.player),
+            Level_03(self, self.player),
+            Level_04(self, self.player),
+            Level_05(self, self.player)
         ]
         self.current_level_index = 0
         self.current_level = self.levels[self.current_level_index]
@@ -119,7 +129,6 @@ class EngineSingleton:
             pygame.display.set_caption(text)
 
         # Update the screen with what has been drawn
-        #pygame.display.update(self.current_level.camera.state)
         pygame.display.flip()
 
     def next_level(self):

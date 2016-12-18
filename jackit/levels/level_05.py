@@ -67,8 +67,8 @@ def is_moving_up(change_y):
         """
     ]
 
-    def __init__(self, game_engine):
-        super(Level_05, self).__init__(game_engine, Level_05._map)
+    def __init__(self, game_engine, player):
+        super(Level_05, self).__init__(game_engine, Level_05._map, player)
         self.num_code_blocks_created = 0
 
     def create_code_block(self, x_pos, y_pos):

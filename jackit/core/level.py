@@ -44,7 +44,7 @@ class Level:
     Base level class. Subclass this to make levels
     '''
 
-    def __init__(self, game_engine, level_map):
+    def __init__(self, game_engine, level_map, player):
         self.level_map = level_map
         self.game_engine = game_engine
 
@@ -52,7 +52,7 @@ class Level:
         # This will have all entities for use in collision
         # detection
         self.entities = SpriteGroup()
-        self.non_enemy_collideable_entities = SpriteGroup()
+        self.collideable_entities = SpriteGroup()
         self.interactable_blocks = SpriteGroup()
 
         # These groups are for draw and update order preservation
@@ -67,7 +67,7 @@ class Level:
         self.camera = None
 
         # Init the Player
-        self.player = Player(game_engine, game_engine.config.controls)
+        self.player = player
 
     def reset(self):
         '''
@@ -91,7 +91,7 @@ class Level:
         self.enemies.empty()
         self.moveable_blocks.empty()
         self.entities.empty()
-        self.non_enemy_collideable_entities.empty()
+        self.collideable_entities.empty()
         self.interactable_blocks.empty()
 
         # Stop the text editor if it's running
@@ -118,10 +118,42 @@ class Level:
         # The player collides with everything
         self.player.collides_with = self.entities
         self.entities.add(self.player)
-        self.non_enemy_collideable_entities.add(self.player)
 
         for enemy in self.enemies:
-            enemy.collides_with = self.non_enemy_collideable_entities
+            enemy.collides_with = SpriteGroup()
+
+            # All enemies need to collide with the player
+            enemy.collides_with.add(self.player)
+
+            if not isinstance(enemy, LedgeSensingEnemy):
+                for collideable in self.collideable_entities:
+                    # All non ledge sensing enemies need only collide with blocks at
+                    # their level or below them.
+                    if (collideable.rect.y + BLOCK_HEIGHT) > enemy.rect.y:
+                        enemy.collides_with.add(collideable)
+            else:
+                # Ledge sensing enemies need only collide with the player and
+                # blocks at their Level (blocks under them is handled bytes
+                # sprite.is_on_collideable())
+                for collideable in self.collideable_entities:
+                    if (collideable.rect.y + (BLOCK_HEIGHT / 2)) > enemy.rect.y and\
+                    (collideable.rect.y + (BLOCK_HEIGHT / 2)) < enemy.rect.bottom:
+                        enemy.collides_with.add(collideable)
+
+            '''
+            if isinstance(enemy, LedgeSensingEnemy):
+                for collideable in self.collideable_entities:
+                    # Ledge sensing enemies only need the blocks below them and
+                    # at the same level as them
+                    if (collideable.rect.y + BLOCK_HEIGHT) > enemy.rect.y and\
+                    (collideable.rect.y - BLOCK_HEIGHT) < enemy.rect.bottom:
+                        enemy.collides_with.add(collideable)
+            else:
+                for collideable in self.collideable_entities:
+                    # All other enemies need all blocks below them
+                    if (collideable.rect.y + BLOCK_HEIGHT) > enemy.rect.y:
+                        enemy.collides_with.add(collideable)
+            '''
 
         # Reset the Player
         self.player.reset()
@@ -163,7 +195,7 @@ class Level:
 
                 if sprite is not None:
                     if sprite.is_collideable() and not isinstance(sprite, Enemy):
-                        self.non_enemy_collideable_entities.add(sprite)
+                        self.collideable_entities.add(sprite)
                     elif sprite.is_interactable():
                         self.interactable_blocks.add(sprite)
                     self.entities.add(sprite)
@@ -371,6 +403,8 @@ class Level:
         '''
         if event.type == CustomEvent.KILL_SPRITE:
             if isinstance(event.sprite, Player):
+                self.game_engine.deaths += 1
+
                 # Reset the current level. This clears the
                 # user patched code
                 self.reset()
@@ -378,7 +412,7 @@ class Level:
                 self.entities.remove(event.sprite)
                 self.collectable_blocks.remove(event.sprite)
                 if event.sprite.is_collideable():
-                    self.non_enemy_collideable_entities.remove(event.sprite)
+                    self.collideable_entities.remove(event.sprite)
                 if event.sprite.is_interactable():
                     self.interactable_blocks.remove(event.sprite)
             else:

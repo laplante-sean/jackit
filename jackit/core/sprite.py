@@ -193,7 +193,7 @@ class Sprite(pygame.sprite.Sprite):
         # Move down 2 pixels (doesn't work well with 1)
         self.rect.y += 2
         collideable_blocks_hit = self.spritecollide(
-            self.game_engine.current_level.non_enemy_collideable_entities,
+            self.game_engine.current_level.collideable_entities,
             0, 0,
             trigger_cb=False,
             only_collideable=True

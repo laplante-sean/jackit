@@ -5,6 +5,8 @@ Enemy behavior functions
 import random
 from jackit.actors.enemy import Enemy
 from jackit.core.physics import Physics
+from jackit.core.actor import Actor
+from jackit.core.spritegroup import SpriteGroup
 
 random.seed()
 
@@ -50,10 +52,41 @@ class LedgeSensingEnemy(BasicEnemy):
             x_pos, y_pos, collides_with, stats
         )
 
+        # Once a ledge sensing enemy is on a platform it will be there forever
+        # Once this is set we stop calling is_on_collideable() b/c we know we are
+        self.on_platforms = None
+
+        # Once the enemy has gone back and forth once on a platform these will be known
+        # Once known we can further optimize collision by removing every block from
+        # the collides_with list except for the player
+        self.has_left_ledge = False
+        self.has_right_ledge = False
+
+        # True once all optimizations are complete
+        self.optimized = False
+
     def update(self):
+        if self.on_platforms is not None:
+            self.frame_cache["is_on_collideable"] = self.on_platforms
+        if self.has_left_ledge and self.has_right_ledge and not self.optimized:
+            self.optimized = True
+            actor = None
+            for collideable in self.collides_with:
+                if isinstance(collideable, Actor): # Find the player and hold onto it
+                    actor = collideable
+                    break
+            self.collides_with = SpriteGroup()
+            if actor is not None:
+                self.collides_with.add(actor) # Add the player back to the collides_with list
+                                              # Now we only check if we collide with one thing
+                                              # on each frame
+
         super(LedgeSensingEnemy, self).update()
 
-        if self.is_moving_left() and self.is_on_collideable():
+        if not self.on_platforms and self.is_on_collideable():
+            self.on_platforms = self.frame_cache["is_on_collideable"]
+
+        if self.is_moving_left() and self.on_platforms is not None:
             self.rect.y += 2 # Move down 2
             on_ledge = True
 
@@ -66,10 +99,11 @@ class LedgeSensingEnemy(BasicEnemy):
             self.rect.y -= 2 # Move back up 2
 
             if on_ledge:
+                self.has_left_ledge = True
                 self.change_x = 0
                 self.go_right()
 
-        elif self.is_moving_right() and self.is_on_collideable():
+        elif self.is_moving_right() and self.on_platforms is not None:
             self.rect.y += 2 # Move down 2
             on_ledge = True
 
@@ -82,5 +116,6 @@ class LedgeSensingEnemy(BasicEnemy):
             self.rect.y -= 2
 
             if on_ledge:
+                self.has_right_ledge = True
                 self.change_x = 0
                 self.go_left()
