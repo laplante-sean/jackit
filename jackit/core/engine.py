@@ -10,6 +10,7 @@ from deploy import SiteDeployment
 from jackit.core import CustomEvent
 from jackit.core.input import Input
 from jackit.core.editor import CodeEditor
+from jackit.core.hud import Hud
 from jackit.actors import Player
 from jackit.levels import Level_01, Level_02, Level_03,\
                           Level_04, Level_05
@@ -49,9 +50,6 @@ class EngineSingleton:
 
         # Number of deaths (factors into final score)
         self.deaths = 0
-
-        # Score with deaths, points, and playtime factored in
-        self.final_score = 0
 
         self.clock = pygame.time.Clock() # for framerate control
         if self.config.accurate_framerate:
@@ -93,6 +91,9 @@ class EngineSingleton:
         # Init the code editor
         self.code_editor = CodeEditor(self)
 
+        # Init the HUD
+        self.hud = Hud(self)
+
         # Set the allowed events so that we don't waste time looking for more
         pygame.event.set_allowed([
             pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP,
@@ -113,6 +114,9 @@ class EngineSingleton:
         # Update all sprites for the current level
         self.current_level.update()
 
+        # Update the HUD with up-to-date stats DUDE!!
+        self.hud.update()
+
         # Update the code editor if it's running
         if self.code_editor.is_running():
             self.code_editor.update()
@@ -123,6 +127,8 @@ class EngineSingleton:
 
         if self.code_editor.is_running():
             self.code_editor.draw(self.screen) # Draws the code editor if it's running
+
+        self.hud.draw(self.screen) # Draw the HUD last so it's like...on top BRO!
 
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 
@@ -175,7 +181,6 @@ class EngineSingleton:
 
         for event in self.input.events:
             if event.type == pygame.QUIT:
-                self.total_points += self.current_level.player.level_points
                 self.running = False
 
             if not self.current_level.handle_event(event, keys):

@@ -140,21 +140,6 @@ class Level:
                     (collideable.rect.y + (BLOCK_HEIGHT / 2)) < enemy.rect.bottom:
                         enemy.collides_with.add(collideable)
 
-            '''
-            if isinstance(enemy, LedgeSensingEnemy):
-                for collideable in self.collideable_entities:
-                    # Ledge sensing enemies only need the blocks below them and
-                    # at the same level as them
-                    if (collideable.rect.y + BLOCK_HEIGHT) > enemy.rect.y and\
-                    (collideable.rect.y - BLOCK_HEIGHT) < enemy.rect.bottom:
-                        enemy.collides_with.add(collideable)
-            else:
-                for collideable in self.collideable_entities:
-                    # All other enemies need all blocks below them
-                    if (collideable.rect.y + BLOCK_HEIGHT) > enemy.rect.y:
-                        enemy.collides_with.add(collideable)
-            '''
-
         # Reset the Player
         self.player.reset()
 

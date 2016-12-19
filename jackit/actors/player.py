@@ -73,12 +73,12 @@ class Player(Actor):
 
         if isinstance(sprite, Coin):
             self.level_points += sprite.points
+            self.game_engine.total_points += sprite.points
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, DecryptionKey):
             self.items.append(sprite)
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, ExitBlock):
-            self.game_engine.total_points += self.level_points
             self.items.clear()
             self.level_points = 0
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
@@ -103,6 +103,7 @@ class Player(Actor):
             return
 
         self.items.clear()
+        self.game_engine.total_points -= self.level_points
         self.level_points = 0
 
         self.alive = False
