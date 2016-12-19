@@ -21,6 +21,7 @@ class JackitGame:
             GameEngine.update()
 
         print("Game over: ")
-        print("\tScore: ", GameEngine.total_score)
+        print("\tScore: ", GameEngine.total_points)
         print("\tDeaths: ", GameEngine.deaths)
         print("\tPlaytime: {}s".format(GameEngine.playtime))
+        print("\nFINAL WEIGHTED SCORE: ", GameEngine.final_score)

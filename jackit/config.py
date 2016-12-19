@@ -200,11 +200,26 @@ class JackitConfigControls(JsonConfig):
             'push': self.push
         }
 
+class JackitLeaderboard(JsonConfig):
+    '''
+    Config for connection to the leaderboard
+    '''
+    def __init__(self):
+        pass
+
+    def to_json(self):
+        '''
+        Return a dict representation of the object
+        '''
+        return {}
+
+    def from_json(self, raw):
+        pass
+
 class JackitConfig(JsonConfig):
     '''
     Jackit config class
     '''
-
     def __init__(self, path):
         super(JackitConfig, self).__init__()
         self.path = path
@@ -217,6 +232,7 @@ class JackitConfig(JsonConfig):
         self.animation_framerate = 30
         self.controls = JackitConfigControls()
         self.code_editor = JackitConfigCodeEditor()
+        self.leaderboard = JackitLeaderboard()
 
     @property
     def mode(self):
@@ -310,7 +326,8 @@ class JackitConfig(JsonConfig):
             "controls": self.controls.to_json(),
             "code_editor": self.code_editor.to_json(),
             "accurate_framerate": self.accurate_framerate,
-            "animation_framerate": self.animation_framerate
+            "animation_framerate": self.animation_framerate,
+            "leaderboard": self.leaderboard.to_json()
         }
 
     def from_json(self, raw):
@@ -328,6 +345,7 @@ class JackitConfig(JsonConfig):
         self.code_editor.from_json(raw.get("code_editor", self.code_editor.to_json()))
         self.accurate_framerate = self.validate_bool(raw.get("accurate_framerate", True))
         self.animation_framerate = self.validate_uint(raw.get("animation_framerate"))
+        self.leaderboard.from_json(raw.get("leaderboard", self.leaderboard.to_json()))
 
     def load(self):
         '''

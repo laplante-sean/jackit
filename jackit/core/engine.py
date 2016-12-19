@@ -65,7 +65,11 @@ class EngineSingleton:
 
         # Set the display mode
         if self.fullscreen:
-            self.screen = pygame.display.set_mode(self.screen_size, pygame.FULLSCREEN)
+            # Run with all the fancy when doing fullscreen
+            self.screen = pygame.display.set_mode(
+                self.screen_size,
+                pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
+            )
         else:
             self.screen = pygame.display.set_mode(self.screen_size)
 

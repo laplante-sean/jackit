@@ -26,13 +26,13 @@ class Player(Actor):
             int(game_engine.config.framerate / 24)
         ) + SpriteStripAnimation(
             image_path, (0, 24, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
-            int(game_engine.config.framerate / 24)
+            int(game_engine.config.framerate / game_engine.config.animation_framerate)
         ) + SpriteStripAnimation(
             image_path, (0, 48, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
-            int(game_engine.config.framerate / 24)
+            int(game_engine.config.framerate / game_engine.config.animation_framerate)
         ) + SpriteStripAnimation(
             image_path, (0, 72, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
-            int(game_engine.config.framerate / 24)
+            int(game_engine.config.framerate / game_engine.config.animation_framerate)
         )
 
         super(Player, self).__init__(
