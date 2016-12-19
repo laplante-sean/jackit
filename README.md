@@ -5,9 +5,15 @@
 1. clone
 2. have python 3.5
 3. `pip install -r requirements.txt`
-4. `python game.py`
+4. `python3 game.py`
 
-#### Leaderboard
+#### Using pygame_sdl2
+
+1. clone https://github.com/renpy/pygame_sdl2
+1. Follow installation instructions for your OS
+1. Run jackit with `python3 game.py --sdl2`
+
+#### Web Leaderboard
 
 ##### Running the dev server
 
