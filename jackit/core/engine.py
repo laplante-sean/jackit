@@ -10,6 +10,7 @@ from deploy import SiteDeployment
 from jackit.core import CustomEvent
 from jackit.core.input import Input
 from jackit.core.editor import CodeEditor
+from jackit.core.welcome import Welcome
 from jackit.core.hud import Hud
 from jackit.actors import Player
 from jackit.levels import Level_01, Level_02, Level_03,\
@@ -94,6 +95,10 @@ class EngineSingleton:
         # Init the HUD
         self.hud = Hud(self)
 
+        # Init the welcome screen
+        self.welcome = Welcome(self)
+        self.welcome.run()
+
         # Set the allowed events so that we don't waste time looking for more
         pygame.event.set_allowed([
             pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP,
@@ -104,9 +109,16 @@ class EngineSingleton:
         '''
         Updates all game components
         '''
-
         # Get user input for this frame
         self.input.update()
+
+        # If the welcome window is running, don't do anything else
+        if self.welcome.is_running():
+            self.welcome.handle_events(self.input.events)
+            self.welcome.update()
+            self.welcome.draw(self.screen)
+            pygame.display.flip()
+            return
 
         # Handle input events
         self.handle_events()

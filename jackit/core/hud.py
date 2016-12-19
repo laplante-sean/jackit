@@ -25,10 +25,6 @@ class Hud:
         self.hud_view = self.hud_view.convert()
         self.rect = self.hud_view.get_rect()
 
-        # Put the HUD at the top left
-        self.rect.x = 0
-        self.rect.y = 0
-
         self.display_text_template = "Playtime: {0:.2f} | Points: {1} | Deaths: {2}"
         self.display_text = ""
 
