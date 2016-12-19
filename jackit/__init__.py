@@ -3,7 +3,6 @@ The main game loop
 '''
 
 import sys
-import pygame
 
 class JackitGame:
     '''

@@ -41,7 +41,7 @@ class Camera:
         '''
         Apply camera to target
         '''
-        return target.rect.move(self.state.topleft)
+        return target.rect.move(self.state.left, self.state.top)
 
     def update(self, target):
         '''
