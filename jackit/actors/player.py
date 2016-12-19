@@ -43,8 +43,8 @@ class Player(Actor):
         self.controls = controls
         self.use_patch = True # Use the UserPatch for player stats and player
 
-        # Current level score
-        self.level_score = 0
+        # Current level points
+        self.level_points = 0
 
         # List of items the player has
         self.items = []
@@ -72,15 +72,15 @@ class Player(Actor):
         collideable = super(Player, self).collide(change_x, change_y, sprite)
 
         if isinstance(sprite, Coin):
-            self.level_score += sprite.points
+            self.level_points += sprite.points
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, DecryptionKey):
             self.items.append(sprite)
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, ExitBlock):
-            self.game_engine.total_score += self.level_score
+            self.game_engine.total_points += self.level_points
             self.items.clear()
-            self.level_score = 0
+            self.level_points = 0
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
         elif isinstance(sprite, Enemy) or isinstance(sprite, DeathBlock):
             self.kill()
@@ -103,7 +103,7 @@ class Player(Actor):
             return
 
         self.items.clear()
-        self.level_score = 0
+        self.level_points = 0
 
         self.alive = False
         pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))

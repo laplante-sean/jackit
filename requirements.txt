@@ -1,2 +1,5 @@
-#JackIT!
+#For JackIT! The game
 pygame
+
+#For JackITio The leaderboard
+django

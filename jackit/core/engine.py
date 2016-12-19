@@ -44,11 +44,14 @@ class EngineSingleton:
         # Current amout of time playing (seconds)
         self.playtime = 0
 
-        # Current score
-        self.total_score = 0
+        # Total points
+        self.total_points = 0
 
         # Number of deaths (factors into final score)
         self.deaths = 0
+
+        # Score with deaths, points, and playtime factored in
+        self.final_score = 0
 
         self.clock = pygame.time.Clock() # for framerate control
         if self.config.accurate_framerate:
@@ -168,7 +171,7 @@ class EngineSingleton:
 
         for event in self.input.events:
             if event.type == pygame.QUIT:
-                self.total_score += self.current_level.player.level_score
+                self.total_points += self.current_level.player.level_points
                 self.running = False
 
             if not self.current_level.handle_event(event, keys):
