@@ -229,7 +229,6 @@ class JackitConfig(JsonConfig):
         self._mode = "production"
         self._fullscreen = False
         self.accurate_framerate = True
-        self.animation_framerate = 30
         self.controls = JackitConfigControls()
         self.code_editor = JackitConfigCodeEditor()
         self.leaderboard = JackitLeaderboard()
@@ -326,7 +325,6 @@ class JackitConfig(JsonConfig):
             "controls": self.controls.to_json(),
             "code_editor": self.code_editor.to_json(),
             "accurate_framerate": self.accurate_framerate,
-            "animation_framerate": self.animation_framerate,
             "leaderboard": self.leaderboard.to_json()
         }
 
@@ -344,7 +342,6 @@ class JackitConfig(JsonConfig):
         self.controls.from_json(raw.get('controls', self.controls.to_json()))
         self.code_editor.from_json(raw.get("code_editor", self.code_editor.to_json()))
         self.accurate_framerate = self.validate_bool(raw.get("accurate_framerate", True))
-        self.animation_framerate = self.validate_uint(raw.get("animation_framerate"))
         self.leaderboard.from_json(raw.get("leaderboard", self.leaderboard.to_json()))
 
     def load(self):

@@ -20,13 +20,15 @@ class SpriteSheet:
         except pygame.error as e:
             raise SpriteSheetError("Unable to load spritesheet image: {}. {}".format(filename, e))
 
-    def image_at(self, rect, colorkey=None):
+    def image_at(self, rect, colorkey=None, x_mirror=False, y_mirror=False):
         '''
         Load image at rect
         '''
         rect = pygame.Rect(rect)
         image = pygame.Surface(rect.size).convert()
         image.blit(self.sheet, (0, 0), rect)
+        if x_mirror or y_mirror:
+            image = pygame.transform.flip(image, x_mirror, y_mirror)
 
         if colorkey is not None:
             if colorkey is -1:
@@ -34,30 +36,33 @@ class SpriteSheet:
             image.set_colorkey(colorkey, pygame.RLEACCEL)
         return image
 
-    def images_at(self, rects, colorkey=None):
+    def images_at(self, rects, colorkey=None, x_mirror=False, y_mirror=False):
         '''
         Load image at each rect and return as list
         '''
-        return [self.image_at(rect, colorkey) for rect in rects]
+        return [self.image_at(rect, colorkey, x_mirror, y_mirror) for rect in rects]
 
-    def load_strip(self, rect, image_count, colorkey=None):
+    def load_strip(self, rect, image_count, colorkey=None, x_mirror=False, y_mirror=False):
         '''
         Load an entire strip
         '''
         tups = [(rect[0]+rect[2]*x, rect[1], rect[2], rect[3]) for x in range(image_count)]
-        return self.images_at(tups, colorkey)
+        return self.images_at(tups, colorkey, x_mirror, y_mirror)
 
 
 class SpriteStripAnimation:
     '''
     Animator for a spritesheet
     '''
-    def __init__(self, filename, rect, count, colorkey=None, loop=False, frames=1):
+    def __init__(
+            self, filename, rect, count, colorkey=None,
+            loop=False, frames=1, x_mirror=False, y_mirror=False):
+
         self.filename = filename
 
         # Load the sprite sheet and the srip
         sheet = SpriteSheet(filename)
-        self.images = sheet.load_strip(rect, count, colorkey)
+        self.images = sheet.load_strip(rect, count, colorkey, x_mirror, y_mirror)
 
         self.i = 0
 
@@ -84,7 +89,7 @@ class SpriteStripAnimation:
         # Should we loop or stop iteration
         if self.i >= len(self.images):
             if not self.loop:
-                raise StopIteration
+                return self.images[-1]
             else:
                 self.i = 0
 

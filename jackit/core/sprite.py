@@ -213,7 +213,7 @@ class Sprite(pygame.sprite.Sprite):
         Overridden by subclasses to do more on death
         like decrement lives etc.
         '''
-        return
+        pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
 
     def reset(self):
         '''

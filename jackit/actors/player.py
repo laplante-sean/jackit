@@ -19,32 +19,26 @@ class Player(Actor):
     '''
 
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
-        image_path = os.path.join(SiteDeployment.resource_path, "sprites", "run_jack.bmp")
+        run_jack = os.path.join(SiteDeployment.resource_path, "sprites", "run_jack.bmp")
+        stand_jack = os.path.join(SiteDeployment.resource_path, "sprites", "stand_jack.bmp")
+        jump_jack = os.path.join(SiteDeployment.resource_path, "sprites", "jump_jack.bmp")
 
-        '''
-        animation = SpriteStripAnimation(
-            image_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
-            int(game_engine.config.framerate / 24)
-        ) + SpriteStripAnimation(
-            image_path, (0, 24, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
-            int(game_engine.config.framerate / game_engine.config.animation_framerate)
-        ) + SpriteStripAnimation(
-            image_path, (0, 48, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
-            int(game_engine.config.framerate / game_engine.config.animation_framerate)
-        ) + SpriteStripAnimation(
-            image_path, (0, 72, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
-            int(game_engine.config.framerate / game_engine.config.animation_framerate)
+        self.stand_animation = SpriteStripAnimation(
+            stand_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, -1, False,
+            int(game_engine.config.framerate / 10)
         )
-        '''
-
-        animation = SpriteStripAnimation(
-            image_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
+        self.run_animation = SpriteStripAnimation(
+            run_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
+            int(game_engine.config.framerate / 10)
+        )
+        self.jump_animation = SpriteStripAnimation(
+            jump_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, False,
             int(game_engine.config.framerate / 10)
         )
 
         super(Player, self).__init__(
             game_engine, BLOCK_WIDTH, BLOCK_HEIGHT, spawn_point[0],
-            spawn_point[1], animation=animation
+            spawn_point[1], animation=self.stand_animation
         )
 
         self.controls = controls
@@ -65,6 +59,32 @@ class Player(Actor):
 
         # True if the player cannot be killed
         self.invincible = False
+
+    def update(self):
+        super(Player, self).update()
+
+        if self.is_moving_left():
+            self.image = pygame.transform.flip(self.image, True, False)
+
+    def stop(self):
+        if self.horizontal_movement_action != self.stop:
+            self.animation = self.stand_animation.iter()
+        super(Player, self).stop()
+
+    def go_left(self):
+        if self.horizontal_movement_action != self.go_left:
+            self.animation = self.run_animation.iter()
+        super(Player, self).go_left()
+
+    def go_right(self):
+        if self.horizontal_movement_action != self.go_right:
+            self.animation = self.run_animation.iter()
+        super(Player, self).go_right()
+
+    def jump(self):
+        if not self.jumping:
+            self.animation = self.jump_animation.iter()
+        super(Player, self).jump()
 
     def has_key(self):
         '''
@@ -114,7 +134,7 @@ class Player(Actor):
         self.level_points = 0
 
         self.alive = False
-        pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
+        super(Player, self).kill()
 
     def is_on_collideable(self):
         '''
