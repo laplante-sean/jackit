@@ -25,15 +25,15 @@ class Player(Actor):
 
         self.stand_animation = SpriteStripAnimation(
             stand_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, -1, False,
-            int(game_engine.config.framerate / 10)
+            int(game_engine.config.framerate / 7)
         )
         self.run_animation = SpriteStripAnimation(
             run_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
-            int(game_engine.config.framerate / 10)
+            int(game_engine.config.framerate / 7)
         )
         self.jump_animation = SpriteStripAnimation(
             jump_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, False,
-            int(game_engine.config.framerate / 10)
+            int(game_engine.config.framerate / 5)
         )
 
         super(Player, self).__init__(

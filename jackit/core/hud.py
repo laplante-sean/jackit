@@ -33,10 +33,15 @@ class Hud:
         self.current_hint = None
         self.current_delay = 0
 
+        # Maximum number of things in the queue before messages are dropped
+        self.queue_spam_protection = 5
+
     def display_hint(self, hint, delay):
         '''
         Add a hint to the hint display queue
         '''
+        if len(self.hint_queue) >= self.queue_spam_protection:
+            return
         self.hint_queue.append({"hint":hint, "delay":delay})
 
     def update(self):

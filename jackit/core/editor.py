@@ -236,11 +236,19 @@ class CodeEditor:
             if (self.text_rect.y + self.line_size) >= (self.height + self.rect.y):
                 break # Don't draw when we hit the bottom
 
-            screen.blit(self.font.render(
-                line,
-                self.config.font_antialiasing,
-                self.config.font_color
-            ), self.text_rect)
+            try:
+                screen.blit(self.font.render(
+                    line,
+                    self.config.font_antialiasing,
+                    self.config.font_color
+                ), self.text_rect)
+            except BaseException:
+                self.game_engine.hud.display_hint("That thing you just entered was real bad!", 2)
+                screen.blit(self.font.render(
+                    "*"*len(line),
+                    self.config.font_antialiasing,
+                    self.config.font_color
+                ), self.text_rect)
 
             self.text_rect.y += self.line_size
 
@@ -352,20 +360,24 @@ class CodeEditor:
         if key == pygame.K_LSHIFT or key == pygame.K_RSHIFT:
             return # Skip the event for the shift key itself
 
-        # Handle shift key
-        if pygame.key.get_mods() & pygame.KMOD_SHIFT:
-            if key >= 97 and key <= 122:
-                key = ord(chr(key).upper())
-            else:
-                if KEY_TO_SHIFT_MAP.get(chr(key), None) is not None:
-                    key = ord(KEY_TO_SHIFT_MAP[chr(key)])
+        try:
+            # Handle shift key
+            if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                if key >= 97 and key <= 122:
+                    key = ord(chr(key).upper())
+                else:
+                    if KEY_TO_SHIFT_MAP.get(chr(key), None) is not None:
+                        key = ord(KEY_TO_SHIFT_MAP[chr(key)])
 
-        self.text = ''.join((
-            self.text[:self.cursor_position],
-            chr(key),
-            self.text[self.cursor_position:]
-        ))
-        self.cursor_position += 1
+            self.text = ''.join((
+                self.text[:self.cursor_position],
+                chr(key),
+                self.text[self.cursor_position:]
+            ))
+            self.cursor_position += 1
+        except ValueError:
+            self.game_engine.hud.display_hint("Attempt to enter an invalid character!", 2)
+            return
 
     def k_up(self):
         '''
