@@ -20,6 +20,7 @@
 #### If you want to use pygame_sdl2 (optional)
 
 _This is not optional on Mac OS X 10.12.2 because of a bug in pygame_
+_https://bitbucket.org/pygame/pygame/issues/320/wont-start-on-mac-os-x-10122-on-python-352#comment-33011207_
 
 1. clone https://github.com/renpy/pygame_sdl2
 1. Follow installation instructions for your OS
