@@ -31,9 +31,17 @@ class Player(Actor):
             run_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
             int(game_engine.config.framerate / 7)
         )
+        self.run_left_animation = SpriteStripAnimation(
+            run_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
+            int(game_engine.config.framerate / 7), x_mirror=True
+        )
         self.jump_animation = SpriteStripAnimation(
             jump_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, False,
             int(game_engine.config.framerate / 5)
+        )
+        self.jump_left_animation = SpriteStripAnimation(
+            jump_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
+            int(game_engine.config.framerate / 5), x_mirror=True
         )
 
         super(Player, self).__init__(
@@ -63,9 +71,6 @@ class Player(Actor):
     def update(self):
         super(Player, self).update()
 
-        if self.is_moving_left():
-            self.image = pygame.transform.flip(self.image, True, False)
-
     def stop(self):
         if self.horizontal_movement_action != self.stop:
             self.animation = self.stand_animation.iter()
@@ -73,7 +78,7 @@ class Player(Actor):
 
     def go_left(self):
         if self.horizontal_movement_action != self.go_left:
-            self.animation = self.run_animation.iter()
+            self.animation = self.run_left_animation.iter()
         super(Player, self).go_left()
 
     def go_right(self):
@@ -83,7 +88,11 @@ class Player(Actor):
 
     def jump(self):
         if not self.jumping:
-            self.animation = self.jump_animation.iter()
+            if self.is_moving_left():
+                self.animation = self.jump_left_animation.iter()
+            else:
+                self.animation = self.jump_animation.iter()
+
         super(Player, self).jump()
 
     def has_key(self):
