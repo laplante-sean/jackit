@@ -341,7 +341,6 @@ class Level:
         '''
         Update the level
         '''
-
         # Update the camera to follow the player
         self.camera.update(self.player)
 
@@ -388,7 +387,11 @@ class Level:
         '''
         if event.type == CustomEvent.KILL_SPRITE:
             if isinstance(event.sprite, Player):
+                print("You died")
                 self.game_engine.deaths += 1
+
+                # Display you died in the HUD for 2 seconds
+                self.game_engine.hud.display_hint("YOU DIED!!", 2)
 
                 # Reset the current level. This clears the
                 # user patched code

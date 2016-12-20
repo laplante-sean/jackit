@@ -3,6 +3,7 @@ Heads up display - Shows score, deaths, time, etc.
 '''
 
 import pygame
+from collections import deque
 
 class Hud:
     '''
@@ -28,6 +29,16 @@ class Hud:
         self.display_text_template = "Playtime: {0:.2f} | Points: {1} | Deaths: {2}"
         self.display_text = ""
 
+        self.hint_queue = deque()
+        self.current_hint = None
+        self.current_delay = 0
+
+    def display_hint(self, hint, delay):
+        '''
+        Add a hint to the hint display queue
+        '''
+        self.hint_queue.append({"hint":hint, "delay":delay})
+
     def update(self):
         '''
         Update the text
@@ -37,6 +48,18 @@ class Hud:
             self.game_engine.total_points,
             self.game_engine.deaths
         )
+
+        if self.current_hint:
+            self.current_delay += (self.game_engine.clock.get_time() / 1000.0)
+            if self.current_delay <= self.current_hint["delay"]:
+                self.display_text += " | " + self.current_hint["hint"]
+            else:
+                self.current_hint = None
+                self.current_delay = 0
+        elif len(self.hint_queue) > 0:
+            self.current_hint = self.hint_queue.popleft()
+            self.current_delay = 0
+            self.display_text += " | " + self.current_hint["hint"]
 
     def draw(self, screen):
         '''
