@@ -9,6 +9,7 @@ from deploy import SiteDeployment
 
 # Import game engine components
 from jackit.core import CustomEvent
+from jackit.effects import DeathFrame
 from jackit.core.input import Input
 from jackit.core.sound import Sound
 from jackit.core.editor import CodeEditor
@@ -135,6 +136,9 @@ class EngineSingleton:
         self.welcome = Welcome(self)
         self.welcome.run()
 
+        # Flashed when the player dies
+        self.death_frame = DeathFrame(self)
+
         # Set the allowed events so that we don't waste time looking for more
         pygame.event.set_allowed([
             pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP,
@@ -164,6 +168,9 @@ class EngineSingleton:
         # Update the HUD with up-to-date stats DUDE!!
         self.hud.update()
 
+        # Update the death frame (in case it's being displayed)
+        self.death_frame.update()
+
         # Update the code editor if it's running
         if self.code_editor.is_running():
             self.code_editor.update()
@@ -176,6 +183,9 @@ class EngineSingleton:
             self.code_editor.draw(self.screen) # Draws the code editor if it's running
 
         self.hud.draw(self.screen) # Draw the HUD last so it's like...on top BRO!
+
+        # Draw the death frame way last so it's way on top
+        self.death_frame.draw(self.screen)
 
         # ALL CODE FOR DRAWING GOES ABOVE HERE
 

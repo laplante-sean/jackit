@@ -411,8 +411,12 @@ class Level:
                 print("You died")
                 self.game_engine.deaths += 1
 
+                # Flash a death frame when they die
+                self.game_engine.death_frame.flash()
+
                 # Display you died in the HUD for 2 seconds
                 self.game_engine.hud.display_hint("YOU DIED!!", 2)
+                self.game_engine.hud.display_hint("Your code changes persist. Press 'Q' to reset.", 3)
 
                 # Reset the current level. This clears the
                 # user patched code
