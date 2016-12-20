@@ -41,6 +41,7 @@ class Welcome:
     Jump: '<Space Bar>'
     Interact to open code editor: 'E'
     Exit code editor: 'ESC'
+    Reset changes made in code editor: 'Q'
     Editing text: Arrow keys + keyboard
 
 Quit: Close the window
