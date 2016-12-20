@@ -1,5 +1,7 @@
 # JackIT!!! The Game
 
+2D Side Scroller platforming game where you have to modify the game's source code to complete levels
+
 ### Install
 
 1. clone repo
