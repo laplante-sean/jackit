@@ -2,6 +2,10 @@
 
 2D Side Scroller platforming game where you have to modify the game's source code to complete levels
 
+##### Special thanks
+
+Jacob Hartman made the music. https://j2h2.com/
+
 ### Install
 
 1. clone repo

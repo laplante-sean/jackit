@@ -9,6 +9,7 @@ from deploy import SiteDeployment
 # Import game engine components
 from jackit.core import CustomEvent
 from jackit.core.input import Input
+from jackit.core.sound import Sound
 from jackit.core.editor import CodeEditor
 from jackit.core.welcome import Welcome
 from jackit.core.hud import Hud
@@ -116,6 +117,10 @@ $ python3 game.py --sdl2
 
         # Init Input handler
         self.input = Input()
+
+        # Init the sound
+        self.sound = Sound(self)
+        self.sound.play_game_music()
 
         # Init the code editor
         self.code_editor = CodeEditor(self)
