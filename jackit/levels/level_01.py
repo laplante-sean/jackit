@@ -11,69 +11,31 @@ class Level_01(Level):
 
     # pylint: disable=C0301
     _map = [
-        "                                               PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "                                               P                                                                 P",
-        "                                               P                                                                 P",
-        "                                               P                                                                 P",
-        "                                               P                                                                 P",
-        "                                               P                                                                 P",
-        "                                               P                                                                 P",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP                  PPPPPPPP                                       P",
-        "P                                                                        P                                       P",
-        "P                                                  PPPPPPPP              P                                       P",
-        "P                         K                                     U        P                                       P",
-        "P                    PPPPPPPPPPP                               PPPPPPPPPPP            5 5 5 5                    P",
-        "P                                                                        PPPPPPPPPPPPPPPPPPPPPPPPPPP             P",
-        "P                                          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP                                       P",
-        "P      11111                               P                            PP                                       P",
-        "P    PPPPPPPP                              P                            PPPPP    PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P                           1              P                                                                     P",
-        "P                          PPPPPPP         P                                                                     P",
-        "P                 PPPPPP                   P                             5                                       P",
-        "P            1                             P           PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP                          P",
-        "P         PPPPPPP                          P                                                                     P",
-        "P                        1                 P                                                                     P",
-        "P                     PPPPPP               P                                             1 1 1 1 1 1 1           P",
-        "P                                          P                                      PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P   PPPPPPPPPPP                            P                                                                     P",
-        "P                                          P                                                                     P",
-        "P                 PPPPPPPPPPP              P                                                                     P",
-        "P                                          P                                                                     P",
-        "P                                          P                          111111111111111111111111111111             P",
-        "P                               PPPPPPPPPPPP    PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P                                          P                                                                     E",
-        "P                                          P                                                                     E",
-        "P                        PPPPPPPPPPPPP     P                                                                     E",
-        "P                                          P                                                                     E",
-        "P                                          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+        "PPPPPPPPPPPPPPPPPPPPPPP",
+        "P                     P",
+        "P                     P",
+        "P                     E",
+        "P               1     E",
         "P          PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P   0                                      P",
+        "P                                          P",
         "PPPPPP                                     P",
         "P     P                                    P",
         "P      P                                   P",
-        "P       PPP  5                             P",
-        "P           PPP   5                        P",
+        "P       PPP  1                             P",
+        "P           PPP                            P",
         "P                PPP                       P",
-        "P                       ZZZZZ ZZZZZ        P",
+        "P                          1   1           P",
         "P                       PPPPPPPPPPP        P",
         "P                                          P",
-        "P                  LLLL                    P",
+        "P            L                             P",
         "P            PPPPPPPPPPP                   P",
         "P                                          P",
-        "P                                          P",
+        "P    S                      1 1 1          P",
         "P                         PPPPPPPPPP       P",
-        "P    S                                     P",
-        "P           E                              P",
+        "P                                          P",
+        "P                                          P",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 
     def __init__(self, game_engine, player):
         super(Level_01, self).__init__(game_engine, Level_01._map, player)
-
-    def create_code_block(self, x_pos, y_pos):
-        block = super(Level_01, self).create_code_block(x_pos, y_pos)
-        block.challenge_text = """
-dDDDdjslkfjdsf;lksafhkfjahsdjkfhasdkjfhalsdkjfhaldjksfhalkjsdhflakjshdflkajhfldkajhdlkjhalkjsdhflasjdhfalksdjhfaldsj
-        """
-        block.locked = True
-        return block

@@ -67,7 +67,7 @@ class JackitConfigCodeEditor(JsonConfig):
     '''
     def __init__(self):
         super(JackitConfigCodeEditor, self).__init__()
-        self.bg_alpha = 210
+        self.bg_alpha = 235
         self.bg_color = (0, 0, 0) # Black
         self.font_antialiasing = True
         self.font_color = (0, 255, 0) # Green
@@ -82,7 +82,7 @@ class JackitConfigCodeEditor(JsonConfig):
         '''
         Load the object from JSON laoded from config file
         '''
-        self.bg_alpha = self.validate_ubyte(raw.get("bg_alpha", 210))
+        self.bg_alpha = self.validate_ubyte(raw.get("bg_alpha", 235))
         self.bg_color = self.validate_color(raw.get("bg_color", (0, 0, 0)))
         self.font_antialiasing = self.validate_bool(raw.get("font_antialiasing", True))
         self.font_color = self.validate_color(raw.get("font_color", (0, 255, 0)))

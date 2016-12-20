@@ -52,7 +52,7 @@ class Physics:
         if not self.use_patch:
             return self._grav_acceleration
 
-        ret = UserPatch.get_actor_grav_acceleration()
+        ret = UserPatch.get_grav_acceleration()
         if ret is None:
             return self._grav_acceleration
         return ret
@@ -69,7 +69,7 @@ class Physics:
         if not self.use_patch:
             return self._grav_deceleration
 
-        ret = UserPatch.get_actor_grav_deceleration()
+        ret = UserPatch.get_grav_deceleration()
         if ret is None:
             return self._grav_deceleration
         return ret
@@ -86,7 +86,7 @@ class Physics:
         if not self.use_patch:
             return self._grav_high_jump
 
-        ret = UserPatch.get_actor_grav_high_jump()
+        ret = UserPatch.get_grav_high_jump()
         if ret is None:
             return self._grav_high_jump
         return ret
@@ -103,7 +103,7 @@ class Physics:
         if not self.use_patch:
             return self._x_acceleration
 
-        ret = UserPatch.get_actor_x_acceleration()
+        ret = UserPatch.get_x_acceleration()
         if ret is None:
             return self._x_acceleration
         return ret
@@ -120,7 +120,7 @@ class Physics:
         if not self.use_patch:
             return self._top_speed
 
-        ret = UserPatch.get_actor_top_speed()
+        ret = UserPatch.get_top_speed()
         if ret is None:
             return self._top_speed
         return ret
@@ -137,7 +137,7 @@ class Physics:
         if not self.use_patch:
             return self._jump_speed
 
-        ret = UserPatch.get_actor_jump_speed()
+        ret = UserPatch.get_jump_speed()
         if ret is None:
             return self._jump_speed
         return ret

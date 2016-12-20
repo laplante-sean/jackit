@@ -28,7 +28,10 @@ class LevelMap:
     EXIT = "E"
     SPAWN = "S"
     CODE = "C"
-    DEATH_ENTITY = "D"
+    DEATH_SPIKE = "D"
+    LEFT_DEATH_SPIKE = "<"
+    RIGHT_DEATH_SPIKE = ">"
+    UP_DEATH_SPIKE = "^"
     BASIC_ENEMY = "B"
     LEDGE_SENSE_ENEMY = "L"
     LEDGE_SENSE_RND_ENEMY = "Z"
@@ -159,8 +162,14 @@ class Level:
                     self.player.spawn_point = (x, y)
                 elif col == LevelMap.CODE:
                     sprite = self.create_code_block(x, y)
-                elif col == LevelMap.DEATH_ENTITY:
+                elif col == LevelMap.DEATH_SPIKE:
                     sprite = self.create_death_block(x, y)
+                elif col == LevelMap.LEFT_DEATH_SPIKE:
+                    sprite = self.create_death_block(x, y, direction="left")
+                elif col == LevelMap.RIGHT_DEATH_SPIKE:
+                    sprite = self.create_death_block(x, y, direction="right")
+                elif col == LevelMap.UP_DEATH_SPIKE:
+                    sprite = self.create_death_block(x, y, direction="up")
                 elif col == LevelMap.BASIC_ENEMY:
                     sprite = self.create_basic_enemy(x, y)
                 elif col == LevelMap.LEDGE_SENSE_ENEMY:
@@ -316,7 +325,7 @@ class Level:
         self.platforms.add(ret)
         return ret
 
-    def create_death_block(self, x_pos, y_pos):
+    def create_death_block(self, x_pos, y_pos, direction="down"):
         '''
         Creates a block that kills the player on collide
         '''
@@ -324,7 +333,8 @@ class Level:
             self.game_engine,
             BLOCK_WIDTH,
             BLOCK_HEIGHT,
-            x_pos, y_pos
+            x_pos, y_pos,
+            direction=direction
         )
         self.platforms.add(ret)
         return ret

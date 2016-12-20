@@ -65,47 +65,53 @@ class UserPatchSingleton:
             return self.patch_map[method_name](*args)
         return None
 
-    def get_actor_top_speed(self):
+    def get_top_speed(self):
         '''
         Getter for the actors's top speed
         '''
-        return self.call_patch(self.get_actor_top_speed.__name__)
+        return self.call_patch(self.get_top_speed.__name__)
 
-    def get_actor_jump_speed(self):
+    def get_jump_speed(self):
         '''
         Getter for the actors's jump speed
         '''
-        return self.call_patch(self.get_actor_jump_speed.__name__)
+        return self.call_patch(self.get_jump_speed.__name__)
 
-    def get_actor_x_acceleration(self):
+    def get_x_acceleration(self):
         '''
         Getter for the actors's x-axis acceleration
         '''
-        return self.call_patch(self.get_actor_x_acceleration.__name__)
+        return self.call_patch(self.get_x_acceleration.__name__)
 
-    def get_actor_grav_acceleration(self):
+    def get_grav_acceleration(self):
         '''
         Getter for the actor's gravity acceleration
         '''
-        return self.call_patch(self.get_actor_grav_acceleration.__name__)
+        return self.call_patch(self.get_grav_acceleration.__name__)
 
-    def get_actor_grav_deceleration(self):
+    def get_grav_deceleration(self):
         '''
         Getter for the actor's gravity deceleration
         '''
-        return self.call_patch(self.get_actor_grav_deceleration.__name__)
+        return self.call_patch(self.get_grav_deceleration.__name__)
 
-    def get_actor_grav_high_jump(self):
+    def get_grav_high_jump(self):
         '''
         Getter for the actor's gravity high jump value
         '''
-        return self.call_patch(self.get_actor_grav_high_jump.__name__)
+        return self.call_patch(self.get_grav_high_jump.__name__)
 
     def is_moving_up(self, change_y):
         '''
         User patch getter to check if the sprite is moving up
         '''
         return self.call_patch(self.is_moving_up.__name__, change_y)
+
+    def is_moving_down(self, change_y):
+        '''
+        User patch getter to check if the sprite is moving down
+        '''
+        return self.call_patch(self.is_moving_down.__name__, change_y)
 
 # Create an instance of UserPatchSingleton
 UserPatch = UserPatchSingleton.instance()

@@ -10,20 +10,19 @@ class Level_02(Level):
     '''
 
     _map = [
+        "                          PPPPPPPPPPPPPPPPPP",
+        "                          P                E",
+        "                          P 0              E",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP          PPPP",
         "P                             PP           P",
-        "P                                        B P",
-        "P                 E                 PPPPPPPP",
-        "P            PPPPPPPPPPP                   P",
-        "                              PPPPPP        ",
-        "                                            ",
-        "      S                      B           B  ",
+        "P                                         BP",
+        "P               1 1 1               PPPPPPPP",
+        "P   S        PPPPPPPPPPP                   P",
+        "P                             PPPPPPPP     P",
+        "                                           P",
+        "                                    B   B  P",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
     ]
 
     def __init__(self, game_engine, player):
         super(Level_02, self).__init__(game_engine, Level_02._map, player)
-
-    def create_code_block(self, x_pos, y_pos):
-        block = super(Level_02, self).create_code_block(x_pos, y_pos)
-        return block

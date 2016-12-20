@@ -20,34 +20,39 @@ class SpriteSheet:
         except pygame.error as e:
             raise SpriteSheetError("Unable to load spritesheet image: {}. {}".format(filename, e))
 
-    def image_at(self, rect, colorkey=None, x_mirror=False, y_mirror=False):
+    def image_at(self, rect, colorkey=None, x_mirror=False, y_mirror=False, rotation=0):
         '''
         Load image at rect
         '''
         rect = pygame.Rect(rect)
         image = pygame.Surface(rect.size).convert()
         image.blit(self.sheet, (0, 0), rect)
-        if x_mirror or y_mirror:
-            image = pygame.transform.flip(image, x_mirror, y_mirror)
 
         if colorkey is not None:
             if colorkey is -1:
                 colorkey = image.get_at((0, 0))
             image.set_colorkey(colorkey, pygame.RLEACCEL)
+
+        if x_mirror or y_mirror:
+            image = pygame.transform.flip(image, x_mirror, y_mirror)
+        if rotation > 0:
+            image = pygame.transform.rotate(image, rotation)
+
         return image
 
-    def images_at(self, rects, colorkey=None, x_mirror=False, y_mirror=False):
+    def images_at(self, rects, colorkey=None, x_mirror=False, y_mirror=False, rotation=0):
         '''
         Load image at each rect and return as list
         '''
-        return [self.image_at(rect, colorkey, x_mirror, y_mirror) for rect in rects]
+        return [self.image_at(rect, colorkey, x_mirror, y_mirror, rotation) for rect in rects]
 
-    def load_strip(self, rect, image_count, colorkey=None, x_mirror=False, y_mirror=False):
+    def load_strip(self, rect, image_count, colorkey=None,
+                   x_mirror=False, y_mirror=False, rotation=0):
         '''
         Load an entire strip
         '''
         tups = [(rect[0]+rect[2]*x, rect[1], rect[2], rect[3]) for x in range(image_count)]
-        return self.images_at(tups, colorkey, x_mirror, y_mirror)
+        return self.images_at(tups, colorkey, x_mirror, y_mirror, rotation)
 
 
 class SpriteStripAnimation:
@@ -56,13 +61,13 @@ class SpriteStripAnimation:
     '''
     def __init__(
             self, filename, rect, count, colorkey=None,
-            loop=False, frames=1, x_mirror=False, y_mirror=False):
+            loop=False, frames=1, x_mirror=False, y_mirror=False, rotation=0):
 
         self.filename = filename
 
         # Load the sprite sheet and the srip
         sheet = SpriteSheet(filename)
-        self.images = sheet.load_strip(rect, count, colorkey, x_mirror, y_mirror)
+        self.images = sheet.load_strip(rect, count, colorkey, x_mirror, y_mirror, rotation)
 
         self.i = 0
 

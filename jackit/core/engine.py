@@ -61,7 +61,7 @@ class EngineSingleton:
 
         if platform.system().lower() == "darwin":
             if platform.mac_ver()[0] == "10.12.2" and pygame.get_sdl_version()[0] < 2:
-                print("""Because of a bug in pygame, this game is 
+                print("""Because of a bug in pygame, this game is
 currently not working on Mac OS X 10.12.2. 
 Please install pygame_sdl2 and re-run game.py 
 with the '--sdl2' argument to fix this issue

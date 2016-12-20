@@ -289,7 +289,13 @@ class Sprite(pygame.sprite.Sprite):
         '''
         True if the Actor is moving down
         '''
-        return self.change_y > 0
+        if not self.use_patch:
+            return self.change_y > 0
+
+        ret = UserPatch.is_moving_down(self.change_y)
+        if ret is None:
+            return self.change_y > 0
+        return ret
 
     def is_moving_horizontal(self):
         '''
