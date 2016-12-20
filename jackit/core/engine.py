@@ -60,7 +60,34 @@ class EngineSingleton:
             self.tick_method = self.clock.tick
 
         if platform.system().lower() == "darwin":
+            if platform.mac_ver()[0] == "10.12.2" and pygame.get_sdl_version()[0] < 2:
+                print("""Because of a bug in pygame, this game is 
+currently not working on Mac OS X 10.12.2. 
+Please install pygame_sdl2 and re-run game.py 
+with the '--sdl2' argument to fix this issue
+
+pygame_sdl2 can be found here: 
+https://github.com/renpy/pygame_sdl2
+
+To setup, brew is required. If you don't have it, get it like this:
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+Then do this to install pygame_sdl2:
+$ git clone https://github.com/renpy/pygame_sdl2
+$ cd pygame_sdl2
+$ brew install sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_ttf
+$ pip install cython
+$ python3 setup.py install
+
+Then finally, from the jackit repo:
+$ python3 game.py --sdl2
+                """)
+
+                import sys
+                sys.exit(-1)
+
             print("Detected MAC OS X. Run this app in low resolution mode on retina displays.")
+
 
         # Set the display mode
         if self.fullscreen:
