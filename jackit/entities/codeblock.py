@@ -73,6 +73,9 @@ class CodeBlock(Entity):
 
             self.game_engine.current_level.challenge_completed(code_obj)
 
+            # Tell them how to clear the code changes they made
+            self.game_engine.hud.display_hint("Clear code changes with 'Q'", 2)
+
             # Update the challenge text
             self.challenge_text = event.text
         except BaseException as e:
