@@ -19,8 +19,9 @@ class Player(Actor):
     '''
 
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
-        image_path = os.path.join(SiteDeployment.resource_path, "sprites", "animation_demo.bmp")
+        image_path = os.path.join(SiteDeployment.resource_path, "sprites", "run_jack.bmp")
 
+        '''
         animation = SpriteStripAnimation(
             image_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
             int(game_engine.config.framerate / 24)
@@ -33,6 +34,12 @@ class Player(Actor):
         ) + SpriteStripAnimation(
             image_path, (0, 72, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, True,
             int(game_engine.config.framerate / game_engine.config.animation_framerate)
+        )
+        '''
+
+        animation = SpriteStripAnimation(
+            image_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
+            int(game_engine.config.framerate / 10)
         )
 
         super(Player, self).__init__(
