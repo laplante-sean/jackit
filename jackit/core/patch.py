@@ -83,6 +83,12 @@ class UserPatchSingleton:
         '''
         return self.call_patch(self.get_x_acceleration.__name__)
 
+    def get_x_deceleration(self):
+        '''
+        Getter for the actos's x-axis deceleration
+        '''
+        return self.call_patch(self.get_x_deceleration.__name__)
+
     def get_grav_acceleration(self):
         '''
         Getter for the actor's gravity acceleration

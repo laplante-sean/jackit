@@ -18,7 +18,7 @@ class Physics:
         self._x_acceleration = x_acceleration
 
         # Stopping acceleration
-        self.x_deceleration = x_deceleration
+        self._x_deceleration = x_deceleration
 
         # Fastest (in pixels) the actor moves
         self._top_speed = top_speed
@@ -111,6 +111,23 @@ class Physics:
     @x_acceleration.setter
     def x_acceleration(self, value):
         self._x_acceleration = value
+
+    @property
+    def x_deceleration(self):
+        '''
+        Getter for _x_deceleration - Calls the patched version if it exists
+        '''
+        if not self.use_patch:
+            return self._x_deceleration
+
+        ret = UserPatch.get_x_deceleration()
+        if ret is None:
+            return self._x_deceleration
+        return ret
+
+    @x_deceleration.setter
+    def x_deceleration(self, value):
+        self._x_deceleration = value
 
     @property
     def top_speed(self):
