@@ -150,6 +150,7 @@ class JackitConfigControls(JsonConfig):
         self.interact = pygame.K_e
         self.push = pygame.K_LSHIFT
         self.reset_code = pygame.K_q
+        self.toggle_sound = pygame.K_m
 
     def from_json(self, raw):
         '''
@@ -187,6 +188,7 @@ class JackitConfigControls(JsonConfig):
         self.interact = raw.get('interact', getattr(pygame, 'K_e'))
         self.push = raw.get("push", getattr(pygame, "K_LSHIFT"))
         self.reset_code = raw.get("reset_code", getattr(pygame, "K_q"))
+        self.toggle_sound = raw.get("toggle_sound", getattr(pygame, "K_m"))
 
     def to_json(self):
         '''
@@ -200,7 +202,8 @@ class JackitConfigControls(JsonConfig):
             'jump': self.jump,
             'interact': self.interact,
             'push': self.push,
-            'reset_code': self.reset_code
+            'reset_code': self.reset_code,
+            'toggle_sound': self.toggle_sound
         }
 
 class JackitLeaderboard(JsonConfig):
@@ -232,6 +235,7 @@ class JackitConfig(JsonConfig):
         self._mode = "production"
         self._fullscreen = False
         self.accurate_framerate = True
+        self.sound_enabled = True
         self.controls = JackitConfigControls()
         self.code_editor = JackitConfigCodeEditor()
         self.leaderboard = JackitLeaderboard()
@@ -328,7 +332,8 @@ class JackitConfig(JsonConfig):
             "controls": self.controls.to_json(),
             "code_editor": self.code_editor.to_json(),
             "accurate_framerate": self.accurate_framerate,
-            "leaderboard": self.leaderboard.to_json()
+            "leaderboard": self.leaderboard.to_json(),
+            "sound_enabled": self.sound_enabled
         }
 
     def from_json(self, raw):
@@ -346,6 +351,7 @@ class JackitConfig(JsonConfig):
         self.code_editor.from_json(raw.get("code_editor", self.code_editor.to_json()))
         self.accurate_framerate = self.validate_bool(raw.get("accurate_framerate", True))
         self.leaderboard.from_json(raw.get("leaderboard", self.leaderboard.to_json()))
+        self.sound_enabled = self.validate_bool(raw.get("sound_enabled", False))
 
     def load(self):
         '''

@@ -2,6 +2,7 @@
 Main game engine
 '''
 
+import sys
 import platform
 import pygame
 from deploy import SiteDeployment
@@ -16,6 +17,27 @@ from jackit.core.hud import Hud
 from jackit.actors import Player
 from jackit.levels import Level_01, Level_02, Level_03,\
                           Level_04, Level_05, Level_06
+
+MAC_OSX_10_12_2_NOTE = """Because of a bug in pygame, this game is
+currently not working on Mac OS X 10.12.2. 
+Please install pygame_sdl2 and re-run game.py 
+with the '--sdl2' argument to fix this issue
+
+pygame_sdl2 can be found here: 
+https://github.com/renpy/pygame_sdl2
+
+To setup, brew is required. If you don't have it, get it like this:
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+Then do this to install pygame_sdl2:
+$ git clone https://github.com/renpy/pygame_sdl2
+$ cd pygame_sdl2
+$ brew install sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_ttf
+$ pip install cython
+$ python3 setup.py install
+
+Then finally, from the jackit repo:
+$ python3 game.py --sdl2"""
 
 class EngineSingleton:
     '''
@@ -62,29 +84,7 @@ class EngineSingleton:
 
         if platform.system().lower() == "darwin":
             if platform.mac_ver()[0] == "10.12.2" and pygame.get_sdl_version()[0] < 2:
-                print("""Because of a bug in pygame, this game is
-currently not working on Mac OS X 10.12.2. 
-Please install pygame_sdl2 and re-run game.py 
-with the '--sdl2' argument to fix this issue
-
-pygame_sdl2 can be found here: 
-https://github.com/renpy/pygame_sdl2
-
-To setup, brew is required. If you don't have it, get it like this:
-$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-
-Then do this to install pygame_sdl2:
-$ git clone https://github.com/renpy/pygame_sdl2
-$ cd pygame_sdl2
-$ brew install sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_ttf
-$ pip install cython
-$ python3 setup.py install
-
-Then finally, from the jackit repo:
-$ python3 game.py --sdl2
-                """)
-
-                import sys
+                print(MAC_OSX_10_12_2_NOTE)
                 sys.exit(-1)
 
             print("Detected MAC OS X. Run this app in low resolution mode on retina displays.")
@@ -145,16 +145,15 @@ $ python3 game.py --sdl2
         # Get user input for this frame
         self.input.update()
 
+        # Handle input events
+        self.handle_events()
+
         # If the welcome window is running, don't do anything else
         if self.welcome.is_running():
-            self.welcome.handle_events(self.input.events)
             self.welcome.update()
             self.welcome.draw(self.screen)
             pygame.display.flip()
             return
-
-        # Handle input events
-        self.handle_events()
 
         # Update all sprites for the current level
         self.current_level.update()
@@ -217,17 +216,31 @@ $ python3 game.py --sdl2
         Handle user input events
         '''
 
-        # Handle code editor events if it's running
-        if self.code_editor.is_running():
-            self.code_editor.handle_events(self.input.events)
-
         # Get the keys that are currently down
         keys = pygame.key.get_pressed()
 
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 self.running = False
+                break # No need to process any more events
 
+            # Handle global events
+            if event.type == pygame.KEYDOWN:
+                if event.key == self.config.controls.toggle_sound and not self.code_editor.is_running():
+                    print("Toggling sound")
+                    self.sound.toggle_game_music()
+
+            # Handle welcome screen events if it's running
+            if self.welcome.is_running():
+                if not self.welcome.handle_event(event):
+                    break
+                continue # Skip the rest of the events while the welcome screen is running
+
+            # Handle code editor events if it's running
+            if self.code_editor.is_running():
+                if not self.code_editor.handle_event(event):
+                    break
+            
             if not self.current_level.handle_event(event, keys):
                 break
 

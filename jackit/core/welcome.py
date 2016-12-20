@@ -4,6 +4,24 @@ Initial welcome page
 
 import pygame
 
+INFO_TEMPLATE = """Movement:
+Left: 'A'
+Right: 'D'
+Jump: '<Space Bar>'
+
+Code Blocks:
+Interact: 'E'
+Exit Editor: 'ESC'
+Reset Code: 'Q'
+Edit Text: Arrow keys + keyboard
+
+Sound:
+Toggle Music: 'M'
+
+Quit: Close this window
+
+<Press ENTER to begin>"""
+
 class Welcome:
     '''
     Initial welcome page
@@ -35,19 +53,7 @@ class Welcome:
             self.rect.x, self.rect.y, self.width, self.info_line_size)
 
         self.welcome_text = "JackIT! The Game"
-        self.info_template = """Controls:
-    Left: 'A'
-    Right: 'D'
-    Jump: '<Space Bar>'
-    Interact to open code editor: 'E'
-    Exit code editor: 'ESC'
-    Reset changes made in code editor: 'Q'
-    Editing text: Arrow keys + keyboard
-
-Quit: Close the window
-
-<Press ENTER to begin!>
-        """
+        self.info_template = INFO_TEMPLATE
 
         self.render_welcome_text = []
         self.render_info = []
@@ -113,13 +119,10 @@ Quit: Close the window
 
             self.info_text_rect.y += self.info_line_size
 
-    def handle_events(self, events):
+    def handle_event(self, event):
         '''
-        Handle events
+        Handle event
         '''
-        for event in events:
-            if event.type == pygame.QUIT:
-                self.game_engine.running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    self.stop()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                self.stop()

@@ -6,11 +6,11 @@ import os
 import pygame
 from deploy import SiteDeployment
 from jackit.core import BLOCK_WIDTH, BLOCK_HEIGHT
+from jackit.core.patch import UserPatch
 from jackit.core.animation import SpriteStripAnimation
 from jackit.core import CustomEvent
 from jackit.core.actor import Actor
 from jackit.actors.enemy import Enemy
-from jackit.core.patch import UserPatch
 from jackit.entities import CodeBlock, ExitBlock, DeathBlock,\
                             DecryptionKey, Coin
 
@@ -230,6 +230,7 @@ class Player(Actor):
                 self.stop_jumping()
         elif event.type == pygame.KEYDOWN:
             if event.key == self.controls.reset_code:
+                print("Resetting code block")
                 UserPatch.unpatch()
             if event.key == self.controls.left:
                 self.go_left()
@@ -239,7 +240,7 @@ class Player(Actor):
                 self.jump()
             elif event.key == self.controls.interact and self.is_on_code_block():
                 if self.frame_cache["is_on_code_block"].is_locked() and not self.has_key():
-                    return
+                    return True # Continue processing events
 
                 # Stop the player and put them over the interactable object
                 # and make them invincible

@@ -264,34 +264,35 @@ class CodeEditor:
         '''
         return self.running
 
-    def handle_events(self, events):
+    def handle_event(self, event):
         '''
         Handle input events while the code editor is up
         '''
-        for event in events:
-            if event.type == pygame.KEYDOWN:
-                self.text_change = True
+        if event.type == pygame.KEYDOWN:
+            self.text_change = True
 
-                if event.key == pygame.K_ESCAPE:
-                    self.stop()
-                elif event.key == pygame.K_DELETE:
-                    self.k_delete()
-                elif event.key == pygame.K_LEFT:
-                    self.k_left()
-                elif event.key == pygame.K_RIGHT:
-                    self.k_right()
-                elif event.key == pygame.K_BACKSPACE:
-                    self.k_backspace()
-                elif event.key == pygame.K_TAB:
-                    self.k_tab()
-                elif event.key == pygame.K_RETURN:
-                    self.k_return()
-                elif event.key == pygame.K_UP:
-                    self.k_up()
-                elif event.key == pygame.K_DOWN:
-                    self.k_down()
-                else:
-                    self.character_key(event.key)
+            if event.key == pygame.K_ESCAPE:
+                self.stop()
+            elif event.key == pygame.K_DELETE:
+                self.k_delete()
+            elif event.key == pygame.K_LEFT:
+                self.k_left()
+            elif event.key == pygame.K_RIGHT:
+                self.k_right()
+            elif event.key == pygame.K_BACKSPACE:
+                self.k_backspace()
+            elif event.key == pygame.K_TAB:
+                self.k_tab()
+            elif event.key == pygame.K_RETURN:
+                self.k_return()
+            elif event.key == pygame.K_UP:
+                self.k_up()
+            elif event.key == pygame.K_DOWN:
+                self.k_down()
+            else:
+                self.character_key(event.key)
+
+        return True # keep processing events
 
     def k_delete(self):
         '''
