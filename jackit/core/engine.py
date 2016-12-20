@@ -120,7 +120,10 @@ class EngineSingleton:
 
         # Init the sound
         self.sound = Sound(self)
-        self.sound.play_game_music()
+
+        # Decides whether the sound is on by default or not
+        if self.config.sound_enabled:
+            self.sound.play_game_music()
 
         # Init the code editor
         self.code_editor = CodeEditor(self)

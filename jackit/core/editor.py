@@ -362,8 +362,28 @@ class CodeEditor:
             return # Skip the event for the shift key itself
 
         try:
-            # Handle shift key
-            if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+            # Handle the number pad
+            if key == pygame.K_KP0:
+                key = pygame.K_0
+            elif key == pygame.K_KP1:
+                key = pygame.K_1
+            elif key == pygame.K_KP2:
+                key = pygame.K_2
+            elif key == pygame.K_KP3:
+                key = pygame.K_3
+            elif key == pygame.K_KP4:
+                key = pygame.K_4
+            elif key == pygame.K_KP5:
+                key = pygame.K_5
+            elif key == pygame.K_KP6:
+                key = pygame.K_6
+            elif key == pygame.K_KP7:
+                key = pygame.K_7
+            elif key == pygame.K_KP8:
+                key = pygame.K_8
+            elif key == pygame.K_KP9:
+                key = pygame.K_9
+            elif pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 if key >= 97 and key <= 122:
                     key = ord(chr(key).upper())
                 else:

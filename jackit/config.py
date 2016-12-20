@@ -351,7 +351,7 @@ class JackitConfig(JsonConfig):
         self.code_editor.from_json(raw.get("code_editor", self.code_editor.to_json()))
         self.accurate_framerate = self.validate_bool(raw.get("accurate_framerate", True))
         self.leaderboard.from_json(raw.get("leaderboard", self.leaderboard.to_json()))
-        self.sound_enabled = self.validate_bool(raw.get("sound_enabled", False))
+        self.sound_enabled = self.validate_bool(raw.get("sound_enabled", True))
 
     def load(self):
         '''
