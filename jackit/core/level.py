@@ -65,6 +65,10 @@ class Level:
         self.enemies = SpriteGroup()
         self.moveable_blocks = SpriteGroup()
 
+        # List of collectable blocks that have been collected so
+        # we can put them back on level reset
+        self.collected_blocks = SpriteGroup()
+
         self.width = self.height = 0
         self.death_zone = None
         self.camera = None
@@ -76,8 +80,17 @@ class Level:
         '''
         Reset the level
         '''
-        self.unload()
-        self.load()
+        # Reset all the sprites
+        self.entities.reset()
+        self.collected_blocks.reset()
+
+        self.entities.add(self.collected_blocks)
+        self.collectable_blocks.add(self.collected_blocks)
+        self.collected_blocks.empty()
+
+        # Stop the text editor if it's running
+        if self.game_engine.code_editor.is_running():
+            self.game_engine.code_editor.stop()
 
     def unload(self):
         '''
@@ -91,6 +104,7 @@ class Level:
         self.platforms.empty()
         self.code_blocks.empty()
         self.collectable_blocks.empty()
+        self.collected_blocks.empty()
         self.enemies.empty()
         self.moveable_blocks.empty()
         self.entities.empty()
@@ -100,9 +114,6 @@ class Level:
         # Stop the text editor if it's running
         if self.game_engine.code_editor.is_running():
             self.game_engine.code_editor.stop()
-
-        # Unpatch the user patched methods when the level is complete
-        UserPatch.unpatch()
 
     def load(self):
         '''
@@ -409,6 +420,8 @@ class Level:
             elif isinstance(event.sprite, CollectableBlock):
                 self.entities.remove(event.sprite)
                 self.collectable_blocks.remove(event.sprite)
+                self.collected_blocks.add(event.sprite)
+
                 if event.sprite.is_collideable():
                     self.collideable_entities.remove(event.sprite)
                 if event.sprite.is_interactable():
@@ -419,6 +432,7 @@ class Level:
             self.player.frame_cache["is_on_code_block"].interaction_complete(event)
         elif event.type == CustomEvent.NEXT_LEVEL:
             self.game_engine.next_level()
+            UserPatch.unpatch() # Unpatch the user modification when moving to the next level
             return False # Stop processing more events
 
         # Don't process controller events for player when code editor is open

@@ -109,10 +109,12 @@ class Player(Actor):
         collideable = super(Player, self).collide(change_x, change_y, sprite)
 
         if isinstance(sprite, Coin):
+            self.collides_with.remove(sprite) # So we don't accidently grab it twice
             self.level_points += sprite.points
             self.game_engine.total_points += sprite.points
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, DecryptionKey):
+            self.collides_with.remove(sprite) # So we don't accidently grab it twice
             self.items.append(sprite)
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
         elif isinstance(sprite, ExitBlock):
@@ -231,6 +233,8 @@ class Player(Actor):
         elif event.type == pygame.KEYDOWN:
             if event.key == self.controls.reset_code:
                 print("Resetting code block")
+                for block in self.game_engine.current_level.code_blocks:
+                    block.restore() # Put the initial challenge text back
                 UserPatch.unpatch()
             if event.key == self.controls.left:
                 self.go_left()

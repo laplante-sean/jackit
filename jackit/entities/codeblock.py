@@ -16,10 +16,32 @@ class CodeBlock(Entity):
         self.image.fill((254, 68, 123))
         self.interactable = True
         self.collideable = False
-        self.challenge_text = "CHALLENGE TEXT"
+        self._challenge_text = "CHALLENGE TEXT"
+        self.original_text = None
 
         # True if this block requires an adapter to unlock
         self.locked = False
+
+    @property
+    def challenge_text(self):
+        '''
+        Getter for the instance variable _challenge_text
+        '''
+        return self._challenge_text
+
+    @challenge_text.setter
+    def challenge_text(self, value):
+        self._challenge_text = value
+
+        # When first populated, update the original_text
+        if self.original_text is None:
+            self.original_text = value
+
+    def restore(self):
+        '''
+        Restore the orignal challenge text
+        '''
+        self.challenge_text = self.original_text
 
     def is_locked(self):
         '''

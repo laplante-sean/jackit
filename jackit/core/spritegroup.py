@@ -29,3 +29,11 @@ class SpriteGroup(pygame.sprite.Group):
         for sprite in self.sprites():
             if hasattr(sprite, attr):
                 setattr(sprite, attr, value)
+
+    def reset(self):
+        '''
+        Calls reset() for each sprite that has it
+        '''
+        for sprite in self.sprites():
+            if hasattr(sprite, "reset"):
+                sprite.reset()
