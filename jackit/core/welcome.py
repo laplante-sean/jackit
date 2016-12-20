@@ -20,6 +20,8 @@ Toggle Music: 'M'
 
 Quit: Close this window
 
+May cause seizures. Don't blow it.
+
 <Press ENTER to begin>"""
 
 class Welcome:
