@@ -9,6 +9,14 @@
 3. `pip install -r requirements.txt`
 4. `python3 game.py`
 
+### Playing
+
+1. Once the game loads there will be a welcome screen. Press enter to start playing
+1. Controls are "A" for left, "D" for right, "SPACE" for jump, "E" for interact, and "ESC" to get out of a code editor
+1. In the code editor use the arrow keys to move the cursor and the keyboard to type.
+1. All the code you type is run by the game. There are some protections but it's not perfect. You can pretty much do anything.
+1. a config file `site.cfg.json` is created in the root of the repo when the game is run. You can modify this file, but I wouldn't. A lot of the config options have only been tested with their default values.
+
 #### If you want to use pygame_sdl2 (optional)
 
 _This is not optional on Mac OS X 10.12.2 because of a bug in pygame_

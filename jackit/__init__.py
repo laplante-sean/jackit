@@ -22,4 +22,4 @@ class JackitGame:
         print("Game over: ")
         print("\tScore: ", GameEngine.total_points)
         print("\tDeaths: ", GameEngine.deaths)
-        print("\tPlaytime: {}s".format(GameEngine.playtime))
+        print("\tPlaytime: {0:.2f}s".format(GameEngine.playtime))
