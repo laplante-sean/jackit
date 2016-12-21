@@ -11,15 +11,15 @@ class Level_04(Level):
     '''
 
     _map = [
-        "             PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "PPPPPPPPPPPPPPDDDDDDDDDDDDDDDDDDDDDDDDDDDPP",
-        "P5  S                                    <P",
-        "P                                        <P",
-        "P           C            1  1  1  1      <P",
-        "PPPPPPPPPPPPPP         PPPPPPPPPPPP   PPPPP",
-        "                               PPPP   P   E",
-        "                               PPPP       E",
-        "                               PPPPPPPPPPPP"
+        "             WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWDDDDDDDDDDDDDDDDDDDDDDDDDDDDW",
+        "W5  S                                    <W",
+        "W                                        <W",
+        "W           c            1  1  1  1      <W",
+        "WFFFFFFFFFFFFF         FFFFFFFFFFFF   FFFFW",
+        "                               WWWW       E",
+        "                               WWWW       E",
+        "                               WWWWFFFFFFFW"
     ]
 
     _challenge = """# Make this jump!!

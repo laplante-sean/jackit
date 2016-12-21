@@ -25,9 +25,13 @@ class LevelMap:
     Level map format characters
     '''
     PLATFORM = "P"
+    WALL = "W"
+    FLOOR = "F"
+    GROUND = "G"
+    CLOUD = "C"
     EXIT = "E"
     SPAWN = "S"
-    CODE = "C"
+    CODE = "c"
     DEATH_SPIKE = "D"
     LEFT_DEATH_SPIKE = "<"
     RIGHT_DEATH_SPIKE = ">"
@@ -166,7 +170,15 @@ class Level:
             for col in row:
                 sprite = None
                 if col == LevelMap.PLATFORM:
-                    sprite = self.create_platform(x, y)
+                    sprite = self.create_platform(x, y, platform_type="")
+                elif col == LevelMap.WALL:
+                    sprite = self.create_platform(x, y, platform_type="wall")
+                elif col == LevelMap.FLOOR:
+                    sprite = self.create_platform(x, y, platform_type="floor")
+                elif col == LevelMap.GROUND:
+                    sprite = self.create_platform(x, y, platform_type="ground")
+                elif col == LevelMap.CLOUD:
+                    sprite = self.create_platform(x, y, platform_type="cloud")
                 elif col == LevelMap.EXIT:
                     sprite = self.create_exit_block(x, y)
                 elif col == LevelMap.SPAWN:
@@ -308,7 +320,7 @@ class Level:
         self.code_blocks.add(ret)
         return ret
 
-    def create_platform(self, x_pos, y_pos):
+    def create_platform(self, x_pos, y_pos, platform_type="ground"):
         '''
         Creates a platform block. Subclasses can override
         this to assign special functionality to each platform block
@@ -317,7 +329,8 @@ class Level:
             self.game_engine,
             BLOCK_WIDTH,
             BLOCK_HEIGHT,
-            x_pos, y_pos
+            x_pos, y_pos,
+            platform_type=platform_type
         )
         self.platforms.add(ret)
         return ret

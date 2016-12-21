@@ -2,7 +2,11 @@
 Platform entity
 '''
 
+import os
+from deploy import SiteDeployment
+from jackit.core import BLOCK_WIDTH, BLOCK_HEIGHT
 from jackit.core.entity import Entity
+from jackit.core.animation import SpriteStripAnimation
 
 class PlatformStats:
     '''
@@ -19,9 +23,34 @@ class Platform(Entity):
     '''
     Represents a platform that actors can stand on
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos, platform_stats=PlatformStats()):
-        super(Platform, self).__init__(game_engine, width, height, x_pos, y_pos)
-        self.image.fill((0, 255, 0))
+    def __init__(self, game_engine, width, height, x_pos, y_pos,
+                 platform_stats=PlatformStats(), platform_type="ground"):
+
+        ground_path = os.path.join(SiteDeployment.resource_path, "sprites", "ground.bmp")
+        floor_path = os.path.join(SiteDeployment.resource_path, "sprites", "floor.bmp")
+        cloud_path = os.path.join(SiteDeployment.resource_path, "sprites", "cloud.bmp")
+        wall_path = os.path.join(SiteDeployment.resource_path, "sprites", "wall.bmp")
+
+        self.animation = None
+
+        if platform_type == "ground":
+            self.animation = SpriteStripAnimation(
+                ground_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1)
+        elif platform_type == "cloud":
+            self.animation = SpriteStripAnimation(
+                cloud_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, (0, 0, 0))
+        elif platform_type == "floor":
+            self.animation = SpriteStripAnimation(
+                floor_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1)
+        elif platform_type == "wall":
+            self.animation = SpriteStripAnimation(
+                wall_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1)
+
+        super(Platform, self).__init__(
+            game_engine, width, height, x_pos, y_pos, animation=self.animation)
+
+        if self.animation is None:
+            self.image.fill((0, 255, 0)) # Green
 
         # Movement stats if it's moving platform
         self.stats = platform_stats

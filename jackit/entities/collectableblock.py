@@ -2,14 +2,19 @@
 A block that can be collected
 '''
 
+import os
+from deploy import SiteDeployment
+from jackit.core import BLOCK_WIDTH, BLOCK_HEIGHT
+from jackit.core.animation import SpriteStripAnimation
 from jackit.core.entity import Entity
 
 class CollectableBlock(Entity):
     '''
     A block that can be collected
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos):
-        super(CollectableBlock, self).__init__(game_engine, width, height, x_pos, y_pos)
+    def __init__(self, game_engine, width, height, x_pos, y_pos, animation=None):
+        super(CollectableBlock, self).__init__(
+            game_engine, width, height, x_pos, y_pos, animation=animation)
         self.collectable = True
         self.collideable = False
 
@@ -19,6 +24,11 @@ class Coin(CollectableBlock):
     '''
     def __init__(self, game_engine, width, height, x_pos, y_pos):
         super(Coin, self).__init__(game_engine, width, height, x_pos, y_pos)
+
+        self.coin1 = os.path.join(SiteDeployment.resource_path, "sprites", "coin1.bmp")
+        self.coin5 = os.path.join(SiteDeployment.resource_path, "sprites", "coin5.bmp")
+        self.coin10 = os.path.join(SiteDeployment.resource_path, "sprites", "coin10.bmp")
+
         self.image.fill((255, 255, 0))
         self._points = 1
 
@@ -32,11 +42,23 @@ class Coin(CollectableBlock):
     @points.setter
     def points(self, value):
         if value == 1:
-            self.image.fill((255, 255, 0))
+            self.animation = SpriteStripAnimation(
+                self.coin1, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 5, -1, True,
+                int(self.game_engine.config.framerate / 7)
+            )
         elif value == 5:
-            self.image.fill((255, 255, 100))
+            self.animation = SpriteStripAnimation(
+                self.coin5, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 5, -1, True,
+                int(self.game_engine.config.framerate / 7)
+            )
         elif value == 10:
-            self.image.fill((255, 255, 200))
+            pass
+            '''
+            self.animation = SpriteStripAnimation(
+                self.coin10, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 5, -1, True,
+                int(self.game_engine.config.framerate / 7)
+            )
+            '''
         else:
             self.image.fill((0, 255, 255))
         self._points = value

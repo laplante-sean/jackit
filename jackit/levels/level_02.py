@@ -10,18 +10,18 @@ class Level_02(Level):
     '''
 
     _map = [
-        "                          PPPPPPPPPPPPPPPPPP",
-        "                          P                E",
-        "                          P 0              E",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP          PPPP",
-        "P                             PP           P",
-        "P                                         BP",
-        "P               1 1 1               PPPPPPPP",
-        "P   S        PPPPPPPPPPP                   P",
-        "P                             PPPPPPPP     P",
-        "                                           P",
-        "                                    B   B  P",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+        "                          WWWWWWWWWWWWWWWWWW",
+        "                          W                E",
+        "                          W 5              E",
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWFFF          FFFW",
+        "W                             FF           W",
+        "W                                         BW",
+        "W               1 1 1               FFFFFFFW",
+        "W   S        FFFFFFFFFFF                   W",
+        "W                             FFFFFFFF     W",
+        "                                           W",
+        "                                    B   B  W",
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
     ]
 
     def __init__(self, game_engine, player):

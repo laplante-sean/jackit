@@ -12,13 +12,13 @@ class Level_06(Level):
 
     # pylint: disable=C0301
     _map = [
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P                P                       P                    <<<<>>>>                    P           P          P            PPPPPPP",
-        "P  S             P                   1   P   1                <<<<>>>>           0  5  0Z P           P          P            PPPPPPP",
-        "P                P                   PPPPPPPPP                DDDDDDDD         PPPPPPPPPPPP           P          P            PPPPPPP",
-        "P                P                   <<<<>>>>>                   P                        P           P          P            EEEEEEE",
-        "P     C          P                   <<<<>>>>>    1 1 1          P         1 1 1 1        P           P          P     1 1    EEEEEEE",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+        "W                W                       W                    <<<<>>>>                    W           W          W            FFFFFFF",
+        "W  S             W                   1   W   1                <<<<>>>>           0  5  0Z W           W          W            FFFFFFF",
+        "W                W                   FFFFFFFFF                DDDDDDDD         FFFFFFFFFFFW           W          W            FFFFFFF",
+        "W                W                   <<<<>>>>>                   W                        W           W          W            EEEEEEE",
+        "W     c          W                   <<<<>>>>>    1 1 1          W         1 1 1 1        W           W          W     1 1    EEEEEEE",
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
     ]
 
     _challenge = """# Gotta go FAST!!!

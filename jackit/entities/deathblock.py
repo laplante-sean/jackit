@@ -31,7 +31,7 @@ class DeathBlock(Entity):
             pass
 
         self.db = SpriteStripAnimation(
-            death_block, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, -1, False,
+            death_block, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, (0, 149, 255), False,
             int(game_engine.config.framerate / 1), x_mirror=x_mirror, y_mirror=y_mirror,
             rotation=rotation
         )

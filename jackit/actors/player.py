@@ -22,7 +22,6 @@ class Player(Actor):
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
         run_jack = os.path.join(SiteDeployment.resource_path, "sprites", "run_jack.bmp")
         stand_jack = os.path.join(SiteDeployment.resource_path, "sprites", "stand_jack.bmp")
-        jump_jack = os.path.join(SiteDeployment.resource_path, "sprites", "jump_jack.bmp")
 
         self.stand_animation = SpriteStripAnimation(
             stand_jack, (0, 0, 19, BLOCK_HEIGHT), 1, -1, False,
@@ -138,7 +137,7 @@ class Player(Actor):
         ret = super(Player, self).is_on_collideable()
         if ret:
             for block in self.frame_cache["is_on_collideable"]:
-                if isinstance(block, Enemy):
+                if isinstance(block, Enemy) or isinstance(block, DeathBlock):
                     pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":self}))
                     break
         return ret

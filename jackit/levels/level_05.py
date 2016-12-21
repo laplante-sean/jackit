@@ -11,20 +11,20 @@ class Level_05(Level):
     '''
 
     _map = [
-        "                                      PPPPPPDDDDDDDPP",
-        "                                      P            <P",
-        "                                      P            <P",
-        "                                      P  PP        <P",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP  <>        <PPPPPPPPPPPPPP",
-        "P S           1   1   1   1   1          <> 000000 <>          EP",
-        "P                                        <PPPPPPPPPP>          EP",
-        "P    C                                   <PDDDDDDDDP>      PPPPPP",
-        "PPPPPPP                                                         ",
+        "                                           DDDDDDDD  ",
+        "                                                    <>",
+        "                                                    <>",
+        "              1   1   1   1   1         FF          <>",
+        "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC   <>          <>",
+        "  S           1   1   1   1   1         <>  00  00  <>         EW",
+        "W                                        <GGGGGGGGGG>          EW",
+        "W    c                                   <DDDDDDDDDD>      GGGGGG",
+        "GGGGGGG                                                         ",
         "                Z                   1   1   1                   ",
-        "              PPPPPPPPPPP        PPPPPPPPPPPPPPP                ",
+        "              GGGGGGGGGGG        GGGGGGGGGGGGGGG                ",
         "                                    5   0   5         1  1      ",
-        "                                                   PPPPPPPPPP   ",
-        "                                                      0000      ",
+        "                                                   GGGGGGGGGG   ",
+        "                                                      0  0      ",
         "                                                                ",
         "                                                                ",
         "                                                                ",
@@ -46,7 +46,7 @@ class Level_05(Level):
         "                                                                ",
         "                                                                ",
         "                                       1  5 1 5  1              ",
-        "                                       PPPPPPPPPPP              "
+        "                                       GGGGGGGGGGG              "
     ]
 
     _challenge = """# There's items up there!
