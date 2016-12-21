@@ -43,3 +43,4 @@ class Level_01(Level):
     def load(self):
         super(Level_01, self).load()
         self.game_engine.hud.display_popup("Welcome to JackIT. 'A', 'D' to move. 'Space'' to jump. Have Fun!!!!!", 5)
+        self.game_engine.hud.display_popup("The exit blocks are red. Run into them to move on.", 3)
