@@ -73,11 +73,23 @@ def get_x_acceleration():
     def __init__(self, game_engine, player):
         super(Level_03, self).__init__(game_engine, Level_03._map, player)
 
+        self.has_reset_once = False
+
         self.challenge = Level_03._challenge.format(
             player.stats.top_speed,
             player.stats.jump_speed,
             player.stats.x_acceleration
         )
+
+    def load(self):
+        super(Level_03, self).load()
+        self.game_engine.hud.display_popup("That thing over there. The thing that looks like tech. Press 'E' to interact", 6)
+
+    def reset(self):
+        super(Level_03, self).reset()
+        if not self.has_reset_once:
+            self.has_reset_once = True
+            self.game_engine.hud.display_popup("OUCH! Your code changes stick around b/w deaths. Press 'Q' to reset", 4)
 
     def create_code_block(self, x_pos, y_pos):
         block = super(Level_03, self).create_code_block(x_pos, y_pos)

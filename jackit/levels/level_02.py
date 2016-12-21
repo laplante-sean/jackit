@@ -26,3 +26,7 @@ class Level_02(Level):
 
     def __init__(self, game_engine, player):
         super(Level_02, self).__init__(game_engine, Level_02._map, player)
+
+    def load(self):
+        super(Level_02, self).load()
+        self.game_engine.hud.display_popup("WATCH OUT! THEY RESPAWN!", 4)
