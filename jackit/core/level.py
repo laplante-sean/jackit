@@ -380,6 +380,8 @@ class Level:
         '''
         # Update the camera to follow the player
         self.camera.update(self.player)
+        #if self.game_engine.hud.popup_rect is not None:
+        #    self.camera.update(self.game_engine.hud.popup_rect)
 
         # Update the player first
         self.player.update()

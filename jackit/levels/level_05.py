@@ -11,7 +11,13 @@ class Level_05(Level):
     '''
 
     _map = [
-        "                                           DDDDDDDD  ",
+        "                                                      ",
+        "                                                      ",
+        "                                                      ",
+        "                                                      ",
+        "                                                      ",
+        "                                                      ",
+        "                                           DDDDDDDD   ",
         "                                                    <>",
         "                                                    <>",
         "              1   1   1   1   1         FF          <>",

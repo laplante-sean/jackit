@@ -39,9 +39,7 @@ class TextInput(CodeEditor):
         Called when the user hits enter. Overrides the code editor version
         '''
         self.running = False
-
         pygame.event.post(pygame.event.Event(CustomEvent.SET_USER, {"text": self.text}))
-
         pygame.key.set_repeat() # Sets back to no repeat
 
     def update(self):

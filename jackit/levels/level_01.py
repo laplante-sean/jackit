@@ -39,3 +39,7 @@ class Level_01(Level):
 
     def __init__(self, game_engine, player):
         super(Level_01, self).__init__(game_engine, Level_01._map, player)
+
+    def load(self):
+        super(Level_01, self).load()
+        self.game_engine.hud.display_popup("Welcome to JackIT. Have Fun!!!!!", 25)

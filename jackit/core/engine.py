@@ -104,6 +104,12 @@ class EngineSingleton:
         else:
             self.screen = pygame.display.set_mode(self.screen_size)
 
+        # Init the HUD
+        self.hud = Hud(self)
+
+        # Init the welcome screen
+        self.welcome = Welcome(self)
+
         self.player = Player(self, self.config.controls)
 
         # Init the levels
@@ -131,12 +137,6 @@ class EngineSingleton:
 
         # Init the code editor
         self.code_editor = CodeEditor(self)
-
-        # Init the HUD
-        self.hud = Hud(self)
-
-        # Init the welcome screen
-        self.welcome = Welcome(self)
 
         # Init the user name enter box
         self.name_enter = TextInput(self, max_chars=50)
@@ -174,11 +174,13 @@ class EngineSingleton:
         if self.welcome.is_running():
             self.welcome.update()
             self.welcome.draw(self.screen)
+            self.tick_method(self.framerate)
             pygame.display.flip()
             return
         elif self.name_enter.is_running():
             self.name_enter.update()
             self.name_enter.draw(self.screen)
+            self.tick_method(self.framerate)
             pygame.display.flip()
             return
 
@@ -275,6 +277,7 @@ class EngineSingleton:
             # Set the username
             if event.type == CustomEvent.SET_USER:
                 print("Username: ", event.text)
+                #self.name_enter.running = False
                 self.user = event.text
                 self.welcome.run()
 
