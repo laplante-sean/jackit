@@ -103,13 +103,8 @@ def get_x_acceleration():
         '''
         local_dict = locals()
 
-        # Execute the code object
-        try:
-            # pylint: disable=W0122
-            exec(code_obj, globals(), local_dict)
-        except BaseException as e:
-            # TODO: Display this as a popup
-            print("That's some bad code! ", str(e))
+        # pylint: disable=W0122
+        exec(code_obj, globals(), local_dict)
 
         # Patch the provided methods
         if local_dict.get("get_top_speed", None) is not None:

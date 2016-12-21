@@ -77,9 +77,8 @@ class CodeBlock(Entity):
         Called when the interaction is complete
         '''
         try:
-            # TODO: More security
-            pattern = re.compile(r'.*import.*')
-            if pattern.match(event.text) is not None:
+            pattern = re.compile("import")
+            if pattern.search(event.text) is not None:
                 raise Exception("No Imports!")
 
             # Compile the code and catch any errors
@@ -93,7 +92,7 @@ class CodeBlock(Entity):
             # Update the challenge text
             self.challenge_text = event.text
         except BaseException as e:
-            print("Your code blows! ", str(e))
+            self.game_engine.hud.display_popup("Your code blows! " + str(e), 7)
 
         # Make it so player can die again
         self.game_engine.current_level.player.invincible = False

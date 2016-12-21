@@ -366,7 +366,7 @@ class Level:
         self.platforms.add(ret)
         return ret
 
-    def challenge_completed(self, _):
+    def challenge_completed(self, code_obj):
         '''
         Callback for when user finishes editing the code
         and it passes the compile stage. code_obj can be
