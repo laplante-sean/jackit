@@ -24,7 +24,7 @@ def validate_code(data, code):
     levels = data.get("levels_completed", None)
 
     if user is None or playtime is None or score is None or deaths is None\
-    or levels is None:
+    or levels is None or code is None:
         return False
 
     '''
@@ -59,10 +59,9 @@ def cheated(data):
     Attempt to find cheaty cheaters
     '''
     sys.path.append(REPO_BASE_DIR)
-    # TODO: Check things like. Do they have more points than possible?
-    # did they finish way to fast?
-    # did they finish more levels than possible?
-    # etc...
+
+    if not validate_code(data, data.get("game_id", None))
+        return True, "Invalid game_id"
     return False, ""
 
 def get_leaderboard():
@@ -92,19 +91,14 @@ def submit(request):
     '''
     if request.POST:
         d = request.POST.dict()
-        c = d.get("game_id", None)
-
         if c is not None:
-            if validate_code(d, c):
-                try:
-                    form = LeaderboardForm(request.POST)
-                    leader = form.save(commit=False)
-                    leader.cheated, leader.cheated_reason = cheated(d)
-                    leader.save()
-                except BaseException as e:
-                    print("Error creating form from post data: ", str(e))
-                    print("Post data: ", request.POST)
-            else:
-                print("Validation failed")
+            try:
+                form = LeaderboardForm(request.POST)
+                leader = form.save(commit=False)
+                leader.cheated, leader.cheated_reason = cheated(d)
+                leader.save()
+            except BaseException as e:
+                print("Error creating form from post data: ", str(e))
+                print("Post data: ", request.POST)
 
     return HttpResponse("Success!")
