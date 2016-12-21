@@ -83,7 +83,7 @@ def get_x_acceleration():
 
     def load(self):
         super(Level_03, self).load()
-        self.game_engine.hud.display_popup("That thing over there. The thing that looks like tech. Press 'E' to interact", 6)
+        self.game_engine.hud.display_popup("That thing over there that looks like tech. Press 'E' to JACK IN!!", 6)
 
     def reset(self):
         super(Level_03, self).reset()
