@@ -66,6 +66,8 @@ class CodeBlock(Entity):
         Called when an interactable block is interacted with
         '''
 
+        self.game_engine.hud.display_hint("Press 'ESC' when you're done", 6)
+
         # Start doing the code
         self.game_engine.code_editor.run(self.challenge_text)
         self.game_engine.current_level.player.invincible = True
