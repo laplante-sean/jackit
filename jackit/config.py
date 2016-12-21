@@ -214,16 +214,22 @@ class JackitLeaderboard(JsonConfig):
     Config for connection to the leaderboard
     '''
     def __init__(self):
-        pass
+        super(JackitLeaderboard, self).__init__()
+        self.submission_url = "https://www.jackit.io/leaderboard/submit/"
 
     def to_json(self):
         '''
         Return a dict representation of the object
         '''
-        return {}
+        return {
+            'submission_url': self.submission_url
+        }
 
     def from_json(self, raw):
-        pass
+        '''
+        Parse the config from JSON
+        '''
+        self.submission_url = raw.get("submission_url", "https://www.jackit.io/leaderboard/submit/")
 
 class JackitConfig(JsonConfig):
     '''

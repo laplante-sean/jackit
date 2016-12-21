@@ -11,8 +11,7 @@ class Leaderboard(models.Model):
     Database model for a leaderboard entry strip
     '''
     user = models.CharField(max_length=10, default="")
-    score = models.IntegerField() # Total score with playtime, points, and deaths factored in
-    points = models.IntegerField()
+    score = models.IntegerField()
     playtime = models.IntegerField()
     deaths = models.IntegerField()
 

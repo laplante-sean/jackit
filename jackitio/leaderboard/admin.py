@@ -1,5 +1,5 @@
 '''
-Admin interface for our comic site
+Admin interface for our leaderboard site
 '''
 
 from django.contrib import admin

@@ -5,34 +5,32 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container container-fluid">
-        {% if leaderboard %}
-            <table class="table table-condensed">
-                <thead>
+    {% if leaderboard %}
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Points</th>
+                    <th>Playtime</th>
+                    <th>Deaths</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for leader in leaderboard %}
                     <tr>
-                        <th>User</th>
-                        <th>Points</th>
-                        <th>Playtime</th>
-                        <th>Deaths</th>
-                        <th>Score</th>
+                        <td>{{ leader.user }}</td>
+                        <td>{{ leader.points }}</td>
+                        <td>{{ leader.playtime }}</td>
+                        <td>{{ leader.deaths }}</td>
+                        <td>{{ leader.score }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for leader in leaderboard %}
-                        <tr>
-                            <td>{{ leader.user }}</td>
-                            <td>{{ leader.points }}</td>
-                            <td>{{ leader.playtime }}</td>
-                            <td>{{ leader.deaths }}</td>
-                            <td>{{ leader.score }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>Sorry, no leaderboard :( #sadface</p>
-        {% endif %}
-    </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Sorry, no leaderboard :( #sadface</p>
+    {% endif %}
 {% endblock %}
 
 {% block script %}
