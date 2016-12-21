@@ -11,6 +11,7 @@
                 <tr>
                     <th>User</th>
                     <th>Playtime (s)</th>
+                    <th>Lvls</th>
                     <th>Deaths</th>
                     <th>Score</th>
                 </tr>
@@ -20,6 +21,7 @@
                     <tr>
                         <td>{{ leader.user }}</td>
                         <td>{{ leader.playtime | floatformat }}</td>
+                        <td>{{ leader.levels_completed }}</td>
                         <td>{{ leader.deaths }}</td>
                         <td>{{ leader.score }}</td>
                     </tr>

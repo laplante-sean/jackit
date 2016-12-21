@@ -28,25 +28,15 @@ class JackitGame:
         print("\tScore: ", GameEngine.total_points)
         print("\tDeaths: ", GameEngine.deaths)
         print("\tPlaytime: {0:.2f}s".format(GameEngine.playtime))
+        print("\tLevels Completed: ", GameEngine.levels_completed)
 
-        if GameEngine.user is None:
+        if GameEngine.user is None or len(GameEngine.user.strip()) == 0:
+            print("No username provided. Not submitting score. Enter username when game starts.")
             return
 
         print("Submitting score...")
 
-        #Super secure (not really...at all)
         try:
-            result = {}
-            code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
-
-            # pylint: disable=W0122
-            exec(code_obj, {
-                'user': GameEngine.user,
-                'score': GameEngine.total_points,
-                'deaths': GameEngine.deaths,
-                'playtime': GameEngine.playtime
-            }, locals())
-
             r = requests.post(
                 GameEngine.config.leaderboard.submission_url,
                 data={
@@ -54,10 +44,10 @@ class JackitGame:
                     'score':GameEngine.total_points,
                     'deaths':GameEngine.deaths,
                     'playtime':GameEngine.playtime,
-                    'code': result["code"]
+                    'game_id': GameEngine.game_id,
+                    'levels_completed': GameEngine.levels_completed
                 }
             )
             print(r.status_code, r.reason)
         except BaseException as e:
-            print(e)
             return

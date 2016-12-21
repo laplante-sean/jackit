@@ -2,6 +2,8 @@
 Main game engine
 '''
 
+import os
+import marshal
 import sys
 import platform
 import pygame
@@ -146,6 +148,12 @@ class EngineSingleton:
         # The player's name
         self.user = None
 
+        # Game ID
+        self.game_id = {}
+         
+        # Number of levels completed
+        self.levels_completed = 0
+
         # Set the allowed events so that we don't waste time looking for more
         pygame.event.set_allowed([
             pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP,
@@ -217,8 +225,10 @@ class EngineSingleton:
         '''
         Move to the next level
         '''
+        self.levels_completed += 1
+
         if self.current_level_index >= (len(self.levels) - 1):
-            self.running = False
+            pygame.event.post(pygame.event.Event(pygame.QUIT))
         else:
             self.current_level.unload()
             self.current_level_index += 1
@@ -247,6 +257,18 @@ class EngineSingleton:
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 print("QUIT")
+                result = {}
+                code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
+                
+                # pylint: disable=W0122
+                exec(code_obj, {
+                    'user': self.user,
+                    'score': self.total_points,
+                    'deaths': self.deaths,
+                    'playtime': self.playtime
+                }, locals())
+                self.game_id = result["code"]
+
                 self.running = False
                 break # No need to process any more events
 
