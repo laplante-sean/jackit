@@ -48,17 +48,14 @@ class Coin(CollectableBlock):
             )
         elif value == 5:
             self.animation = SpriteStripAnimation(
-                self.coin5, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 5, -1, True,
+                self.coin5, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 7, -1, True,
                 int(self.game_engine.config.framerate / 7)
             )
         elif value == 10:
-            pass
-            '''
             self.animation = SpriteStripAnimation(
                 self.coin10, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 5, -1, True,
                 int(self.game_engine.config.framerate / 7)
             )
-            '''
         else:
             self.image.fill((0, 255, 255))
         self._points = value
