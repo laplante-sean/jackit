@@ -25,28 +25,20 @@ class Player(Actor):
         jump_jack = os.path.join(SiteDeployment.resource_path, "sprites", "jump_jack.bmp")
 
         self.stand_animation = SpriteStripAnimation(
-            stand_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, -1, False,
+            stand_jack, (0, 0, 19, BLOCK_HEIGHT), 1, -1, False,
             int(game_engine.config.framerate / 7)
         )
         self.run_animation = SpriteStripAnimation(
-            run_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
+            run_jack, (0, 0, 19, BLOCK_HEIGHT), 2, -1, True,
             int(game_engine.config.framerate / 7)
         )
         self.run_left_animation = SpriteStripAnimation(
-            run_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
+            run_jack, (0, 0, 19, BLOCK_HEIGHT), 2, -1, True,
             int(game_engine.config.framerate / 7), x_mirror=True
-        )
-        self.jump_animation = SpriteStripAnimation(
-            jump_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, False,
-            int(game_engine.config.framerate / 5)
-        )
-        self.jump_left_animation = SpriteStripAnimation(
-            jump_jack, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 2, -1, True,
-            int(game_engine.config.framerate / 5), x_mirror=True
         )
 
         super(Player, self).__init__(
-            game_engine, BLOCK_WIDTH, BLOCK_HEIGHT, spawn_point[0],
+            game_engine, 19, BLOCK_HEIGHT, spawn_point[0],
             spawn_point[1], animation=self.stand_animation
         )
 
@@ -86,15 +78,6 @@ class Player(Actor):
         if self.horizontal_movement_action != self.go_right:
             self.animation = self.run_animation.iter()
         super(Player, self).go_right()
-
-    def jump(self):
-        if not self.jumping:
-            if self.is_moving_left():
-                self.animation = self.jump_left_animation.iter()
-            else:
-                self.animation = self.jump_animation.iter()
-
-        super(Player, self).jump()
 
     def has_key(self):
         '''
