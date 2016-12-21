@@ -2,9 +2,12 @@
 Code block entity
 '''
 
+import os
 import re
-import pygame
 
+from deploy import SiteDeployment
+from jackit.core import BLOCK_WIDTH, BLOCK_HEIGHT
+from jackit.core.animation import SpriteStripAnimation
 from jackit.core.entity import Entity
 
 class CodeBlock(Entity):
@@ -12,8 +15,17 @@ class CodeBlock(Entity):
     Code block. Used to bring up the code view
     '''
     def __init__(self, game_engine, width, height, x_pos, y_pos):
-        super(CodeBlock, self).__init__(game_engine, width, height, x_pos, y_pos)
-        self.image.fill((254, 68, 123))
+        code_plug = os.path.join(SiteDeployment.resource_path, "sprites", "code_plug.bmp")
+
+        animation = SpriteStripAnimation(
+            code_plug, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, -1)
+
+        super(CodeBlock, self).__init__(
+            game_engine, width, height, x_pos, y_pos, animation=animation)
+
+        if self.animation is None:
+            self.image.fill((254, 68, 123))
+
         self.interactable = True
         self.collideable = False
         self._challenge_text = "CHALLENGE TEXT"

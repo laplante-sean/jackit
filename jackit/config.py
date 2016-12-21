@@ -151,6 +151,7 @@ class JackitConfigControls(JsonConfig):
         self.push = pygame.K_LSHIFT
         self.reset_code = pygame.K_q
         self.toggle_sound = pygame.K_m
+        self.kill_self = pygame.K_k
 
     def from_json(self, raw):
         '''
@@ -189,6 +190,7 @@ class JackitConfigControls(JsonConfig):
         self.push = raw.get("push", getattr(pygame, "K_LSHIFT"))
         self.reset_code = raw.get("reset_code", getattr(pygame, "K_q"))
         self.toggle_sound = raw.get("toggle_sound", getattr(pygame, "K_m"))
+        self.kill_self = raw.get("kill_self", getattr(pygame, "K_k"))
 
     def to_json(self):
         '''
@@ -203,7 +205,8 @@ class JackitConfigControls(JsonConfig):
             'interact': self.interact,
             'push': self.push,
             'reset_code': self.reset_code,
-            'toggle_sound': self.toggle_sound
+            'toggle_sound': self.toggle_sound,
+            'kill_self': self.kill_self
         }
 
 class JackitLeaderboard(JsonConfig):

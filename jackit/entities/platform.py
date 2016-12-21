@@ -30,6 +30,7 @@ class Platform(Entity):
         floor_path = os.path.join(SiteDeployment.resource_path, "sprites", "floor.bmp")
         cloud_path = os.path.join(SiteDeployment.resource_path, "sprites", "cloud.bmp")
         wall_path = os.path.join(SiteDeployment.resource_path, "sprites", "wall.bmp")
+        code_block = os.path.join(SiteDeployment.resource_path, "sprites", "code_block.bmp")
 
         self.animation = None
 
@@ -45,6 +46,9 @@ class Platform(Entity):
         elif platform_type == "wall":
             self.animation = SpriteStripAnimation(
                 wall_path, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1)
+        elif platform_type == "code":
+            self.animation = SpriteStripAnimation(
+                code_block, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1)
 
         super(Platform, self).__init__(
             game_engine, width, height, x_pos, y_pos, animation=self.animation)

@@ -2,8 +2,8 @@
 Heads up display - Shows score, deaths, time, etc.
 '''
 
-import pygame
 from collections import deque
+import pygame
 
 class Hud:
     '''
@@ -36,7 +36,7 @@ class Hud:
         # Maximum number of things in the queue before messages are dropped
         self.queue_spam_protection = 5
 
-    def display_hint(self, hint, delay):
+    def display_hint(self, hint, delay=2):
         '''
         Add a hint to the hint display queue
         '''

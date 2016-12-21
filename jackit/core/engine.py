@@ -13,6 +13,7 @@ from jackit.effects import DeathFrame
 from jackit.core.input import Input
 from jackit.core.sound import Sound
 from jackit.core.editor import CodeEditor
+from jackit.core.textinput import TextInput
 from jackit.core.welcome import Welcome
 from jackit.core.hud import Hud
 from jackit.actors import Player
@@ -134,16 +135,22 @@ class EngineSingleton:
 
         # Init the welcome screen
         self.welcome = Welcome(self)
-        self.welcome.run()
+
+        # Init the user name enter box
+        self.name_enter = TextInput(self, max_chars=50)
+        self.name_enter.run(start_text="Enter your name followed by <ENTER>")
 
         # Flashed when the player dies
         self.death_frame = DeathFrame(self)
+
+        # The player's name
+        self.user = None
 
         # Set the allowed events so that we don't waste time looking for more
         pygame.event.set_allowed([
             pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP,
             CustomEvent.KILL_SPRITE, CustomEvent.EXIT_EDITOR,
-            CustomEvent.NEXT_LEVEL])
+            CustomEvent.NEXT_LEVEL, CustomEvent.SET_USER])
 
     def update(self):
         '''
@@ -155,10 +162,15 @@ class EngineSingleton:
         # Handle input events
         self.handle_events()
 
-        # If the welcome window is running, don't do anything else
+        # If the welcome window or name input is running, don't do anything else
         if self.welcome.is_running():
             self.welcome.update()
             self.welcome.draw(self.screen)
+            pygame.display.flip()
+            return
+        elif self.name_enter.is_running():
+            self.name_enter.update()
+            self.name_enter.draw(self.screen)
             pygame.display.flip()
             return
 
@@ -237,9 +249,22 @@ class EngineSingleton:
                 self.running = False
                 break # No need to process any more events
 
-            # Handle global events
+            # Set the username
+            if event.type == CustomEvent.SET_USER:
+                print("Username: ", event.text)
+                self.user = event.text
+                self.welcome.run()
+
+            # Handle the user input screen it it's running
+            if self.name_enter.is_running():
+                if not self.name_enter.handle_event(event):
+                    break
+                continue # Skip the rest of the events while entering username
+
+            # Toggle sound
             if event.type == pygame.KEYDOWN:
-                if event.key == self.config.controls.toggle_sound and not self.code_editor.is_running():
+                if event.key == self.config.controls.toggle_sound and\
+                not self.code_editor.is_running():
                     print("Toggling sound")
                     self.sound.toggle_game_music()
 
@@ -253,7 +278,8 @@ class EngineSingleton:
             if self.code_editor.is_running():
                 if not self.code_editor.handle_event(event):
                     break
-            
+
+            # All the cool event handling happens in the level
             if not self.current_level.handle_event(event, keys):
                 break
 

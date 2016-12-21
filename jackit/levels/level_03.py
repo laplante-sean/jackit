@@ -49,8 +49,8 @@ class Level_03(Level):
         "W   S            1                                                W                 W                        ",
         "W               1                                                 W                 W                        ",
         "W              1                                                                   EW                        ",
-        "W            c1                                                                    EW     5    1 1 1 1  0    ",
-        "GGGGGGGGGGGGGGGG                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+        "W            p1                                                                    EW     5    1 1 1 1  0    ",
+        "GGGGGGGGGGGGcccG                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
     ]
 
     _challenge = """# Make the jump!

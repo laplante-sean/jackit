@@ -218,7 +218,12 @@ class Player(Actor):
                 for block in self.game_engine.current_level.code_blocks:
                     block.restore() # Put the initial challenge text back
                 UserPatch.unpatch()
-            if event.key == self.controls.left:
+            elif event.key == self.controls.kill_self:
+                print("Killing self!")
+                self.game_engine.hud.display_hint("You just killed yourself with 'K'. Worth it?", 2)
+                self.kill()
+                return False
+            elif event.key == self.controls.left:
                 self.go_left()
             elif event.key == self.controls.right:
                 self.go_right()

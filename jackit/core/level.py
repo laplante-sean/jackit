@@ -31,7 +31,8 @@ class LevelMap:
     CLOUD = "C"
     EXIT = "E"
     SPAWN = "S"
-    CODE = "c"
+    CODE_BLOCK = "c"
+    CODE_PLUG = "p"
     DEATH_SPIKE = "D"
     LEFT_DEATH_SPIKE = "<"
     RIGHT_DEATH_SPIKE = ">"
@@ -183,7 +184,9 @@ class Level:
                     sprite = self.create_exit_block(x, y)
                 elif col == LevelMap.SPAWN:
                     self.player.spawn_point = (x, y)
-                elif col == LevelMap.CODE:
+                elif col == LevelMap.CODE_BLOCK:
+                    sprite = self.create_platform(x, y, platform_type="code")
+                elif col == LevelMap.CODE_PLUG:
                     sprite = self.create_code_block(x, y)
                 elif col == LevelMap.DEATH_SPIKE:
                     sprite = self.create_death_block(x, y)
@@ -429,7 +432,8 @@ class Level:
 
                 # Display you died in the HUD for 2 seconds
                 self.game_engine.hud.display_hint("YOU DIED!!", 2)
-                self.game_engine.hud.display_hint("Your code changes persist. Press 'Q' to reset.", 3)
+                self.game_engine.hud.display_hint(
+                    "Your code changes persist. Press 'Q' to reset.", 3)
 
                 # Reset the current level. This clears the
                 # user patched code

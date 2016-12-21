@@ -20,18 +20,18 @@ class DeathBlock(Entity):
         rotation = 0
 
         if direction == "down":
-            y_mirror = True
-        elif direction == "left":
-            rotation = 90
-        elif direction == "right":
-            rotation = 270
-        elif direction == "up":
             pass
+        elif direction == "left":
+            rotation = 270
+        elif direction == "right":
+            rotation = 90
+        elif direction == "up":
+            y_mirror = True
         else:
             pass
 
         self.db = SpriteStripAnimation(
-            death_block, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, (0, 149, 255), False,
+            death_block, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, (0, 0, 0), False,
             int(game_engine.config.framerate / 1), x_mirror=x_mirror, y_mirror=y_mirror,
             rotation=rotation
         )

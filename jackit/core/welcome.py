@@ -16,7 +16,7 @@ Reset Code: 'Q'
 Edit Text: Arrow keys + keyboard
 
 Sound:
-Toggle Music: 'M'
+Toggle Music: 'M' (by: Jacob Hartman)
 
 Quit: Close this window
 

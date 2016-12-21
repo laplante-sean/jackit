@@ -17,8 +17,8 @@ class Level_06(Level):
         "W  S             W                   1   W   1                <<<<>>>>           0  5  0Z W           W          W            FFFFFFF",
         "W                W                   FFFFFFFFF                DDDDDDDD         FFFFFFFFFFFW           W          W            FFFFFFF",
         "W                W                   <<<<>>>>>                   W                        W           W          W            EEEEEEE",
-        "W     c          W                   <<<<>>>>>    1 1 1          W         1 1 1 1        W           W          W     1 1    EEEEEEE",
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+        "W     p          W                   <<<<>>>>>    1 1 1          W         1 1 1 1        W           W          W     1 1    EEEEEEE",
+        "FFFFFcccFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
     ]
 
     _challenge = """# Gotta go FAST!!!
