@@ -2,6 +2,9 @@
 Level 3
 '''
 
+import os
+from deploy import SiteDeployment
+from jackit.core.animation import SpriteStripAnimation
 from jackit.core.level import Level
 from jackit.core.patch import UserPatch
 

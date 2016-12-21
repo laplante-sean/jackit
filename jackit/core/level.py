@@ -380,8 +380,6 @@ class Level:
         '''
         # Update the camera to follow the player
         self.camera.update(self.player)
-        #if self.game_engine.hud.popup_rect is not None:
-        #    self.camera.update(self.game_engine.hud.popup_rect)
 
         # Update the player first
         self.player.update()
@@ -403,7 +401,7 @@ class Level:
         '''
 
         # Draw the background
-        screen.fill((0, 0, 255)) #TODO: Make this a background image of some sort
+        screen.fill((0, 0, 200)) #TODO: Make this a background image of some sort
 
         # Draw the sprites in proper order so layers look right
         for e in self.platforms:
@@ -433,7 +431,7 @@ class Level:
                 self.game_engine.death_frame.flash()
 
                 # Display you died in the HUD for 2 seconds
-                self.game_engine.hud.display_hint("YOU DIED!!", 2)
+                self.game_engine.hud.display_hint("YOU DIED!!", 1)
                 self.game_engine.hud.display_hint(
                     "Your code changes persist. Press 'Q' to reset.", 3)
 

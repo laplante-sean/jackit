@@ -99,6 +99,8 @@ class Welcome:
         '''
         Draw the text to the screen
         '''
+        screen.fill((0, 0, 0))
+
         screen.blit(self.welcome_view, self.rect)
 
         for line in self.render_welcome_text:

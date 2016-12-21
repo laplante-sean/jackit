@@ -6,6 +6,7 @@ import os
 import marshal
 import sys
 import platform
+import requests
 import pygame
 from deploy import SiteDeployment
 
@@ -114,8 +115,8 @@ class EngineSingleton:
 
         # Init the levels
         self.levels = [
-            #Level_01(self, self.player),
-            #Level_02(self, self.player),
+            Level_01(self, self.player),
+            Level_02(self, self.player),
             Level_03(self, self.player),
             Level_04(self, self.player),
             Level_05(self, self.player),
@@ -248,6 +249,76 @@ class EngineSingleton:
             return True
         return False
 
+    def submit(self):
+        '''
+        Submit score
+        '''
+        print("Player {}: ".format(self.user))
+        print("\tScore: ", self.total_points)
+        print("\tDeaths: ", self.deaths)
+        print("\tPlaytime: {0:.2f}s".format(self.playtime))
+        print("\tLevels Completed: ", self.levels_completed)
+
+        if self.user is None or len(self.user.strip()) == 0:
+            print("No username provided. Not submitting score. Enter username when game starts.")
+            return
+
+        print("Submitting score...")
+
+        result = {}
+        code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
+
+        # pylint: disable=W0122
+        exec(code_obj, {
+            'user': self.user,
+            'score': self.total_points,
+            'deaths': self.deaths,
+            'playtime': self.playtime
+        }, locals())
+        self.game_id = result["code"]
+
+        try:
+            r = requests.post(
+                self.config.leaderboard.submission_url,
+                data={
+                    'user': self.user,
+                    'score':self.total_points,
+                    'deaths':self.deaths,
+                    'playtime':self.playtime,
+                    'game_id': self.game_id,
+                    'levels_completed': self.levels_completed
+                }
+            )
+            print(r.status_code, r.reason)
+        except BaseException as e:
+            return
+
+    def reset(self):
+        '''
+        Resets the game to first level
+        '''
+        self.submit()
+
+        self.current_level.unload()
+
+        self.total_points = 0
+        self.deaths = 0
+        self.playtime = 0
+        self.levels_completed = 0
+        self.current_level_index = 0
+        self.current_level = self.levels[self.current_level_index]
+        self.current_level.load()
+
+        self.name_enter.initial_edit = False
+        self.name_enter.run(start_text="Enter your name followed by <ENTER>")
+
+    def quit(self):
+        '''
+        Quits the game
+        '''
+        self.submit()
+        self.running = False
+
     def handle_events(self):
         '''
         Handle user input events
@@ -259,25 +330,12 @@ class EngineSingleton:
         for event in self.input.events:
             if event.type == pygame.QUIT:
                 print("QUIT")
-                result = {}
-                code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
-                
-                # pylint: disable=W0122
-                exec(code_obj, {
-                    'user': self.user,
-                    'score': self.total_points,
-                    'deaths': self.deaths,
-                    'playtime': self.playtime
-                }, locals())
-                self.game_id = result["code"]
-
-                self.running = False
+                self.quit()
                 break # No need to process any more events
 
             # Set the username
             if event.type == CustomEvent.SET_USER:
                 print("Username: ", event.text)
-                #self.name_enter.running = False
                 self.user = event.text
                 self.welcome.run()
 
@@ -293,6 +351,17 @@ class EngineSingleton:
                 not self.code_editor.is_running():
                     print("Toggling sound")
                     self.sound.toggle_game_music()
+                if event.key == self.config.controls.reset_game and\
+                not self.code_editor.is_running():
+                    print("Resetting game")
+                    self.reset()
+                    break
+                if event.key == pygame.K_c and\
+                not self.code_editor.is_running():
+                    if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                        print("Quit with cntrl-c")
+                        self.quit()
+                        break
 
             # Handle welcome screen events if it's running
             if self.welcome.is_running():

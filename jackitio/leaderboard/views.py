@@ -54,7 +54,7 @@ def validate_code(data, code):
         return True
     return False
 
-def cheated(data):
+def validate(data):
     '''
     Attempt to find cheaty cheaters
     '''
@@ -95,7 +95,7 @@ def submit(request):
             try:
                 form = LeaderboardForm(request.POST)
                 leader = form.save(commit=False)
-                leader.cheated, leader.cheated_reason = cheated(d)
+                leader.cheated, leader.cheated_reason = validate(d)
                 leader.save()
             except BaseException as e:
                 print("Error creating form from post data: ", str(e))

@@ -152,6 +152,7 @@ class JackitConfigControls(JsonConfig):
         self.reset_code = pygame.K_q
         self.toggle_sound = pygame.K_m
         self.kill_self = pygame.K_k
+        self.reset_game = pygame.K_n
 
     def from_json(self, raw):
         '''
@@ -191,6 +192,7 @@ class JackitConfigControls(JsonConfig):
         self.reset_code = raw.get("reset_code", getattr(pygame, "K_q"))
         self.toggle_sound = raw.get("toggle_sound", getattr(pygame, "K_m"))
         self.kill_self = raw.get("kill_self", getattr(pygame, "K_k"))
+        self.reset_game = raw.get("reset_game", getattr(pygame, "K_n"))
 
     def to_json(self):
         '''
@@ -206,7 +208,8 @@ class JackitConfigControls(JsonConfig):
             'push': self.push,
             'reset_code': self.reset_code,
             'toggle_sound': self.toggle_sound,
-            'kill_self': self.kill_self
+            'kill_self': self.kill_self,
+            'reset_game': self.reset_game
         }
 
 class JackitLeaderboard(JsonConfig):
@@ -245,6 +248,7 @@ class JackitConfig(JsonConfig):
         self._fullscreen = False
         self.accurate_framerate = True
         self.sound_enabled = True
+        self.play_forever = False
         self.controls = JackitConfigControls()
         self.code_editor = JackitConfigCodeEditor()
         self.leaderboard = JackitLeaderboard()
@@ -342,7 +346,8 @@ class JackitConfig(JsonConfig):
             "code_editor": self.code_editor.to_json(),
             "accurate_framerate": self.accurate_framerate,
             "leaderboard": self.leaderboard.to_json(),
-            "sound_enabled": self.sound_enabled
+            "sound_enabled": self.sound_enabled,
+            "play_forever": self.play_forever
         }
 
     def from_json(self, raw):
@@ -361,6 +366,7 @@ class JackitConfig(JsonConfig):
         self.accurate_framerate = self.validate_bool(raw.get("accurate_framerate", True))
         self.leaderboard.from_json(raw.get("leaderboard", self.leaderboard.to_json()))
         self.sound_enabled = self.validate_bool(raw.get("sound_enabled", True))
+        self.play_forever = self.validate_bool(raw.get("play_forever", False))
 
     def load(self):
         '''

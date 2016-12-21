@@ -60,6 +60,9 @@ class TextInput(CodeEditor):
         Draw the line editor. Overrides the code editor version
         '''
 
+        # Wipe out the background
+        screen.fill((0, 0, 0))
+
         # Blit the background window to the screen
         screen.blit(self.code_window, self.rect)
 
@@ -97,12 +100,14 @@ class TextInput(CodeEditor):
         if event.type == pygame.KEYDOWN:
             self.text_change = True
 
-            if not self.initial_edit:
+            if not self.initial_edit and event.key != pygame.K_RETURN:
                 self.initial_edit = True
                 self.text = ""
 
-            if event.key == pygame.K_RETURN:
+            if event.key == pygame.K_RETURN and self.initial_edit:
                 self.stop()
+            elif event.key == pygame.K_RETURN:
+                pass
             elif event.key == pygame.K_DELETE:
                 self.k_delete()
             elif event.key == pygame.K_LEFT:
