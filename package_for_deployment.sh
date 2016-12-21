@@ -27,19 +27,19 @@ for f in `ls`;
 do
     if [ -d $f ];
     then
-        echo "cp -R $f $staging"
-        #cp -R $f $staging
+        #echo "cp -R $f $staging"
+        cp -R $f $staging
     fi
 
     if [ -f $f ];
     then
-        echo "cp $f $staging"
-        #cp $f $staging
+        #echo "cp $f $staging"
+        cp $f $staging
     fi
 done
 
 # Tar up the staging directory
-echo "tar -zcvf $package_file $staging"
-#tar -zcvf $package_file $staging 
+#echo "tar -zcvf $package_file $staging"
+tar -zcvf $package_file $staging 
 
 exit 0
