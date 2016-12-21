@@ -231,7 +231,10 @@ class EngineSingleton:
         self.levels_completed += 1
 
         if self.current_level_index >= (len(self.levels) - 1):
-            pygame.event.post(pygame.event.Event(pygame.QUIT))
+            if self.config.play_forever:
+                self.reset()
+            else:
+                pygame.event.post(pygame.event.Event(pygame.QUIT))
         else:
             self.current_level.unload()
             self.current_level_index += 1
