@@ -15,7 +15,15 @@ class Sound:
     def __init__(self, game_engine):
         self.game_engine = game_engine
         game_music_path = os.path.join(SiteDeployment.resource_path, "sound", "music.mp3")
-        pygame.mixer.music.load(game_music_path)
+        self.music_loaded = False
+
+        try:
+            pygame.mixer.music.load(game_music_path)
+            self.music_loaded = True
+        except BaseException as e:
+            print("Unable to load music: ", str(e))
+            self.music_loaded = False
+
         self.playing = False
 
     def is_playing(self):
@@ -28,6 +36,9 @@ class Sound:
         '''
         Play the game music
         '''
+        if not self.music_loaded:
+            return
+
         pygame.mixer.music.play(loops=-1)
         self.playing = True
 
@@ -35,6 +46,9 @@ class Sound:
         '''
         Pause the game music
         '''
+        if not self.music_loaded:
+            return
+
         pygame.mixer.music.pause()
         self.playing = False
 
@@ -42,6 +56,9 @@ class Sound:
         '''
         Toggle the game music on and off
         '''
+        if not self.music_loaded:
+            return
+
         if self.is_playing():
             self.pause_game_music()
         else:

@@ -14,6 +14,7 @@ class TextInput(CodeEditor):
     '''
     def __init__(self, game_engine, max_chars=25):
         super(TextInput, self).__init__(game_engine)
+        self.initial_edit = False
         self.max_chars = max_chars
         self.height = self.line_size
         self.width = int(
@@ -97,6 +98,10 @@ class TextInput(CodeEditor):
         '''
         if event.type == pygame.KEYDOWN:
             self.text_change = True
+
+            if not self.initial_edit:
+                self.initial_edit = True
+                self.text = ""
 
             if event.key == pygame.K_RETURN:
                 self.stop()
