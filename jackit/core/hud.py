@@ -14,7 +14,7 @@ class Hud:
 
         # Init the font
         pygame.font.init()
-        self.font = pygame.font.SysFont("Courier", 12)
+        self.font = pygame.font.SysFont("Courier", 14)
 
         self.width = self.game_engine.screen_width
         self.height = self.font.get_linesize()
