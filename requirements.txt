@@ -3,3 +3,4 @@ pygame
 
 #For JackITio The leaderboard
 django
+requests

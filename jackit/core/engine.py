@@ -246,6 +246,7 @@ class EngineSingleton:
 
         for event in self.input.events:
             if event.type == pygame.QUIT:
+                print("QUIT")
                 self.running = False
                 break # No need to process any more events
 

@@ -28,9 +28,9 @@ if __name__ == "__main__":
         print("Using pygame")
 
     try:
-        from deploy import SiteDeployment
-        from jackit import JackitGame
         from jackit.config import ConfigError
+        from jackit import JackitGame
+        from deploy import SiteDeployment
         SiteDeployment.setup_config()
         JackitGame.run()
     except ConfigError as e:

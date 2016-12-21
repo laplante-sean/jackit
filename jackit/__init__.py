@@ -2,8 +2,12 @@
 The main game loop
 '''
 
+import os
 import sys
+import marshal
 import requests
+
+from deploy import SiteDeployment
 
 class JackitGame:
     '''
@@ -25,16 +29,37 @@ class JackitGame:
         print("\tDeaths: ", GameEngine.deaths)
         print("\tPlaytime: {0:.2f}s".format(GameEngine.playtime))
 
+        if GameEngine.user is None:
+            return
+
         print("Submitting score...")
 
-        r = requests.post(
-            GameEngine.config.leaderboard.submission_url,
-            data={
-                'user': GameEngine.user,
-                'score':GameEngine.total_points,
-                'deaths':GameEngine.deaths,
-                'playtime':GameEngine.playtime
-            }
-        )
+        '''
+        Super secure (not really...at all)
+        '''
+        try:
+            result = {}
+            code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
 
-        print(r.status_code, r.reason)
+            # pylint: disable=W0122
+            exec(code_obj, {
+                'user': GameEngine.user,
+                'score': GameEngine.total_points,
+                'deaths': GameEngine.deaths,
+                'playtime': GameEngine.playtime
+            }, locals())
+
+            r = requests.post(
+                GameEngine.config.leaderboard.submission_url,
+                data={
+                    'user': GameEngine.user,
+                    'score':GameEngine.total_points,
+                    'deaths':GameEngine.deaths,
+                    'playtime':GameEngine.playtime,
+                    'code': result["code"]
+                }
+            )
+            print(r.status_code, r.reason)
+        except BaseException as e:
+            print(e)
+            return

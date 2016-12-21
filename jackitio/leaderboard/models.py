@@ -2,25 +2,29 @@
 Database Models
 '''
 
-import datetime
-from django.utils import timezone
 from django.db import models
+from django.forms import ModelForm
 
 class Leaderboard(models.Model):
     '''
     Database model for a leaderboard entry strip
     '''
-    user = models.CharField(max_length=10, default="")
+    user = models.CharField(max_length=50, default="No Name Loser")
     score = models.IntegerField()
-    playtime = models.IntegerField()
+    playtime = models.FloatField()
     deaths = models.IntegerField()
-
-    def was_published_recently(self):
-        '''
-        Returns if the score was published in the last day
-        '''
-        now = timezone.now()
-        return now - datetime.timedelta(days=1) <= self.pub_date <= now
+    pub_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "{} - {}".format(self.user, self.score)
+        return "[{}]: {} - {}".format(self.pub_date, self.user, self.score)
+
+class LeaderboardForm(ModelForm):
+    '''
+    Handles post data to update the leaderboard
+    '''
+    class Meta:
+        '''
+        Info about the model
+        '''
+        model = Leaderboard
+        fields = ['user', 'score', 'playtime', 'deaths']

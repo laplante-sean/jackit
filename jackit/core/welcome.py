@@ -128,3 +128,4 @@ class Welcome:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 self.stop()
+        return True

@@ -10,8 +10,7 @@
             <thead>
                 <tr>
                     <th>User</th>
-                    <th>Points</th>
-                    <th>Playtime</th>
+                    <th>Playtime (s)</th>
                     <th>Deaths</th>
                     <th>Score</th>
                 </tr>
@@ -20,8 +19,7 @@
                 {% for leader in leaderboard %}
                     <tr>
                         <td>{{ leader.user }}</td>
-                        <td>{{ leader.points }}</td>
-                        <td>{{ leader.playtime }}</td>
+                        <td>{{ leader.playtime | floatformat }}</td>
                         <td>{{ leader.deaths }}</td>
                         <td>{{ leader.score }}</td>
                     </tr>
