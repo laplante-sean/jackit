@@ -28,15 +28,17 @@ class SpriteSheet:
         image = pygame.Surface(rect.size).convert()
         image.blit(self.sheet, (0, 0), rect)
 
-        if colorkey is not None:
-            if colorkey is -1:
-                colorkey = image.get_at((0, 0))
-            image.set_colorkey(colorkey, pygame.RLEACCEL)
-
         if x_mirror or y_mirror:
             image = pygame.transform.flip(image, x_mirror, y_mirror)
         if rotation > 0:
             image = pygame.transform.rotate(image, rotation)
+
+        # Determine the color key after transforms. Fix for weird graphics issue
+        # in pygame_sdl2 refs #62
+        if colorkey is not None:
+            if colorkey is -1:
+                colorkey = image.get_at((0, 0))
+            image.set_colorkey(colorkey, pygame.RLEACCEL)
 
         return image
 
