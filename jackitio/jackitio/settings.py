@@ -15,6 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO_BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "..")
+DEPLOY_PUBLIC_DIR = os.path.join("/", "home", "public", "jackitio")
+DEPLOY_PROTECTED_DIR = os.path.join("/", "home", "protected")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -25,8 +27,10 @@ SECRET_KEY = 'this_is_not_the_key_i_use_in_deployment'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["www.jackit.io"]
 
+if DEBUG:
+    ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -74,6 +78,11 @@ WSGI_APPLICATION = 'jackitio.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+if DEBUG:
+    DATABASE_PATH = os.path.join(BASE_DIR, 'db.sqlite3')
+else:
+    DATABASE_PATH = os.path.join(DEPLOY_PROTECTED_DIR, "database", "db.sqlite3")
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -106,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -119,3 +128,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+if not DEBUG:
+    STATIC_ROOT = os.path.join(DEPLOY_PUBLIC_DIR, "static")

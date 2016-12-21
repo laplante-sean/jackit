@@ -34,9 +34,7 @@ class JackitGame:
 
         print("Submitting score...")
 
-        '''
-        Super secure (not really...at all)
-        '''
+        #Super secure (not really...at all)
         try:
             result = {}
             code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
