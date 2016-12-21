@@ -10,7 +10,7 @@ Jacob Hartman made the music. https://j2h2.com/
 
 1. clone repo
 2. have python 3.5
-3. `pip install -r requirements.txt`
+3. `pip3 install -r requirements.txt`
 4. `python3 game.py`
 
 ### Playing
