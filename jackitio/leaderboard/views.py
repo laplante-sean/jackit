@@ -75,7 +75,7 @@ def validate(data):
 
     try:
         prt = playtime.split('.')[1]
-        if len(prt) < 8:
+        if len(prt) < 9:
             return True, "Invalid playtime {}".format(playtime)
     except IndexError:
         return True, "Invalid playtime {}".format(playtime)
@@ -89,10 +89,13 @@ def validate(data):
     except ValueError:
         return True, "Invalid int for levels_completed {}".format(levels_completed)
 
-    if int(levels_completed) > 10:
+    if int(levels_completed) > 8:
         return True, "Too many levels completed {}".format(levels_completed)
 
     if int(levels_completed) < 2 and int(data.get("score", 0)) > 8:
+        return True, "Too many points {}".format(data.get("score", 0))
+
+    if int(data.get("score", 0)) > 1092:
         return True, "Too many points {}".format(data.get("score", 0))
 
     return False, ""
