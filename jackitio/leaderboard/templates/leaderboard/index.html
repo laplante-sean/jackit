@@ -18,7 +18,11 @@
             </thead>
             <tbody>
                 {% for leader in leaderboard %}
-                    <tr>
+                    {% if leader.cheated %}
+                        <tr class="cheated">
+                    {% else %}
+                        <tr>
+                    {% endif %}
                         <td>{{ leader.user }}</td>
                         <td>{{ leader.playtime | floatformat }}</td>
                         <td>{{ leader.levels_completed }}</td>
