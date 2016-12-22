@@ -236,7 +236,9 @@ class Player(Actor):
                 # Stop the player and put them over the interactable object
                 # and make them invincible
                 self.hard_stop()
-                self.rect.left = self.frame_cache["is_on_code_block"].rect.left
+                self.rect.left =\
+                    (self.frame_cache["is_on_code_block"].rect.left - (self.rect.width / 2))
+
                 self.rect.bottom = self.frame_cache["is_on_code_block"].rect.bottom
 
                 # Interact with the object
