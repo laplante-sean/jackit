@@ -14,17 +14,24 @@ class CodeBlock(Entity):
     '''
     Code block. Used to bring up the code view
     '''
-    def __init__(self, game_engine, width, height, x_pos, y_pos):
+    def __init__(self, game_engine, width, height, x_pos, y_pos, locked=False):
         code_plug = os.path.join(SiteDeployment.resource_path, "sprites", "code_plug.bmp")
+        code_plug_locked = os.path.join(
+            SiteDeployment.resource_path, "sprites", "code_plug_locked.bmp")
 
-        animation = SpriteStripAnimation(
+        self.unlocked_animation = SpriteStripAnimation(
             code_plug, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, -1)
 
-        super(CodeBlock, self).__init__(
-            game_engine, width, height, x_pos, y_pos, animation=animation)
+        self.locked_animation = SpriteStripAnimation(
+            code_plug_locked, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, -1)
 
-        if self.animation is None:
-            self.image.fill((254, 68, 123))
+        super(CodeBlock, self).__init__(
+            game_engine, width, height, x_pos, y_pos)
+
+        if self.locked:
+            self.animation = self.locked_animation.iter()
+        else:
+            self.animation = self.unlocked_animation.iter()
 
         self.interactable = True
         self.collideable = False
@@ -32,7 +39,22 @@ class CodeBlock(Entity):
         self.original_text = None
 
         # True if this block requires an adapter to unlock
-        self.locked = False
+        self._locked = locked
+
+    @property
+    def locked(self):
+        '''
+        Getter for the _locked instance variable
+        '''
+        return self._locked
+
+    @locked.setter
+    def locked(self, value):
+        self._locked = value
+        if self._locked:
+            self.animation = self.locked_animation
+        else:
+            self.animation = self.unlocked_animation
 
     @property
     def challenge_text(self):

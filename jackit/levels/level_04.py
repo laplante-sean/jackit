@@ -47,8 +47,8 @@ def get_x_acceleration():
             player.stats.x_acceleration
         )
 
-    def create_code_block(self, x_pos, y_pos):
-        block = super(Level_04, self).create_code_block(x_pos, y_pos)
+    def create_code_block(self, x_pos, y_pos, locked=False):
+        block = super(Level_04, self).create_code_block(x_pos, y_pos, locked)
         block.challenge_text = self.challenge
         return block
 

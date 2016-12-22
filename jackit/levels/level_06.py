@@ -1,5 +1,5 @@
 '''
-Fifth level
+Sixth level
 '''
 
 from jackit.core.level import Level
@@ -47,8 +47,8 @@ def get_x_deceleration():
             player.stats.x_deceleration
         )
 
-    def create_code_block(self, x_pos, y_pos):
-        block = super(Level_06, self).create_code_block(x_pos, y_pos)
+    def create_code_block(self, x_pos, y_pos, locked=False):
+        block = super(Level_06, self).create_code_block(x_pos, y_pos, locked)
         block.challenge_text = self.challenge
         return block
 

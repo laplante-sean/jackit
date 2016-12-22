@@ -32,6 +32,7 @@ class LevelMap:
     EXIT = "E"
     SPAWN = "S"
     CODE_BLOCK = "c"
+    ENCRYPTED_CODE_BLOCK = "X"
     CODE_PLUG = "p"
     DEATH_SPIKE = "D"
     LEFT_DEATH_SPIKE = "<"
@@ -186,6 +187,8 @@ class Level:
                     self.player.spawn_point = (x, y)
                 elif col == LevelMap.CODE_BLOCK:
                     sprite = self.create_platform(x, y, platform_type="code")
+                elif col == LevelMap.ENCRYPTED_CODE_BLOCK:
+                    sprite = self.create_code_block(x, y, locked=True)
                 elif col == LevelMap.CODE_PLUG:
                     sprite = self.create_code_block(x, y)
                 elif col == LevelMap.DEATH_SPIKE:
@@ -309,7 +312,7 @@ class Level:
         self.enemies.add(ret)
         return ret
 
-    def create_code_block(self, x_pos, y_pos):
+    def create_code_block(self, x_pos, y_pos, locked=False):
         '''
         Creates a code block. Subclasses can override
         this to assign special functionality to each code block
@@ -318,7 +321,8 @@ class Level:
             self.game_engine,
             BLOCK_WIDTH,
             BLOCK_HEIGHT,
-            x_pos, y_pos
+            x_pos, y_pos,
+            locked=locked
         )
         self.code_blocks.add(ret)
         return ret

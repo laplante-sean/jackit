@@ -65,5 +65,13 @@ class DecryptionKey(CollectableBlock):
     A block required to unlock a code block
     '''
     def __init__(self, game_engine, width, height, x_pos, y_pos):
-        super(DecryptionKey, self).__init__(game_engine, width, height, x_pos, y_pos)
-        self.image.fill((200, 200, 200))
+        key = os.path.join(SiteDeployment.resource_path, "sprites", "key.bmp")
+
+        self.key_animation = SpriteStripAnimation(
+            key, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 1, -1)
+
+        super(DecryptionKey, self).__init__(
+            game_engine, width, height, x_pos, y_pos, animation=self.key_animation)
+
+        if self.animation is None:
+            self.image.fill((200, 200, 200))

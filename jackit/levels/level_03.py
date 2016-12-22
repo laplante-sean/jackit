@@ -94,8 +94,8 @@ def get_x_acceleration():
             self.has_reset_once = True
             self.game_engine.hud.display_popup("OUCH! Your code changes stick around b/w deaths. Press 'Q' to reset", 4)
 
-    def create_code_block(self, x_pos, y_pos):
-        block = super(Level_03, self).create_code_block(x_pos, y_pos)
+    def create_code_block(self, x_pos, y_pos, locked=False):
+        block = super(Level_03, self).create_code_block(x_pos, y_pos, locked)
         block.challenge_text = self.challenge
         return block
 

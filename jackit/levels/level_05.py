@@ -92,8 +92,8 @@ def is_moving_down(change_y):
             player.stats.grav_high_jump
         )
 
-    def create_code_block(self, x_pos, y_pos):
-        block = super(Level_05, self).create_code_block(x_pos, y_pos)
+    def create_code_block(self, x_pos, y_pos, locked=False):
+        block = super(Level_05, self).create_code_block(x_pos, y_pos, locked)
         block.challenge_text = self.challenge
         return block
 
