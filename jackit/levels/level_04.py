@@ -15,7 +15,7 @@ class Level_04(Level):
         "WWWWWWWWWWWWWWDDDDDDDDDDDDDDDDDDDDDDDDDDDDW",
         "W5  S                                    <W",
         "W                                        <W",
-        "W           p            1  1  1  1      <W",
+        "W           p            1  1  1  1    0 <W",
         "WFFFFFFFFFFccc         FFFFFFFFFFFF   FFFFW",
         "                               WWWW       E",
         "                               WWWW       E",

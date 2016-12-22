@@ -10,13 +10,14 @@ class Level_05(Level):
     Fifth level - Reverse gravity like a boss
     '''
 
+    # pylint: disable=C0301
     _map = [
         "                                                      ",
         "                                                      ",
         "                                                      ",
         "                                                      ",
-        "                                                      ",
-        "                                                      ",
+        "                                              11      ",
+        "                                             GGGG     ",
         "                                           DDDDDDDD   ",
         "                                                    <>          W",
         "                                                    <>          W",
@@ -50,9 +51,9 @@ class Level_05(Level):
         "                                                                ",
         "                                                                ",
         "                                                                ",
-        "                                                                ",
-        "                                       1  5 1 5  1              ",
-        "                                       GGGGGGGGGGG              "
+        "                                                                                            ",
+        "                                       1  5 1 5  1          L          0 0 0             L  ",
+        "                                       GGGGGGGGGGG        GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
     ]
 
     _challenge = """# There's items up there!
