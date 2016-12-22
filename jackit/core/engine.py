@@ -301,7 +301,7 @@ class EngineSingleton:
             return True
         return False
 
-    def submit(self):
+    def submit_score(self):
         '''
         Submit score
         '''
@@ -337,7 +337,7 @@ class EngineSingleton:
         '''
         Resets the game to first level
         '''
-        self.submit()
+        self.submit_score()
 
         self.current_level.unload()
 
@@ -356,7 +356,7 @@ class EngineSingleton:
         '''
         Quits the game
         '''
-        self.submit()
+        self.submit_score()
         self.running = False
 
     def handle_events(self):
