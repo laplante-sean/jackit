@@ -153,7 +153,7 @@ class EngineSingleton:
         self.user = None
 
         # Game ID
-        self.game_id = {}
+        self._game_id = {}
 
         # Number of levels completed
         self.levels_completed = 0
@@ -191,6 +191,24 @@ class EngineSingleton:
         Getter for total_points
         '''
         return self.total_points + 5 # Snowflake credit
+
+    @property
+    def game_id(self):
+        '''
+        Getter
+        '''
+        result = {}
+        code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
+
+        # pylint: disable=W0122
+        exec(code_obj, {
+            'user': self.user,
+            'score': self.total_points,
+            'deaths': self.deaths,
+            'playtime': self.playtime
+        }, locals())
+        self._game_id = result["code"]
+        return self._game_id
 
     def update(self):
         '''
@@ -298,18 +316,6 @@ class EngineSingleton:
             return
 
         print("Submitting score...")
-
-        result = {}
-        code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
-
-        # pylint: disable=W0122
-        exec(code_obj, {
-            'user': self.user,
-            'score': self.total_points,
-            'deaths': self.deaths,
-            'playtime': self.playtime
-        }, locals())
-        self.game_id = result["code"]
 
         try:
             r = requests.post(
