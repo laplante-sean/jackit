@@ -102,7 +102,7 @@ def get_leaderboard():
     Get all the entries in the leaderboard
     '''
     try:
-        ret = Leaderboard.objects.order_by("-score", "deaths", "playtime")
+        ret = Leaderboard.objects.order_by("-score", "deaths", "playtime", "-levels_completed")
         if len(ret) > 50:
             ret = ret[:50]
         return {'leaderboard': ret}
