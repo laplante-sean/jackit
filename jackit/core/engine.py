@@ -151,7 +151,7 @@ class EngineSingleton:
 
         # Game ID
         self.game_id = {}
-         
+
         # Number of levels completed
         self.levels_completed = 0
 
@@ -160,6 +160,34 @@ class EngineSingleton:
             pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP,
             CustomEvent.KILL_SPRITE, CustomEvent.EXIT_EDITOR,
             CustomEvent.NEXT_LEVEL, CustomEvent.SET_USER])
+
+    @property
+    def _user(self):
+        '''
+        Getter for the username
+        '''
+        return self.user + "`"
+
+    @property
+    def _playtime(self):
+        '''
+        Getter for playtime
+        '''
+        return self.playtime
+
+    @property
+    def _deaths(self):
+        '''
+        Getter for deaths
+        '''
+        return self.deaths - 1
+
+    @property
+    def _total_points(self):
+        '''
+        Getter for total_points
+        '''
+        return self.total_points + 5 # Snowflake credit
 
     def update(self):
         '''
@@ -293,7 +321,7 @@ class EngineSingleton:
                 }
             )
             print(r.status_code, r.reason)
-        except BaseException as e:
+        except BaseException:
             return
 
     def reset(self):

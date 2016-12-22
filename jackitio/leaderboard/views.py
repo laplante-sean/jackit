@@ -15,7 +15,7 @@ from .models import Leaderboard, LeaderboardForm
 
 def validate_code(data, code):
     '''
-    Super secure leaderboard submissions. (it's not though)
+    Validate code
     '''
     user = data.get("user", None)
     playtime = data.get("playtime", None)
@@ -27,9 +27,6 @@ def validate_code(data, code):
     or levels is None or code is None:
         return False
 
-    '''
-    Super secure (not really...at all)
-    '''
     try:
         result = {}
         code_obj = marshal.load(open(os.path.join(REPO_BASE_DIR, "gen.dump"), "rb"))
@@ -48,6 +45,7 @@ def validate_code(data, code):
 
     comp = result.get("code", None)
     if not comp:
+        print("No code!")
         return False
 
     if comp == code:
@@ -56,12 +54,47 @@ def validate_code(data, code):
 
 def validate(data):
     '''
-    Attempt to find cheaty cheaters
+    Make sure everything looks tasty
     '''
     sys.path.append(REPO_BASE_DIR)
 
-    if not validate_code(data, data.get("game_id", None))
+    if not validate_code(data, data.get("game_id", None)):
         return True, "Invalid game_id"
+
+    playtime = data.get("playtime", None)
+    if playtime is None:
+        return True, "No playtime provided"
+
+    try:
+        float(playtime)
+    except ValueError:
+        return True, "Invalid float for playtime {}".format(playtime)
+
+    if float(playtime) < 1:
+        return True, "Playtime too short {}".format(playtime)
+
+    try:
+        prt = playtime.split('.')[1]
+        if len(prt) < 15:
+            return True, "Invalid playtime {}".format(playtime)
+    except IndexError:
+        return True, "Invalid playtime {}".format(playtime)
+
+    levels_completed = data.get("levels_completed", None)
+    if levels_completed is None:
+        return True, "No levels completed"
+
+    try:
+        int(levels_completed)
+    except ValueError:
+        return True, "Invalid int for levels_completed {}".format(levels_completed)
+
+    if int(levels_completed) > 10:
+        return True, "Too many levels completed {}".format(levels_completed)
+
+    if int(levels_completed) < 2 and int(data.get("score", 0)) > 8:
+        return True, "Too many points {}".format(data.get("score", 0))
+
     return False, ""
 
 def get_leaderboard():
@@ -91,14 +124,13 @@ def submit(request):
     '''
     if request.POST:
         d = request.POST.dict()
-        if c is not None:
-            try:
-                form = LeaderboardForm(request.POST)
-                leader = form.save(commit=False)
-                leader.cheated, leader.cheated_reason = validate(d)
-                leader.save()
-            except BaseException as e:
-                print("Error creating form from post data: ", str(e))
-                print("Post data: ", request.POST)
+        try:
+            form = LeaderboardForm(request.POST)
+            leader = form.save(commit=False)
+            leader.cheated, leader.cheated_reason = validate(d)
+            leader.save()
+        except BaseException as e:
+            print("Error creating form from post data: ", str(e))
+            print("Post data: ", request.POST)
 
     return HttpResponse("Success!")
