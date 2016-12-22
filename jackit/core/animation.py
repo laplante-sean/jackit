@@ -88,6 +88,14 @@ class SpriteStripAnimation:
         self.f = self.frames
         return self
 
+    def done(self):
+        '''
+        True if not looping and the end of the animation has been reached
+        '''
+        if self.i >= len(self.images) and not self.loop:
+            return True
+        return False
+
     def next(self):
         '''
         Get the next image in the spritesheet

@@ -206,6 +206,10 @@ class CodeEditor:
         Draw the code editor
         '''
 
+        # Wait till the player is done jackin in
+        if self.game_engine.player.is_jackin_in:
+            return
+
         # Blit the background of the code window
         screen.blit(self.code_window, self.rect)
 

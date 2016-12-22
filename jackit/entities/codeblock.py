@@ -66,6 +66,11 @@ class CodeBlock(Entity):
         Called when an interactable block is interacted with
         '''
 
+        # Start the jackin_it animation
+        self.game_engine.player.animation = self.game_engine.player.jackin_it.iter()
+        self.game_engine.player.is_jackin_in = True
+        self.game_engine.player.is_jackin_off = False
+
         self.game_engine.hud.display_hint("Press 'ESC' when you're done", 6)
 
         # Start doing the code
@@ -76,6 +81,12 @@ class CodeBlock(Entity):
         '''
         Called when the interaction is complete
         '''
+
+        # Start the jackin_off animation
+        self.game_engine.player.animation = self.game_engine.player.jackin_off.iter()
+        self.game_engine.player.is_jackin_in = False
+        self.game_engine.player.is_jackin_off = True
+
         try:
             pattern = re.compile("import")
             if pattern.search(event.text) is not None:

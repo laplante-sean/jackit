@@ -22,6 +22,8 @@ class Player(Actor):
     def __init__(self, game_engine, controls, spawn_point=(0, 0)):
         run_jack = os.path.join(SiteDeployment.resource_path, "sprites", "run_jack.bmp")
         stand_jack = os.path.join(SiteDeployment.resource_path, "sprites", "stand_jack.bmp")
+        jack_it = os.path.join(SiteDeployment.resource_path, "sprites", "jack_it.bmp")
+        jack_off = os.path.join(SiteDeployment.resource_path, "sprites", "jack_off.bmp")
 
         self.stand_animation = SpriteStripAnimation(
             stand_jack, (0, 0, 19, BLOCK_HEIGHT), 1, -1, False,
@@ -34,6 +36,16 @@ class Player(Actor):
         self.run_left_animation = SpriteStripAnimation(
             run_jack, (0, 0, 19, BLOCK_HEIGHT), 2, -1, True,
             int(game_engine.config.framerate / 7), x_mirror=True
+        )
+
+        self.jackin_it = SpriteStripAnimation(
+            jack_it, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 10, -1, False,
+            int(game_engine.config.framerate / 7)
+        )
+
+        self.jackin_off = SpriteStripAnimation(
+            jack_off, (0, 0, BLOCK_WIDTH, BLOCK_HEIGHT), 8, -1, False,
+            int(game_engine.config.framerate / 7)
         )
 
         super(Player, self).__init__(
@@ -60,20 +72,38 @@ class Player(Actor):
         # True if the player cannot be killed
         self.invincible = False
 
+        # Whether the animations for jackin in or jackin off are running
+        self.is_jackin_in = False
+        self.is_jackin_off = False
+
     def update(self):
         super(Player, self).update()
 
+        if self.is_jackin_in and self.animation.done():
+            self.is_jackin_in = False
+        if self.is_jackin_off and self.animation.done():
+            self.is_jackin_off = False
+
     def stop(self):
+        if self.is_jackin_in or self.is_jackin_off:
+            return
+
         if self.horizontal_movement_action != self.stop:
             self.animation = self.stand_animation.iter()
         super(Player, self).stop()
 
     def go_left(self):
+        if self.is_jackin_in or self.is_jackin_off:
+            return
+
         if self.horizontal_movement_action != self.go_left:
             self.animation = self.run_left_animation.iter()
         super(Player, self).go_left()
 
     def go_right(self):
+        if self.is_jackin_in or self.is_jackin_off:
+            return
+
         if self.horizontal_movement_action != self.go_right:
             self.animation = self.run_animation.iter()
         super(Player, self).go_right()

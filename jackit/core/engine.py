@@ -115,8 +115,8 @@ class EngineSingleton:
 
         # Init the levels
         self.levels = [
-            Level_01(self, self.player),
-            Level_02(self, self.player),
+            #Level_01(self, self.player),
+            #Level_02(self, self.player),
             Level_03(self, self.player),
             Level_04(self, self.player),
             Level_05(self, self.player),
