@@ -75,7 +75,7 @@ def validate(data):
 
     try:
         prt = playtime.split('.')[1]
-        if len(prt) < 15:
+        if len(prt) < 8:
             return True, "Invalid playtime {}".format(playtime)
     except IndexError:
         return True, "Invalid playtime {}".format(playtime)
