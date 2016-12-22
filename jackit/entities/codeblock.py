@@ -15,6 +15,9 @@ class CodeBlock(Entity):
     Code block. Used to bring up the code view
     '''
     def __init__(self, game_engine, width, height, x_pos, y_pos, locked=False):
+        # True if this block requires an adapter to unlock
+        self._locked = locked
+
         code_plug = os.path.join(SiteDeployment.resource_path, "sprites", "code_plug.bmp")
         code_plug_locked = os.path.join(
             SiteDeployment.resource_path, "sprites", "code_plug_locked.bmp")
@@ -37,9 +40,7 @@ class CodeBlock(Entity):
         self.collideable = False
         self._challenge_text = "CHALLENGE TEXT"
         self.original_text = None
-
-        # True if this block requires an adapter to unlock
-        self._locked = locked
+        self.original_lock_state = locked
 
     @property
     def locked(self):
@@ -70,6 +71,12 @@ class CodeBlock(Entity):
         # When first populated, update the original_text
         if self.original_text is None:
             self.original_text = value
+
+    def reset(self):
+        '''
+        Called on level reset after player death
+        '''
+        self.locked = self.original_lock_state
 
     def restore(self):
         '''

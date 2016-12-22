@@ -119,5 +119,11 @@ class UserPatchSingleton:
         '''
         return self.call_patch(self.is_moving_down.__name__, change_y)
 
+    def get_terminal_velocity(self):
+        '''
+        User patch getter to get the player terminal velocity
+        '''
+        return self.call_patch(self.get_terminal_velocity.__name__)
+
 # Create an instance of UserPatchSingleton
 UserPatch = UserPatchSingleton.instance()

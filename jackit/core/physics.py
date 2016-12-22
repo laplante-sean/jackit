@@ -39,10 +39,27 @@ class Physics:
         self._grav_high_jump = grav_high_jump
 
         # Maximum falling speed
-        self.terminal_velocity = terminal_velocity
+        self._terminal_velocity = terminal_velocity
 
         # True if patch methods should be used
         self.use_patch = False
+
+    @property
+    def terminal_velocity(self):
+        '''
+        Getter for _terminal_velocity - Calls the patched version if it exists
+        '''
+        if not self.use_patch:
+            return self._terminal_velocity
+
+        ret = UserPatch.get_terminal_velocity()
+        if ret is None:
+            return self._terminal_velocity
+        return ret
+
+    @terminal_velocity.setter
+    def terminal_velocity(self, value):
+        self._terminal_velocity = value
 
     @property
     def grav_acceleration(self):

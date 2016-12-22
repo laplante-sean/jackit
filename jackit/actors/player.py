@@ -129,6 +129,8 @@ class Player(Actor):
             self.collides_with.remove(sprite) # So we don't accidently grab it twice
             self.items.append(sprite)
             pygame.event.post(pygame.event.Event(CustomEvent.KILL_SPRITE, {"sprite":sprite}))
+            for block in self.game_engine.current_level.code_blocks:
+                block.locked = False
         elif isinstance(sprite, ExitBlock):
             self.items.clear()
             self.level_points = 0
@@ -154,6 +156,7 @@ class Player(Actor):
             return
 
         self.items.clear()
+        self.items = []
         self.game_engine.total_points -= self.level_points
         self.level_points = 0
 
@@ -262,6 +265,9 @@ class Player(Actor):
             elif event.key == self.controls.interact and self.is_on_code_block():
                 if self.frame_cache["is_on_code_block"].is_locked() and not self.has_key():
                     return True # Continue processing events
+
+                print(self.frame_cache["is_on_code_block"].is_locked())
+                print(self.has_key())
 
                 # Stop the player and put them over the interactable object
                 # and make them invincible
