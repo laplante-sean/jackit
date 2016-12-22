@@ -20,7 +20,7 @@ class Level_07(Level):
         "                                                                          5                                 ",
         "                                                                         GGG                                ",
         "                                                                  K                                         ",
-        "                                                               ^GGGGG^            L                          ",
+        "                                                               ^GGGGG^            L                         ",
         "                                                                DDDDD     GGGGGGGGGGGGG                     ",
         "                                                                                                            ",
         "                                                                                               1 1 1 1 1    ",
