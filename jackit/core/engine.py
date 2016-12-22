@@ -22,7 +22,7 @@ from jackit.core.hud import Hud
 from jackit.actors import Player
 from jackit.levels import Level_01, Level_02, Level_03,\
                           Level_04, Level_05, Level_06,\
-                          Level_07
+                          Level_07, Level_08
 
 MAC_OSX_10_12_2_NOTE = """Because of a bug in pygame, this game is
 currently not working on Mac OS X 10.12.2. 
@@ -122,7 +122,8 @@ class EngineSingleton:
             Level_04(self, self.player),
             Level_05(self, self.player),
             Level_06(self, self.player),
-            Level_07(self, self.player)
+            Level_07(self, self.player),
+            Level_08(self, self.player)
         ]
         self.current_level_index = 0
         self.current_level = self.levels[self.current_level_index]
