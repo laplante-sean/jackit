@@ -12,6 +12,7 @@ class CustomEvent:
     EXIT_EDITOR = pygame.USEREVENT + 2
     NEXT_LEVEL = pygame.USEREVENT + 3
     SET_USER = pygame.USEREVENT + 4
+    KILL_ENEMY = pygame.USEREVENT + 5
 
 
 # Global values for block size

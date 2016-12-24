@@ -135,7 +135,14 @@ class Player(Actor):
             self.items.clear()
             self.level_points = 0
             pygame.event.post(pygame.event.Event(CustomEvent.NEXT_LEVEL))
-        elif isinstance(sprite, Enemy) or isinstance(sprite, DeathBlock):
+        elif isinstance(sprite, Enemy):
+            if self.is_moving_down():
+                self.change_y = -(self.stats.jump_speed)
+                self.level_points += 10
+                pygame.event.post(pygame.event.Event(CustomEvent.KILL_ENEMY, {"sprite":sprite}))
+            else:
+                self.kill()
+        elif isinstance(sprite, DeathBlock):
             self.kill()
 
         return collideable
@@ -181,7 +188,12 @@ class Player(Actor):
         Happens when the other sprite is moving and this sprite is not
         '''
         if isinstance(sprite, Enemy):
-            self.kill()
+            if self.is_moving_down():
+                self.change_y = -(self.stats.jump_speed)
+                self.level_points += 10
+                pygame.event.post(pygame.event.Event(CustomEvent.KILL_ENEMY, {"sprite":sprite}))
+            else:
+                self.kill()
 
     def is_on_code_block(self):
         '''

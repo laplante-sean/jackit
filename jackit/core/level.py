@@ -75,6 +75,9 @@ class Level:
         # we can put them back on level reset
         self.collected_blocks = SpriteGroup()
 
+        # List of dead enemies so we can put them back
+        self.dead_enemies = SpriteGroup()
+
         self.width = self.height = 0
         self.death_zone = None
         self.camera = None
@@ -90,9 +93,15 @@ class Level:
         self.entities.reset()
         self.collected_blocks.reset()
 
+        # Add back the collected items
         self.entities.add(self.collected_blocks)
         self.collectable_blocks.add(self.collected_blocks)
         self.collected_blocks.empty()
+
+        # Add back the dead enemies
+        self.entities.add(self.dead_enemies)
+        self.enemies.add(self.dead_enemies)
+        self.dead_enemies.empty()
 
         # Stop the text editor if it's running
         if self.game_engine.code_editor.is_running():
@@ -370,7 +379,7 @@ class Level:
         self.platforms.add(ret)
         return ret
 
-    def challenge_completed(self, code_obj):
+    def challenge_completed(self, _):
         '''
         Callback for when user finishes editing the code
         and it passes the compile stage. code_obj can be
@@ -453,6 +462,12 @@ class Level:
                     self.interactable_blocks.remove(event.sprite)
             else:
                 event.sprite.reset()
+        elif event.type == CustomEvent.KILL_ENEMY:
+            if isinstance(event.sprite, Enemy):
+                self.entities.remove(event.sprite)
+                self.enemies.remove(event.sprite)
+                self.player.collides_with.remove(event.sprite)
+                self.dead_enemies.add(event.sprite)
         elif event.type == CustomEvent.EXIT_EDITOR and self.player.is_on_code_block():
             self.player.frame_cache["is_on_code_block"].interaction_complete(event)
         elif event.type == CustomEvent.NEXT_LEVEL:
