@@ -6,6 +6,7 @@ import os
 import sys
 import argparse
 
+
 if __name__ == "__main__":
     '''
     Any exceptions are printed to a bugreport.txt file
