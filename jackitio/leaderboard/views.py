@@ -32,6 +32,7 @@ def validate_code(data, code):
     deaths = int(data.get("deaths", 0))
     levels_completed = int(data.get("levels_completed", 0))
     level_completed = data.get("level_completed", None)
+    lvl_data = data.get("level_data", None)
 
     logger.info("Validating code: %s", code)
 
@@ -42,21 +43,8 @@ def validate_code(data, code):
     level = None
     try:
         result = {}
-        if level_completed is not None:
+        if lvl_data is not None:
             logger.info("Validating level %s", str(level_completed))
-            level_completed = int(level_completed)
-
-            from jackit.levels import (
-                Level_01, Level_02, Level_03, Level_04,
-                Level_05, Level_06, Level_07, Level_08
-            )
-
-            levels = [
-                Level_01, Level_02, Level_03, Level_04,
-                Level_05, Level_06, Level_07, Level_08
-            ]
-
-            level = levels[level_completed]
 
         code_obj = marshal.load(open(os.path.join(REPO_BASE_DIR, "gen3.dump"), "rb"))
 
@@ -68,7 +56,8 @@ def validate_code(data, code):
             'deaths': deaths,
             'levels_completed': levels_completed,
             'level_completed': level_completed,
-            'completed_level': level
+            'completed_level': level,
+            'lvl_data': lvl_data
         }, locals())
 
     except BaseException as e:
