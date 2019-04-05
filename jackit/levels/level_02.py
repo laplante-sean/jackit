@@ -20,8 +20,8 @@ class Level_02(Level):
         "W               1 1 1               FFFFFFFW",
         "W   S        FFFFFFFFFFF                   W",
         "W                             FFFFFFFF     W",
-        "W                                          W",
-        "W                                   B   B  W",
+        "                                           W",
+        "                                    B   B  W",
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
     ]
 

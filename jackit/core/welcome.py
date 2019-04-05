@@ -4,7 +4,10 @@ Initial welcome page
 
 import pygame
 
-INFO_TEMPLATE = """Movement:
+INFO_TEMPLATE = """Complete levels to earn flags. Flags will
+be printed in the console window.
+
+Movement:
 Left: 'A'
 Right: 'D'
 Jump: '<Space Bar>'
@@ -18,7 +21,11 @@ Edit Text: Arrow keys + keyboard
 Sound:
 Toggle Music: 'M' (by: Jacob Hartman)
 
-Quit: Close this window
+Quit: Close this window and then hit enter in the console window.
+This way you don't miss any sweet flags.
+
+Scores are submitted automatically on exit.
+Check your score on https://jackit.io
 
 May cause seizures. Don't blow it.
 
@@ -34,8 +41,8 @@ class Welcome:
 
         # Init the font
         pygame.font.init()
-        self.welcome_font = pygame.font.SysFont("Courier", 36)
-        self.info_font = pygame.font.SysFont("Courier", 22)
+        self.welcome_font = pygame.font.SysFont("Courier", 26)
+        self.info_font = pygame.font.SysFont("Courier", 16)
 
         self.welcome_line_size = self.welcome_font.get_linesize()
         self.info_line_size = self.info_font.get_linesize()
@@ -54,7 +61,7 @@ class Welcome:
         self.info_text_rect = pygame.Rect(
             self.rect.x, self.rect.y, self.width, self.info_line_size)
 
-        self.welcome_text = "JackIT! The Game"
+        self.welcome_text = "Welcome CNY Hackathon"
         self.info_template = INFO_TEMPLATE
 
         self.render_welcome_text = []
