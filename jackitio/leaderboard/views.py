@@ -4,6 +4,7 @@ Main view for the leaderboard app
 import os
 import sys
 import marshal
+import logging
 
 from django.http import HttpResponse
 from django.template import loader
@@ -12,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from jackitio.settings import REPO_BASE_DIR
 from .models import Leaderboard, LeaderboardForm
 
+logger = logging.getLogger(__name__)
 
 # TODO: Populate with level flags
 FLAGS = [
@@ -201,7 +203,7 @@ def lvlcomplete(request):
         return HttpResponse("Invalid method")
 
     if cheated:
-        print("Cheated on level: ", cheated_reason)
+        logger.info("Cheated on level: %s", cheated_reason)
         return HttpResponse("No cheating on levels! Maybe try to cheat on score submission?")
 
     flag = None
