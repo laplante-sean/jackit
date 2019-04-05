@@ -12,10 +12,18 @@ setup(
             "includes": [
                 "deploy.py"
             ],
+            "excludes": [
+                "django",
+                "jackitio",
+                "tests"
+            ],
             "packages": [
                 "requests",
                 "queue",
                 "idna"
+            ],
+            "include_files": [
+                ("gen.dump", "lib/gen.dump")
             ]
         }
     },

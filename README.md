@@ -8,10 +8,10 @@ Jacob Hartman made the music. https://j2h2.com/
 
 ### Install
 
-1. clone repo
-2. have python 3.5
-3. `pip3 install -r requirements.txt`
-4. `python3 game.py`
+1. Clone the repo or download the Windows MSI installer from the releases tab
+1. Have or get python 3.7 (or just use the installer on Windows)
+3. Get the requirements: `pip3 install -r requirements.txt`
+4. Run the game `python3 game.py`
 
 ### Playing
 
@@ -20,54 +20,3 @@ Jacob Hartman made the music. https://j2h2.com/
 1. In the code editor use the arrow keys to move the cursor and the keyboard to type.
 1. All the code you type is run by the game. There are some protections but it's not perfect. You can pretty much do anything.
 1. a config file `site.cfg.json` is created in the root of the repo when the game is run. You can modify this file, but I wouldn't. A lot of the config options have only been tested with their default values.
-
-#### If you want to use pygame_sdl2 (optional)
-
-_This is not optional on Mac OS X 10.12.2 because of a bug in pygame_
-_https://bitbucket.org/pygame/pygame/issues/320/wont-start-on-mac-os-x-10122-on-python-352#comment-33011207_
-
-1. clone https://github.com/renpy/pygame_sdl2
-1. Follow installation instructions for your OS
-1. Run jackit with `python3 game.py --sdl2`
-
-### Web Leaderboard
-
-#### Running the dev server
-
-1. Run migrations
-
-```
-python3 manage.py migrate
-```
-
-1. Create the superuser
-
-```
-python3 manage.py createsuperuser
-```
-
-1. Run the dev server
-
-```
-python3 manage.py runserver
-```
-
-#### Updating database with changes to the DB models
-
-1. Make migrations
-
-```
-python3 manage.py makemigrations leaderboard
-```
-
-1. Optionally, look at what will change with `migrate`
-
-```
-python3 manage.py sqlmigrate leaderboard <id_from_makemigrations>
-```
-
-1. Finally, run `migrate` to actually commit the changes
-
-```
-python3 manage.py migrate
-```
