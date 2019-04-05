@@ -23,7 +23,9 @@ setup(
                 "idna"
             ],
             "include_files": [
-                ("gen.dump", "lib/gen.dump")
+                ("gen.dump", "lib/gen.dump"),
+                ("gen2.dump", "lib/gen2.dump"),
+                ("gen3.dump", "lib/gen3.dump")
             ]
         }
     },
