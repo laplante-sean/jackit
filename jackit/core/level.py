@@ -2,9 +2,6 @@
 This is a base class for a level. Create child classes
 for each level
 '''
-
-import pygame
-
 from jackit.core import CustomEvent, BLOCK_WIDTH, BLOCK_HEIGHT
 from jackit.actors import LedgeSensingEnemy, BasicEnemy, Player, Enemy
 from jackit.core.spritegroup import SpriteGroup
@@ -130,6 +127,7 @@ class Level:
 
         # Set up the DEATH ZONE!
         # A rect 50 pixels bigger on all sides than the level
+        import pygame
         self.death_zone = pygame.Rect(-50, -50, self.width + 50, self.height + 50)
 
         # Init the camera
