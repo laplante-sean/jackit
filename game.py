@@ -35,12 +35,12 @@ if __name__ == "__main__":
         JackitGame.run()
     except ConfigError as e:
         print("Invalid config: {}. Please fix {}".format(str(e), SiteDeployment.config_path))
-    except BaseException as e:
+    except BaseException as e:  # pylint: disable=broad-except
         print("Exception during game execution. See {}\nException: {}".format(
             os.path.join(SiteDeployment.base_path, "bugreport.txt"), str(e)
         ))
 
-        with open(os.path.join(os.path.dirname(__file__), "bugreport.txt"), 'w') as f:
+        with open(os.path.join(SiteDeployment.base_path, "bugreport.txt"), 'w') as f:
             traceback.print_exc(file=f)
         sys.exit(1)
     sys.exit(0)

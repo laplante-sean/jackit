@@ -2,11 +2,11 @@
 Main game engine
 '''
 
+import logging
 import os
 import marshal
 import sys
 import platform
-import requests
 import pygame
 from deploy import SiteDeployment
 
@@ -24,12 +24,13 @@ from jackit.levels import Level_01, Level_02, Level_03,\
                           Level_04, Level_05, Level_06,\
                           Level_07, Level_08
 
+
 MAC_OSX_10_12_2_NOTE = """Because of a bug in pygame, this game is
-currently not working on Mac OS X 10.12.2. 
-Please install pygame_sdl2 and re-run game.py 
+currently not working on Mac OS X 10.12.2.
+Please install pygame_sdl2 and re-run game.py
 with the '--sdl2' argument to fix this issue
 
-pygame_sdl2 can be found here: 
+pygame_sdl2 can be found here:
 https://github.com/renpy/pygame_sdl2
 
 To setup, brew is required. If you don't have it, get it like this:
@@ -44,6 +45,10 @@ $ python3 setup.py install
 
 Then finally, from the jackit repo:
 $ python3 game.py --sdl2"""
+
+
+logger = logging.getLogger(__name__)
+
 
 class EngineSingleton:
     '''
@@ -318,6 +323,8 @@ class EngineSingleton:
         print("Submitting score...")
 
         try:
+            import requests
+
             r = requests.post(
                 self.config.leaderboard.submission_url,
                 data={
@@ -330,8 +337,10 @@ class EngineSingleton:
                 }
             )
             print(r.status_code, r.reason)
-        except BaseException:
-            return
+        except ImportError:
+            logger.error("Cannot submit score. python library 'requests' is not installed.")
+        except BaseException as e:  # pylint: disable=broad-except
+            logger.exception("Failed to submit score: %s", str(e))
 
     def reset(self):
         '''

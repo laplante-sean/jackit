@@ -6,11 +6,13 @@ import os
 
 from jackit.config import JackitConfig
 
+
 class SiteDeploymentError(Exception):
     '''
     Raised if there is an issue in the SiteDeploymentSingleton
     '''
-    pass
+    pass  # pylint: disable=unnecessary-pass
+
 
 class SiteDeploymentSingleton:
     '''
@@ -31,8 +33,15 @@ class SiteDeploymentSingleton:
 
     def __init__(self):
         self.base_path = os.path.dirname(os.path.abspath(__file__))
-        self.resource_path = os.path.join(self.base_path, "jackit", "resources")
         self.config_path = os.path.join(self.base_path, "site.cfg.json")
+
+        if "library.zip" in self.base_path:
+            # Running as executable
+            self.base_path = os.path.split(self.base_path)[0]
+            self.config_path = os.path.join(os.path.expanduser("~"), "jackit.cfg.json")
+            print("Config file written to: ", self.config_path)
+
+        self.resource_path = os.path.join(self.base_path, "jackit", "resources")
         self._config = None
 
     @property
@@ -64,5 +73,6 @@ class SiteDeploymentSingleton:
         if os.path.exists(self.config_path):
             self.config.load()
         self.config.save()
+
 
 SiteDeployment = SiteDeploymentSingleton.instance()
