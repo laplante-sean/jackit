@@ -43,4 +43,6 @@ if __name__ == "__main__":
         with open(os.path.join(SiteDeployment.base_path, "bugreport.txt"), 'w') as f:
             traceback.print_exc(file=f)
         sys.exit(1)
+
+    input("Press 'enter' to exit...")
     sys.exit(0)
