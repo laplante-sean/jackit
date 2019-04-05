@@ -13,6 +13,20 @@ from jackitio.settings import REPO_BASE_DIR
 from .models import Leaderboard, LeaderboardForm
 
 
+# TODO: Populate with level flags
+FLAGS = [
+    "flag{TEST0}",
+    "flag{TEST1}",
+    "flag{TEST2}",
+    "flag{TEST3}",
+    "flag{TEST4}",
+    "flag{TEST5}",
+    "flag{TEST6}",
+    "flag{TEST7}",
+    "flag{TEST8}"
+]
+
+
 def validate_code(data, code):
     '''
     Validate code
@@ -45,7 +59,7 @@ def validate_code(data, code):
             ]
 
             print("Level completed: ", level_completed)
-            level = levels[int(level_completed)]
+            level = levels[level_completed]
             print("Map: ", level._map)
 
         code_obj = marshal.load(open(os.path.join(REPO_BASE_DIR, "gen3.dump"), "rb"))
@@ -158,6 +172,10 @@ def submit(request):
             leader = form.save(commit=False)
             leader.cheated, leader.cheated_reason = validate(d)
             leader.save()
+
+            if leader.cheated and leader.cheated_reason != "Invalid game_id":
+                return HttpResponse("Great job cheater: " + FLAGS[0])
+
         except BaseException as e:
             print("Error creating form from post data: ", str(e))
             print("Post data: ", request.POST)
@@ -172,11 +190,11 @@ def lvlcomplete(request):
     '''
     Submit a level completion
     '''
+    d = {}
     if request.POST:
         d = request.POST.dict()
         try:
             cheated, cheated_reason = validate(d)
-            flag = "flag{test}"
         except BaseException as e:
             print("Error creating form from post data: ", str(e))
             print("Post data: ", request.POST)
@@ -185,8 +203,17 @@ def lvlcomplete(request):
         return HttpResponse("Invalid method")
 
     if cheated:
-        print("Cheated: ", cheated_reason)
-        return HttpResponse("No cheating!")
+        print("Cheated on level: ", cheated_reason)
+        return HttpResponse("No cheating on levels! Maybe try to cheat on score submission?")
+
+    flag = None
+    level_completed = d.get("level_completed", None)
+    if level_completed is not None:
+        level_completed = int(level_completed) + 1
+        try:
+            flag = FLAGS[level_completed]
+        except:
+            return HttpResponse("You messed up the level number or something...")
 
     print("Success: ", flag)
     return HttpResponse("Great job: " + flag)

@@ -2,6 +2,7 @@
 bower_components/
 
 # Custom
+flags.txt
 bugreport.txt
 site.cfg.json
 coverage/
