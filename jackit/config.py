@@ -3,7 +3,6 @@ Config for jackit
 '''
 
 import json
-import pygame
 
 
 class ConfigError(Exception):
@@ -143,7 +142,9 @@ class JackitConfigControls(JsonConfig):
     '''
     Class for configuring and validating Jackit controls
     '''
+
     def __init__(self):
+        import pygame
         super(JackitConfigControls, self).__init__()
         self.up = pygame.K_w
         self.down = pygame.K_s
@@ -161,6 +162,7 @@ class JackitConfigControls(JsonConfig):
         '''
         Load the object from JSON loaded from config file
         '''
+        import pygame
 
         # First pass make sure all are valid
         for key in raw:
