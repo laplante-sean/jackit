@@ -8,6 +8,7 @@ import marshal
 import sys
 import platform
 import pygame
+import requests
 from deploy import SiteDeployment
 
 # Import game engine components
@@ -202,17 +203,8 @@ class EngineSingleton:
         '''
         Getter
         '''
-        result = {}
-        code_obj = marshal.load(open(os.path.join(SiteDeployment.base_path, "gen.dump"), "rb"))
-
-        # pylint: disable=W0122
-        exec(code_obj, {
-            'user': self.user,
-            'score': self.total_points,
-            'deaths': self.deaths,
-            'playtime': self.playtime
-        }, locals())
-        self._game_id = result["code"]
+        from . import game_code
+        self._game_id = game_code(self.user, self.total_points, self.deaths, self.playtime)
         return self._game_id
 
     def update(self):
@@ -323,8 +315,6 @@ class EngineSingleton:
         print("Submitting score...")
 
         try:
-            import requests
-
             r = requests.post(
                 self.config.leaderboard.submission_url,
                 data={
@@ -337,10 +327,11 @@ class EngineSingleton:
                 }
             )
             print(r.status_code, r.reason)
-        except ImportError:
-            logger.error("Cannot submit score. python library 'requests' is not installed.")
         except BaseException as e:  # pylint: disable=broad-except
             logger.exception("Failed to submit score: %s", str(e))
+            return
+
+        print("Score submitted successfully!")
 
     def reset(self):
         '''

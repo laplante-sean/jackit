@@ -8,6 +8,7 @@ coverage/
 media/
 .vscode/
 *.zip
+get_game_code.py
 
 # Mac Filesystem garbage
 .DS_Store*

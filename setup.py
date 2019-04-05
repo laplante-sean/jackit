@@ -12,6 +12,11 @@ setup(
             "includes": [
                 "deploy.py"
             ],
+            "packages": [
+                "requests",
+                "queue",
+                "idna"
+            ]
         }
     },
     executables=[
