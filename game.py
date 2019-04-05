@@ -5,6 +5,7 @@ import traceback
 import os
 import sys
 import argparse
+import pygame
 
 
 if __name__ == "__main__":
@@ -36,6 +37,8 @@ if __name__ == "__main__":
         JackitGame.run()
     except ConfigError as e:
         print("Invalid config: {}. Please fix {}".format(str(e), SiteDeployment.config_path))
+    except pygame.error as e:
+        print("Exiting...")
     except BaseException as e:  # pylint: disable=broad-except
         print("Exception during game execution. See {}\nException: {}".format(
             os.path.join(SiteDeployment.base_path, "bugreport.txt"), str(e)

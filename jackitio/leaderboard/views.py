@@ -13,20 +13,13 @@ from django.views.decorators.csrf import csrf_exempt
 from jackitio.settings import REPO_BASE_DIR
 from .models import Leaderboard, LeaderboardForm
 
+
 logger = logging.getLogger(__name__)
 
-# TODO: Populate with level flags
-FLAGS = [
-    "flag{TEST0}",
-    "flag{TEST1}",
-    "flag{TEST2}",
-    "flag{TEST3}",
-    "flag{TEST4}",
-    "flag{TEST5}",
-    "flag{TEST6}",
-    "flag{TEST7}",
-    "flag{TEST8}"
-]
+
+FLAGS = []
+with open(os.path.join(REPO_BASE_DIR, "flags.txt"), "r") as fh:
+    FLAGS = fh.read().splitlines()
 
 
 def validate_code(data, code):
@@ -40,6 +33,8 @@ def validate_code(data, code):
     levels_completed = int(data.get("levels_completed", 0))
     level_completed = data.get("level_completed", None)
 
+    logger.info("Validating code: %s", code)
+
     if user is None or playtime is None or score is None or deaths is None\
     or levels_completed is None or code is None:
         return False
@@ -48,6 +43,7 @@ def validate_code(data, code):
     try:
         result = {}
         if level_completed is not None:
+            logger.info("Validating level %s", str(level_completed))
             level_completed = int(level_completed)
 
             from jackit.levels import (
@@ -76,16 +72,21 @@ def validate_code(data, code):
         }, locals())
 
     except BaseException as e:
-        print(e)
+        logger.exception("Failed to validate submission: %s", str(e))
         return False
 
     comp = result.get("code", None)
     if not comp:
-        print("No code!")
+        logger.error("No code provided, cannot validate!")
         return False
 
+    logger.info("Checking %s == %s", comp, code)
+
     if comp == code:
+        logger.info("CODE MATCH! Valid Game ID")
         return True
+
+    logger.error("Invalid game ID. Possble cheating")
     return False
 
 
@@ -174,12 +175,14 @@ def submit(request):
             leader.save()
 
             if leader.cheated and leader.cheated_reason != "Invalid game_id":
+                logger.info("Cheated the good way!")
                 return HttpResponse("Great job cheater: " + FLAGS[0])
 
         except BaseException as e:
             print("Error creating form from post data: ", str(e))
             print("Post data: ", request.POST)
     else:
+        logger.error("submit() - Invalid method. POST required.")
         return HttpResponse("Invalid method")
 
     return HttpResponse("Success!")
@@ -200,6 +203,7 @@ def lvlcomplete(request):
             print("Post data: ", request.POST)
             return HttpResponse("Internal error. Could not get level flag")
     else:
+        logger.error("lvlcomplete() - Invalid method. POST required.")
         return HttpResponse("Invalid method")
 
     if cheated:
@@ -212,8 +216,11 @@ def lvlcomplete(request):
         level_completed = int(level_completed) + 1
         try:
             flag = FLAGS[level_completed]
-        except:
+        except BaseException as e:
+            logger.exception("Invalid value %s for level_completed: %s", str(level_completed), str(e))
             return HttpResponse("You messed up the level number or something...")
+    else:
+        logger.error("level_completed is required but was not provided in the POST data.")
 
-    print("Success: ", flag)
+    logger.info("Level completed successfully. Flag: ", flag)
     return HttpResponse("Great job: " + flag)

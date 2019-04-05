@@ -360,6 +360,7 @@ class EngineSingleton:
         '''
         self.submit_score()
         self.running = False
+        pygame.quit()
 
     def handle_events(self):
         '''
