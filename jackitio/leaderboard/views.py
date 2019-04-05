@@ -58,9 +58,7 @@ def validate_code(data, code):
                 Level_05, Level_06, Level_07, Level_08
             ]
 
-            print("Level completed: ", level_completed)
             level = levels[level_completed]
-            print("Map: ", level._map)
 
         code_obj = marshal.load(open(os.path.join(REPO_BASE_DIR, "gen3.dump"), "rb"))
 
