@@ -3,8 +3,6 @@ Main game engine
 '''
 
 import logging
-import os
-import marshal
 import sys
 import platform
 import pygame
@@ -158,9 +156,6 @@ class EngineSingleton:
         # The player's name
         self.user = None
 
-        # Game ID
-        self._game_id = {}
-
         # Number of levels completed
         self.levels_completed = 0
 
@@ -197,15 +192,6 @@ class EngineSingleton:
         Getter for total_points
         '''
         return self.total_points + 5 # Snowflake credit
-
-    @property
-    def game_id(self):
-        '''
-        Getter
-        '''
-        from . import game_code
-        self._game_id = game_code(self.user, self.total_points, self.deaths, self.playtime)
-        return self._game_id
 
     def update(self):
         '''
@@ -274,7 +260,25 @@ class EngineSingleton:
         '''
         Move to the next level
         '''
+        from . import submitlvl
+
         self.levels_completed += 1
+
+        try:
+            submitlvl(
+                self.config.leaderboard.lvl_completion_url,
+                self.user,
+                self.total_points,
+                self.deaths,
+                self.playtime,
+                self.levels_completed,
+                self.current_level_index,
+                self.current_level
+            )
+        except BaseException as e:
+            logger.exception("Failed to submit level completion: %s", str(e))
+        else:
+            print("Level completion submitted successfully!")
 
         if self.current_level_index >= (len(self.levels) - 1):
             if self.config.play_forever:
@@ -302,6 +306,8 @@ class EngineSingleton:
         '''
         Submit score
         '''
+        from . import submit
+
         print("Player {}: ".format(self.user))
         print("\tScore: ", self.total_points)
         print("\tDeaths: ", self.deaths)
@@ -315,19 +321,15 @@ class EngineSingleton:
         print("Submitting score...")
 
         try:
-            r = requests.post(
+            submit(
                 self.config.leaderboard.submission_url,
-                data={
-                    'user': self.user,
-                    'score':self.total_points,
-                    'deaths':self.deaths,
-                    'playtime':self.playtime,
-                    'game_id': self.game_id,
-                    'levels_completed': self.levels_completed
-                }
+                self.user,
+                self.total_points,
+                self.deaths,
+                self.playtime,
+                self.levels_completed
             )
-            print(r.status_code, r.reason)
-        except BaseException as e:  # pylint: disable=broad-except
+        except BaseException as e:
             logger.exception("Failed to submit score: %s", str(e))
             return
 

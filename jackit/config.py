@@ -5,11 +5,13 @@ Config for jackit
 import json
 import pygame
 
+
 class ConfigError(Exception):
     '''
     Error during loading/saving/parsing of JSON config
     '''
     pass
+
 
 class JsonConfig:
     '''
@@ -60,6 +62,7 @@ class JsonConfig:
             raise ConfigError("Unknown type object. Expecting 'int', got: {}".format(
                 type(value)
             ))
+
 
 class JackitConfigCodeEditor(JsonConfig):
     '''
@@ -212,6 +215,7 @@ class JackitConfigControls(JsonConfig):
             'reset_game': self.reset_game
         }
 
+
 class JackitLeaderboard(JsonConfig):
     '''
     Config for connection to the leaderboard
@@ -219,13 +223,15 @@ class JackitLeaderboard(JsonConfig):
     def __init__(self):
         super(JackitLeaderboard, self).__init__()
         self.submission_url = "https://www.jackit.io/leaderboard/submit/"
+        self.lvl_completion_url = "https://www.jackit.io/leaderboard/lvlcomplete/"
 
     def to_json(self):
         '''
         Return a dict representation of the object
         '''
         return {
-            'submission_url': self.submission_url
+            'submission_url': self.submission_url,
+            'lvl_completion_url': self.lvl_completion_url
         }
 
     def from_json(self, raw):
@@ -233,6 +239,8 @@ class JackitLeaderboard(JsonConfig):
         Parse the config from JSON
         '''
         self.submission_url = raw.get("submission_url", "https://www.jackit.io/leaderboard/submit/")
+        self.lvl_completion_url = raw.get("lvl_completion_url", "https://www.jackit.io/leaderboard/lvlcomplete/")
+
 
 class JackitConfig(JsonConfig):
     '''

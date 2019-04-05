@@ -1,7 +1,6 @@
 '''
 Main view for the leaderboard app
 '''
-
 import os
 import sys
 import marshal
@@ -13,30 +12,53 @@ from django.views.decorators.csrf import csrf_exempt
 from jackitio.settings import REPO_BASE_DIR
 from .models import Leaderboard, LeaderboardForm
 
+
 def validate_code(data, code):
     '''
     Validate code
     '''
     user = data.get("user", None)
-    playtime = data.get("playtime", None)
-    score = data.get("score", None)
-    deaths = data.get("deaths", None)
-    levels = data.get("levels_completed", None)
+    playtime = data.get("playtime", "0.0").strip()
+    score = int(data.get("score", 0))
+    deaths = int(data.get("deaths", 0))
+    levels_completed = int(data.get("levels_completed", 0))
+    level_completed = data.get("level_completed", None)
 
     if user is None or playtime is None or score is None or deaths is None\
-    or levels is None or code is None:
+    or levels_completed is None or code is None:
         return False
 
+    level = None
     try:
         result = {}
-        code_obj = marshal.load(open(os.path.join(REPO_BASE_DIR, "gen.dump"), "rb"))
+        if level_completed is not None:
+            level_completed = int(level_completed)
+
+            from jackit.levels import (
+                Level_01, Level_02, Level_03, Level_04,
+                Level_05, Level_06, Level_07, Level_08
+            )
+
+            levels = [
+                Level_01, Level_02, Level_03, Level_04,
+                Level_05, Level_06, Level_07, Level_08
+            ]
+
+            print("Level completed: ", level_completed)
+            level = levels[int(level_completed)]
+            print("Map: ", level._map)
+
+        code_obj = marshal.load(open(os.path.join(REPO_BASE_DIR, "gen3.dump"), "rb"))
 
         # pylint: disable=W0122
         exec(code_obj, {
-            'user':user,
-            'playtime':playtime,
-            'score':score,
-            'deaths':deaths
+            'user': user,
+            'playtime': playtime,
+            'total_points': score,
+            'deaths': deaths,
+            'levels_completed': levels_completed,
+            'level_completed': level_completed,
+            'completed_level': level
         }, locals())
 
     except BaseException as e:
@@ -51,6 +73,7 @@ def validate_code(data, code):
     if comp == code:
         return True
     return False
+
 
 def validate(data):
     '''
@@ -100,6 +123,7 @@ def validate(data):
 
     return False, ""
 
+
 def get_leaderboard():
     '''
     Get all the entries in the leaderboard
@@ -112,6 +136,7 @@ def get_leaderboard():
     except BaseException:
         return {'leaderboard': []}
 
+
 def index(request):
     '''
     Home page and load most recent leaderboard
@@ -119,6 +144,7 @@ def index(request):
     template = loader.get_template('leaderboard/index.html')
     context = get_leaderboard()
     return HttpResponse(template.render(context, request))
+
 
 @csrf_exempt
 def submit(request):
@@ -135,5 +161,32 @@ def submit(request):
         except BaseException as e:
             print("Error creating form from post data: ", str(e))
             print("Post data: ", request.POST)
+    else:
+        return HttpResponse("Invalid method")
 
     return HttpResponse("Success!")
+
+
+@csrf_exempt
+def lvlcomplete(request):
+    '''
+    Submit a level completion
+    '''
+    if request.POST:
+        d = request.POST.dict()
+        try:
+            cheated, cheated_reason = validate(d)
+            flag = "flag{test}"
+        except BaseException as e:
+            print("Error creating form from post data: ", str(e))
+            print("Post data: ", request.POST)
+            return HttpResponse("Internal error. Could not get level flag")
+    else:
+        return HttpResponse("Invalid method")
+
+    if cheated:
+        print("Cheated: ", cheated_reason)
+        return HttpResponse("No cheating!")
+
+    print("Success: ", flag)
+    return HttpResponse("Great job: " + flag)
